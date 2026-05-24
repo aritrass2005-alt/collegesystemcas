@@ -6,9 +6,12 @@ public class Student {
     private String name;
     private String email;
     private String phone;
+    private String address;
+    private String profilePhoto;
     private String department;
     private int year;
     private String section;
+    private boolean isBanned;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -26,6 +29,12 @@ public class Student {
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
 
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getProfilePhoto() { return profilePhoto; }
+    public void setProfilePhoto(String profilePhoto) { this.profilePhoto = profilePhoto; }
+
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 
@@ -34,4 +43,7 @@ public class Student {
 
     public String getSection() { return section; }
     public void setSection(String section) { this.section = section; }
+
+    public boolean isBanned() { return isBanned; }
+    public void setBanned(boolean banned) { isBanned = banned; }
 }

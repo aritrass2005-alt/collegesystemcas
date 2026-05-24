@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS admin (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL, -- Hashed password
     role ENUM('SuperAdmin', 'Admin') DEFAULT 'Admin',
+    profile_photo VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS teacher (
     year INT,
     section VARCHAR(10),
     is_approved BOOLEAN DEFAULT FALSE,
+    profile_photo VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -48,6 +50,7 @@ CREATE TABLE IF NOT EXISTS student (
     year INT,
     section VARCHAR(10),
     status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    profile_photo VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,11 +70,12 @@ CREATE TABLE IF NOT EXISTS attendance (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
     subject_id INT NOT NULL,
-    status ENUM('Present', 'Absent') NOT NULL,
+    status ENUM('Present', 'Absent', 'Leave') NOT NULL,
     date_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_locked BOOLEAN DEFAULT FALSE, -- Locked after submission
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE
+    FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE,
+    UNIQUE KEY uc_student_subject_date (student_id, subject_id, (DATE(date_time)))
 );
 
 -- Leave Application Table
@@ -79,6 +83,9 @@ CREATE TABLE IF NOT EXISTS leave_application (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
     reason TEXT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    declaration BOOLEAN DEFAULT FALSE,
     proof_path VARCHAR(255), -- File path for uploaded PDF/Image
     status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
     applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

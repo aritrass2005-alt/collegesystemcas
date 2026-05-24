@@ -47,22 +47,42 @@ public class AdminAttendanceOverrideServlet extends HttpServlet {
             return;
         }
 
-        String[] attendanceIds = request.getParameterValues("attendanceId");
+        String approveAppealIdStr = request.getParameter("approveAppeal");
+        String action = request.getParameter("action");
         String subjectId = request.getParameter("subject_id");
         String date = request.getParameter("date");
 
-        if (attendanceIds != null) {
-            int updated = 0;
-            for (String idStr : attendanceIds) {
-                int id = Integer.parseInt(idStr);
-                String status = request.getParameter("status_" + id);
-                if (attendanceDAO.updateAttendanceStatus(id, status)) {
-                    updated++;
-                }
+        if (approveAppealIdStr != null && !approveAppealIdStr.isEmpty()) {
+            int attendanceId = Integer.parseInt(approveAppealIdStr);
+            if (attendanceDAO.approveAppeal(attendanceId)) {
+                response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&msg=Appeal approved successfully.");
+            } else {
+                response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&error=Failed to approve appeal.");
             }
-            response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&msg=Successfully updated " + updated + " records");
+            return;
+        }
+
+        if ("updateAll".equals(action)) {
+            String[] attendanceIds = request.getParameterValues("attendanceId");
+            if (attendanceIds != null) {
+                int updated = 0;
+                for (String idStr : attendanceIds) {
+                    int id = Integer.parseInt(idStr);
+                    String status = request.getParameter("status_" + id);
+                    
+                    Attendance a = attendanceDAO.getAttendanceById(id);
+                    if (a != null && !a.getStatus().equals(status)) {
+                        if (attendanceDAO.updateAttendanceByAdmin(id, status)) {
+                            updated++;
+                        }
+                    }
+                }
+                response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&msg=Successfully edited and locked " + updated + " records.");
+            } else {
+                response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&error=No records found to update.");
+            }
         } else {
-            response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date + "&error=No records found to update");
+            response.sendRedirect("adminAttendance?subject_id=" + subjectId + "&date=" + date);
         }
     }
 }

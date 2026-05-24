@@ -73,6 +73,35 @@ public class SubjectDAO {
                     s.setName(rs.getString("name"));
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
+                    s.setSection(rs.getString("section"));
+                    s.setTeacherId(rs.getInt("teacher_id"));
+                    subjects.add(s);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return subjects;
+    }
+    public List<Subject> getSubjectsForCoordinator(String department, int year, String section) {
+        List<Subject> subjects = new ArrayList<>();
+        String sql = "SELECT * FROM subject WHERE department = ? AND year = ? AND (section IS NULL OR section = '' OR section = ?)";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             
+            stmt.setString(1, department);
+            stmt.setInt(2, year);
+            stmt.setString(3, section);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Subject s = new Subject();
+                    s.setId(rs.getInt("id"));
+                    s.setSubjectCode(rs.getString("subject_code"));
+                    s.setName(rs.getString("name"));
+                    s.setDepartment(rs.getString("department"));
+                    s.setYear(rs.getInt("year"));
+                    s.setSection(rs.getString("section"));
                     s.setTeacherId(rs.getInt("teacher_id"));
                     subjects.add(s);
                 }
@@ -97,6 +126,7 @@ public class SubjectDAO {
                     s.setName(rs.getString("name"));
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
+                    s.setSection(rs.getString("section"));
                     s.setTeacherId(rs.getInt("teacher_id"));
                     return s;
                 }

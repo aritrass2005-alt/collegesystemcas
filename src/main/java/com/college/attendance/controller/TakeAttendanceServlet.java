@@ -58,6 +58,18 @@ public class TakeAttendanceServlet extends HttpServlet {
                 if (section != null && !section.isEmpty()) {
                     request.setAttribute("selectedSection", section);
                     List<Student> students = studentDAO.getStudentsForSubject(selectedSubject.getDepartment(), selectedSubject.getYear(), section);
+                    
+                    // Check if already submitted
+                    if (students != null && !students.isEmpty()) {
+                        List<Integer> studentIds = new ArrayList<>();
+                        for (Student s : students) studentIds.add(s.getId());
+                        
+                        boolean alreadySubmitted = attendanceDAO.isAttendanceSubmittedForStudents(subjectId, studentIds, new java.sql.Date(System.currentTimeMillis()).toString());
+                        if (alreadySubmitted) {
+                            request.setAttribute("error", "Attendance for this section has already been submitted for today. Please contact the administrator for any modifications.");
+                            request.setAttribute("alreadySubmitted", true);
+                        }
+                    }
                     request.setAttribute("students", students);
                 }
             } else {
@@ -103,6 +115,14 @@ public class TakeAttendanceServlet extends HttpServlet {
                 att.setStatus(status);
                 records.add(att);
             }
+        }
+
+        List<Integer> sIds = new ArrayList<>();
+        for (Attendance a : records) sIds.add(a.getStudentId());
+        
+        if (attendanceDAO.isAttendanceSubmittedForStudents(subjectId, sIds, new java.sql.Date(System.currentTimeMillis()).toString())) {
+            response.sendRedirect("takeAttendance?subjectId=" + subjectId + "&error=Attendance already submitted for today. Please contact Admin for changes.");
+            return;
         }
 
         boolean success = attendanceDAO.submitAttendance(records);

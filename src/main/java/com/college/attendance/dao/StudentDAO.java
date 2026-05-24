@@ -190,4 +190,33 @@ public class StudentDAO {
         }
         return sections;
     }
+
+    public List<Student> getStudentsByTeacher(int teacherId) {
+        List<Student> students = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.* FROM student s " +
+                     "JOIN subject sub ON s.department = sub.department AND s.year = sub.year " +
+                     "WHERE sub.teacher_id = ? AND (sub.section IS NULL OR sub.section = '' OR s.section = sub.section) AND s.status = 'Active' " +
+                     "ORDER BY s.roll_no";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Student s = new Student();
+                    s.setId(rs.getInt("id"));
+                    s.setRollNo(rs.getString("roll_no"));
+                    s.setName(rs.getString("name"));
+                    s.setEmail(rs.getString("email"));
+                    s.setPhone(rs.getString("phone"));
+                    s.setDepartment(rs.getString("department"));
+                    s.setYear(rs.getInt("year"));
+                    s.setSection(rs.getString("section"));
+                    students.add(s);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return students;
+    }
 }

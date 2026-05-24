@@ -18,7 +18,7 @@
     <title>Manage Students - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="css/admin_theme.css" rel="stylesheet">
+    <link href="css/theme.css?v=2" rel="stylesheet">
 </head>
 <body>
     <jsp:include page="includes/admin_sidebar.jsp" />
@@ -106,8 +106,10 @@
                         </thead>
                         <tbody>
                             <% if(students != null && !students.isEmpty()) { 
-                                for(Student s : students) { %>
-                            <tr>
+                                for(Student s : students) { 
+                                    boolean banned = s.isBanned();
+                            %>
+                            <tr class="<%= banned ? "table-danger opacity-75" : "" %>">
                                 <td class="fw-bold"><%= s.getRollNo() %></td>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
@@ -125,6 +127,14 @@
                                             onclick='editStudent(<%= new com.google.gson.Gson().toJson(s) %>)'>
                                             <i class="bi bi-pencil"></i>
                                         </button>
+                                        <form action="toggleBan" method="post" class="m-0 p-0 d-inline" onsubmit="return confirm('Are you sure you want to <%= banned ? "unban" : "ban" %> this student?');">
+                                            <input type="hidden" name="userId" value="<%= s.getId() %>">
+                                            <input type="hidden" name="userRole" value="Student">
+                                            <input type="hidden" name="isBanned" value="<%= !banned %>">
+                                            <button type="submit" class="btn btn-sm <%= banned ? "btn-success" : "btn-warning" %>" title="<%= banned ? "Unban Account" : "Ban Account" %>">
+                                                <i class="bi <%= banned ? "bi-unlock" : "bi-lock" %>"></i>
+                                            </button>
+                                        </form>
                                         <a href="manageStudents?action=delete&id=<%= s.getId() %>" 
                                            class="btn btn-sm btn-outline-danger" 
                                            onclick="return confirm('Are you sure you want to delete this student?')">

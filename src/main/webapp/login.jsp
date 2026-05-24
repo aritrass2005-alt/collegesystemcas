@@ -4,431 +4,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome - College Attendance System</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Login – College Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/theme.css?v=2" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root {
-            --bg-color: #0f0c29;
-            --accent-color: #302b63;
-            --highlight-color: #24243e;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --text-color: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: linear-gradient(135deg, #2c1b4d 0%, #1a0b2e 50%, #0d041a 100%);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
+            display: flex;
+            background: #f0f2f5;
+        }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            width: 45%;
+            background: linear-gradient(160deg, #1e3a5f 0%, #0f2240 60%, #071629 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 52px;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 420px; height: 420px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            top: -80px; left: -80px;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            bottom: -60px; right: -60px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 46px; height: 46px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-tagline {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .panel-center {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-block {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid #4f9cf9;
+            border-radius: 0 12px 12px 0;
+            padding: 24px 26px;
+            margin-bottom: 32px;
+            transition: all 0.5s ease;
+        }
+
+        .quote-text {
+            font-size: 1.05rem;
+            font-weight: 300;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.88);
+            font-style: italic;
+        }
+
+        .quote-author {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+            font-style: normal;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(79,156,249,0.15);
+            border: 1px solid rgba(79,156,249,0.3);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: #7bb8fb;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .panel-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-info {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            line-height: 1.8;
+        }
+
+        /* ── Right Panel ── */
+        .right-panel {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
-            color: var(--text-color);
+            padding: 48px 40px;
+            background: #fff;
         }
 
-        /* Animated Blobs */
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.3;
-            animation: move 20s infinite alternate;
-        }
-
-        .blob-1 {
-            top: -100px;
-            left: -100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .blob-2 {
-            bottom: -150px;
-            right: -100px;
-            width: 600px;
-            height: 600px;
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            animation-delay: -5s;
-        }
-
-        .blob-3 {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            animation-duration: 15s;
-        }
-
-        .blob-4 {
-            top: 10%;
-            right: 20%;
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            animation-delay: -2s;
-        }
-
-        .blob-5 {
-            bottom: 20%;
-            left: 10%;
-            width: 350px;
-            height: 350px;
-            background: linear-gradient(135deg, #a6c0fe 0%, #f68084 100%);
-            animation-delay: -8s;
-        }
-
-        @keyframes move {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(10%, 10%) scale(1.1); }
-        }
-
-        /* Snow Canvas */
-        #snow-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .login-box {
             width: 100%;
-            height: 100%;
-            z-index: 0;
+            max-width: 400px;
+        }
+
+        .login-heading {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f2240;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtext {
+            font-size: 0.88rem;
+            color: #6b7280;
+            margin-bottom: 36px;
+        }
+
+        .form-label-custom {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #374151;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1rem;
             pointer-events: none;
         }
 
-        .login-wrapper {
-            z-index: 10;
+        .form-input {
             width: 100%;
-            max-width: 450px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .welcome-text {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .login-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-        }
-
-        .login-card h3 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .input-group {
-            background: #ffffff;
-            border-radius: 50px;
-            margin-bottom: 15px;
-            padding: 2px 20px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .input-group i {
-            color: #555;
-            margin-right: 12px;
-            font-size: 1rem;
-        }
-
-        .input-group input, .input-group select {
-            border: none;
-            background: transparent;
-            width: 100%;
-            padding: 10px 0;
-            font-size: 0.95rem;
-            color: #333;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 14px 12px 42px;
+            font-size: 0.93rem;
+            font-family: 'Inter', sans-serif;
+            color: #111827;
+            background: #f9fafb;
             outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            appearance: none;
         }
 
-        .input-group select {
+        .form-input:focus {
+            border-color: #1e3a5f;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(30,58,95,0.07);
+        }
+
+        select.form-input {
             cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
         }
 
-        .form-options {
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 1rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .password-toggle:hover { color: #374151; }
+
+        .form-row-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-            padding: 0 10px;
+            margin-bottom: 28px;
+            margin-top: -6px;
         }
 
-        .form-check-label {
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            opacity: 0.8;
+            font-size: 0.83rem;
+            color: #6b7280;
+        }
+
+        .remember-label input[type="checkbox"] {
+            width: 15px; height: 15px;
+            accent-color: #1e3a5f;
+            cursor: pointer;
         }
 
         .forgot-link {
-            color: #fff;
+            font-size: 0.83rem;
+            color: #1e3a5f;
             text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s;
+            font-weight: 500;
         }
 
-        .forgot-link:hover {
-            opacity: 1;
-        }
+        .forgot-link:hover { text-decoration: underline; }
 
-        .login-btn {
-            background: #ffffff;
-            color: #1a0b2e;
-            border: none;
-            border-radius: 50px;
-            padding: 12px;
-            width: 170px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            margin: 0 auto;
-            display: block;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            background: #f0f0f0;
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        .footer-text a {
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: #1e3a5f;
             color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
             font-weight: 600;
-            text-decoration: underline;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .alert {
-            border-radius: 15px;
-            margin-bottom: 15px;
+        .btn-login:hover {
+            background: #0f2240;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(30,58,95,0.3);
+        }
+
+        .btn-login:active { transform: translateY(0); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 28px 0;
+            color: #d1d5db;
+            font-size: 0.8rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .register-row {
+            text-align: center;
+            font-size: 0.86rem;
+            color: #6b7280;
+        }
+
+        .register-row a {
+            color: #1e3a5f;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-row a:hover { text-decoration: underline; }
+
+        .alert-custom {
+            border-radius: 10px;
+            padding: 11px 15px;
             font-size: 0.85rem;
-            padding: 10px 15px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Custom Checkbox */
-        .form-check-input {
-            width: 16px;
-            height: 16px;
-            margin-top: 0.15em;
-            background-color: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { background: #f0f2f5; padding: 32px 24px; }
+            .login-box {
+                background: #fff;
+                padding: 32px 28px;
+                border-radius: 20px;
+                box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Blobs -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="blob blob-4"></div>
-    <div class="blob blob-5"></div>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+            <div>
+                <div class="brand-name">CAS Portal</div>
+                <div class="brand-tagline">College Attendance System</div>
+            </div>
+        </div>
 
-    <!-- Snow Particles Canvas -->
-    <canvas id="snow-canvas"></canvas>
+        <div class="panel-center">
+            <div class="quote-block" id="quoteBlock">
+                <p class="quote-text" id="quoteText">"Education is the most powerful weapon which you can use to change the world."</p>
+                <p class="quote-author" id="quoteAuthor">— Nelson Mandela</p>
+            </div>
+            <div class="role-badge" id="roleBadge">
+                <i class="bi bi-person-circle"></i>
+                <span id="roleBadgeText">Student Portal</span>
+            </div>
+        </div>
 
-    <div class="login-wrapper">
-        <h1 class="welcome-text">Welcome to the website</h1>
+        <div class="panel-footer">
+            <p class="footer-info">
+                © 2026 College Attendance System<br>
+                Secure · Reliable · Transparent<br>
+                All access is logged and monitored.
+            </p>
+        </div>
+    </div>
 
-        <div class="login-card">
-            <h3>User Login</h3>
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <div class="login-box">
+
+            <h1 class="login-heading">Welcome back</h1>
+            <p class="login-subtext" id="loginSubtext">Please sign in to your student account to continue.</p>
 
             <% if(request.getAttribute("error") != null) { %>
-                <div class="alert alert-danger bg-danger text-white border-0"><%= request.getAttribute("error") %></div>
+                <div class="alert-custom alert-error">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <%= request.getAttribute("error") %>
+                </div>
             <% } %>
             <% if(request.getParameter("msg") != null) { %>
-                <div class="alert alert-success bg-success text-white border-0"><%= request.getParameter("msg") %></div>
+                <div class="alert-custom alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <%= request.getParameter("msg") %>
+                </div>
             <% } %>
 
             <form action="login" method="post">
-                <div class="input-group">
-                    <i class="fas fa-users-cog"></i>
-                    <select name="role" id="role" required>
-                        <option value="Student">Student</option>
-                        <option value="Teacher">Teacher / Coordinator</option>
-                        <option value="Admin">Admin / Super Admin</option>
-                    </select>
-                </div>
 
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="identifier" id="identifier" placeholder="User Name" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" name="password" id="password" placeholder="Password" required>
-                    <i class="fas fa-eye" id="togglePassword" style="cursor: pointer; margin-left: 10px; color: #777;"></i>
-                </div>
-
-                <div class="form-options">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                <div>
+                    <label class="form-label-custom" for="role">Login as</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-shield-check input-icon"></i>
+                        <select name="role" id="role" class="form-input" required>
+                            <option value="Student">Student</option>
+                            <option value="Teacher">Faculty / Coordinator</option>
+                            <option value="Admin">Administrator</option>
+                        </select>
                     </div>
+                </div>
+
+                <div>
+                    <label class="form-label-custom" for="identifier" id="identifierLabel">Roll Number</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" name="identifier" id="identifier"
+                               class="form-input" placeholder="e.g. 22641001" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label-custom" for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input type="password" name="password" id="password"
+                               class="form-input" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 44px;">
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password">
+                            <i class="bi bi-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row-meta">
+                    <label class="remember-label">
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
                     <a href="#" class="forgot-link">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="login-btn">Login</button>
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span id="loginBtnText">Sign In as Student</span>
+                </button>
             </form>
-        </div>
 
-        <p class="footer-text">
-            To create a new account. <a href="teacher_register.jsp">Click here</a>
-        </p>
+            <div class="divider">or</div>
+
+            <div class="register-row">
+                New faculty member? <a href="teacher_register.jsp">Request access here</a>
+            </div>
+
+        </div>
     </div>
 
-    <!-- JavaScript -->
     <script>
-        // Snow Particles Logic
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        const particleCount = 150;
-        const mouse = { x: -100, y: -100, radius: 100 };
+        const quotes = {
+            Student: [
+                { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+                { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+                { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier" },
+                { text: "Strive for progress, not perfection. Every class attended is a step forward.", author: "Anonymous" }
+            ],
+            Teacher: [
+                { text: "A good teacher can inspire hope, ignite the imagination, and instill a love of learning.", author: "Brad Henry" },
+                { text: "Teaching is the one profession that creates all other professions.", author: "Unknown" },
+                { text: "The art of teaching is the art of assisting discovery.", author: "Mark Van Doren" },
+                { text: "Teachers plant seeds of knowledge that grow forever.", author: "Anonymous" }
+            ],
+            Admin: [
+                { text: "Good management is the art of making problems so interesting that everyone wants to work on them.", author: "Paul Hawken" },
+                { text: "Leadership is the capacity to translate vision into reality.", author: "Warren Bennis" },
+                { text: "The function of leadership is to produce more leaders, not more followers.", author: "Ralph Nader" },
+                { text: "Administration is about organizing excellence, not just managing tasks.", author: "Anonymous" }
+            ]
+        };
 
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
+        const roleConfig = {
+            Student: {
+                badge: "Student Portal",
+                subtext: "Please sign in to your student account to continue.",
+                idLabel: "Roll Number",
+                idPlaceholder: "e.g. 22641001",
+                btnText: "Sign In as Student",
+                badgeIcon: "bi-mortarboard"
+            },
+            Teacher: {
+                badge: "Faculty Portal",
+                subtext: "Welcome back, Faculty. Sign in to manage your classes and attendance.",
+                idLabel: "Email Address",
+                idPlaceholder: "yourname@college.edu",
+                btnText: "Sign In as Faculty",
+                badgeIcon: "bi-person-workspace"
+            },
+            Admin: {
+                badge: "Admin Portal",
+                subtext: "Restricted access. Please authenticate with your administrator credentials.",
+                idLabel: "Admin Email",
+                idPlaceholder: "admin@college.edu",
+                btnText: "Sign In as Administrator",
+                badgeIcon: "bi-shield-lock"
+            }
+        };
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function updateUI(role) {
+            const cfg = roleConfig[role];
+            const qList = quotes[role];
+            const q = qList[Math.floor(Math.random() * qList.length)];
+
+            // Update quote
+            document.getElementById('quoteText').textContent = '\u201c' + q.text + '\u201d';
+            document.getElementById('quoteAuthor').textContent = '\u2014 ' + q.author;
+
+            // Update badge
+            document.getElementById('roleBadgeText').textContent = cfg.badge;
+            document.getElementById('roleBadge').querySelector('i').className = 'bi ' + cfg.badgeIcon;
+
+            // Update form labels
+            document.getElementById('loginSubtext').textContent = cfg.subtext;
+            document.getElementById('identifierLabel').textContent = cfg.idLabel;
+            document.getElementById('identifier').placeholder = cfg.idPlaceholder;
+            document.getElementById('loginBtnText').textContent = cfg.btnText;
         }
 
-        class Particle {
-            constructor() {
-                this.reset();
-            }
+        // Init on load
+        updateUI('Student');
 
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 + 0.5;
-                this.baseX = this.x;
-                this.baseY = this.y;
-                this.density = (Math.random() * 30) + 1;
-            }
-
-            update() {
-                // Horizontal movement
-                this.x += this.speedX;
-                // Vertical movement (falling)
-                this.y += this.speedY;
-
-                if (this.y > canvas.height) {
-                    this.y = -10;
-                    this.x = Math.random() * canvas.width;
-                }
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-
-                // Mouse interaction (repulsion)
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = mouse.radius;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density;
-                let directionY = forceDirectionY * force * this.density;
-
-                if (distance < mouse.radius) {
-                    this.x -= directionX;
-                    this.y -= directionY;
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-        }
-
-        function init() {
-            resizeCanvas();
-            particles = [];
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        init();
-        animate();
-
-        // Role-based placeholder adjustment
         document.getElementById('role').addEventListener('change', function() {
-            var role = this.value;
-            var identifierInput = document.getElementById('identifier');
-            if (role === 'Student') {
-                identifierInput.placeholder = 'Roll No.';
-            } else {
-                identifierInput.placeholder = 'Email Address';
-            }
+            updateUI(this.value);
         });
 
-        // Password Toggle
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-        togglePassword.addEventListener('click', function (e) {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
+        // Password toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                pwd.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
         });
-        
-        // Initial state
-        document.getElementById('role').dispatchEvent(new Event('change'));
     </script>
+
 </body>
 </html>
-

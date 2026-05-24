@@ -6,7 +6,9 @@ public class Teacher {
     private String email;
     private String phone;
     private String department;
+    private String profilePhoto;
     private boolean isApproved;
+    private boolean isBanned;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -24,6 +26,12 @@ public class Teacher {
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 
+    public String getProfilePhoto() { return profilePhoto; }
+    public void setProfilePhoto(String profilePhoto) { this.profilePhoto = profilePhoto; }
+
     public boolean isApproved() { return isApproved; }
     public void setApproved(boolean approved) { isApproved = approved; }
+
+    public boolean isBanned() { return isBanned; }
+    public void setBanned(boolean banned) { isBanned = banned; }
 }

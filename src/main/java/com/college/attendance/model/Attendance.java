@@ -13,6 +13,8 @@ public class Attendance {
     // Additional fields for displaying information
     private String studentName;
     private String studentRollNo;
+    private String appealStatus;
+    private boolean adminEdited;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -38,4 +40,24 @@ public class Attendance {
 
     public String getStudentRollNo() { return studentRollNo; }
     public void setStudentRollNo(String studentRollNo) { this.studentRollNo = studentRollNo; }
+
+    public String getAppealStatus() { return appealStatus; }
+    public void setAppealStatus(String appealStatus) { this.appealStatus = appealStatus; }
+
+    public boolean isAdminEdited() { return adminEdited; }
+    public void setAdminEdited(boolean adminEdited) { this.adminEdited = adminEdited; }
+
+    // Extra display fields for appeals view
+    private String subjectName;
+    private String subjectCode;
+    private String teacherName;
+
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+
+    public String getSubjectCode() { return subjectCode; }
+    public void setSubjectCode(String subjectCode) { this.subjectCode = subjectCode; }
+
+    public String getTeacherName() { return teacherName; }
+    public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
 }

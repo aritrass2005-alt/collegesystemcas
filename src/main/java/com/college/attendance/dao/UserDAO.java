@@ -49,7 +49,9 @@ public class UserDAO {
                     teacher.setName(rs.getString("name"));
                     teacher.setEmail(rs.getString("email"));
                     teacher.setDepartment(rs.getString("department"));
+                    teacher.setProfilePhoto(rs.getString("profile_photo"));
                     teacher.setApproved(rs.getBoolean("is_approved"));
+                    teacher.setBanned(rs.getBoolean("is_banned"));
                     return teacher;
                 }
             }
@@ -76,6 +78,8 @@ public class UserDAO {
                     student.setDepartment(rs.getString("department"));
                     student.setYear(rs.getInt("year"));
                     student.setSection(rs.getString("section"));
+                    student.setProfilePhoto(rs.getString("profile_photo"));
+                    student.setBanned(rs.getBoolean("is_banned"));
                     return student;
                 }
             }
@@ -152,6 +156,20 @@ public class UserDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean toggleBanStatus(int userId, String role, boolean banStatus) {
+        String table = role.equalsIgnoreCase("Student") ? "student" : "teacher";
+        String sql = "UPDATE " + table + " SET is_banned = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBoolean(1, banStatus);
+            stmt.setInt(2, userId);
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
