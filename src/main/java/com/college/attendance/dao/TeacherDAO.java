@@ -126,6 +126,7 @@ public class TeacherDAO {
                     t.setPhone(rs.getString("phone")); // Added phone
                     t.setDepartment(rs.getString("department"));
                     t.setApproved(rs.getBoolean("is_approved"));
+                    t.setBanned(rs.getBoolean("is_banned"));
                     teachers.add(t);
                 }
             }

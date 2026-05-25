@@ -136,6 +136,7 @@ public class StudentDAO {
                 s.setSection(rs.getString("section"));
                 s.setPhone(rs.getString("phone")); // Ensure phone is set
                 try { s.setEmail(rs.getString("email")); } catch(Exception ex) {} // Safety
+                s.setBanned(rs.getBoolean("is_banned"));
                 students.add(s);
             }
         } catch (Exception e) {

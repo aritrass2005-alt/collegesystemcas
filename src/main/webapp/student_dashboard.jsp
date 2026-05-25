@@ -3,6 +3,7 @@
 <%@ page import="com.college.attendance.model.AttendanceSummary" %>
 <%@ page import="com.college.attendance.model.Attendance" %>
 <%@ page import="com.college.attendance.model.DefaulterRecord" %>
+
 <%@ page import="java.util.List" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%
@@ -16,6 +17,7 @@
     List<AttendanceSummary> monthSummary = (List<AttendanceSummary>) request.getAttribute("monthSummary");
     List<Attendance> history = (List<Attendance>) request.getAttribute("history");
     List<DefaulterRecord> defaulters = (List<DefaulterRecord>) request.getAttribute("defaulters");
+
     Double overallPercentage = (Double) request.getAttribute("overallPercentage");
     if (overallPercentage == null) overallPercentage = 0.0;
     
@@ -35,9 +37,6 @@
     
     <style>
         body { overflow-x: hidden; }
-
-        /* Sidebar wrapper layout */
-        .wrapper { display: flex; width: 100%; align-items: stretch; }
 
         /* Dashboard specific styles */
         .glass-card {
@@ -156,7 +155,6 @@
 </head>
 <body>
 
-<div class="wrapper">
     <!-- Sidebar -->
     <jsp:include page="includes/student_sidebar.jsp" />
 
@@ -328,6 +326,7 @@
                     </div>
                 </div>
 
+
             </div>
         </div>
     </div>
@@ -364,7 +363,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>

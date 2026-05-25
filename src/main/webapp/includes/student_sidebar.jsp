@@ -11,8 +11,8 @@
 <nav id="sidebar">
     <!-- Brand -->
     <div class="sidebar-brand">
-        <div class="sidebar-brand-icon">
-            <i class="bi bi-mortarboard-fill"></i>
+        <div class="sidebar-brand-icon" style="background: transparent; border: none;">
+            <img src="img/logo.png" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-name">Student Portal</div>
@@ -36,6 +36,13 @@
                    class="<%= activePage.contains("studentLeave") || activePage.contains("student_leave") ? "active" : "" %>">
                     <i class="bi bi-envelope-paper-fill"></i>
                     <span>Leave Application</span>
+                </a>
+            </li>
+            <li>
+                <a href="studentTimetable"
+                   class="<%= activePage.contains("studentTimetable") || activePage.contains("student_timetable") ? "active" : "" %>">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Class Routine</span>
                 </a>
             </li>
         </ul>

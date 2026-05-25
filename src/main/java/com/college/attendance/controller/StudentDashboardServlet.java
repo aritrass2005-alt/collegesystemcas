@@ -6,6 +6,7 @@ import com.college.attendance.model.AttendanceSummary;
 import com.college.attendance.model.Student;
 import com.college.attendance.model.DefaulterRecord;
 
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -61,6 +62,7 @@ public class StudentDashboardServlet extends HttpServlet {
         request.setAttribute("history", history);
         request.setAttribute("overallPercentage", overallPercentage);
         request.setAttribute("defaulters", defaulters);
+
 
         request.getRequestDispatcher("student_dashboard.jsp").forward(request, response);
     }

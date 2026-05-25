@@ -39,7 +39,7 @@
             <% } %>
 
             <!-- Selector -->
-            <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: var(--card-radius);">
+            <div class="card p-4 border-0 shadow-sm mb-4 d-print-none" style="border-radius: var(--card-radius);">
                 <form action="adminAttendance" method="get" class="row g-3 align-items-end">
                     <div class="col-md-2">
                         <label class="form-label text-muted small">Department</label>
@@ -87,8 +87,9 @@
             <!-- Attendance Records -->
             <% if (request.getAttribute("selectedSubject") != null && request.getAttribute("selectedDate") != null) { %>
                 <div class="card custom-table border-0 shadow-sm">
-                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold mb-0">Records for <%= request.getAttribute("selectedDate") %></h5>
+                        <button class="btn btn-outline-secondary btn-sm d-print-none" onclick="window.print()"><i class="bi bi-printer"></i> Print / Download Log</button>
                     </div>
                     <div class="card-body mt-3">
                         <% if(records != null && !records.isEmpty()) { %>
@@ -151,7 +152,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="mt-4 text-end">
+                                <div class="mt-4 text-end d-print-none">
                                     <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> Note: Editing a record as Admin will permanently lock it.</p>
                                     <button type="submit" name="action" value="updateAll" class="btn btn-warning fw-bold px-4">Update Records (Admin Edit)</button>
                                 </div>

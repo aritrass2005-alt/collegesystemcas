@@ -6,8 +6,8 @@
 <nav id="sidebar">
     <!-- Brand -->
     <div class="sidebar-brand">
-        <div class="sidebar-brand-icon">
-            <i class="bi bi-person-video3"></i>
+        <div class="sidebar-brand-icon" style="background: transparent; border: none;">
+            <img src="img/logo.png" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-name">CAS Faculty</div>
@@ -48,6 +48,13 @@
                     <i class="bi bi-calendar-check"></i>
                     <span>Attendance History</span>
                 </a>
+            </li>
+            <li>
+                <a href="teacherTimetable" class="<%= activePage.contains("teacherTimetable") || activePage.contains("teacher_timetable.jsp") ? "active" : "" %>">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Class Routine</span>
+                </a>
+            </li>
         </ul>
     </div>
 

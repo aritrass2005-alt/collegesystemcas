@@ -3,6 +3,7 @@
 <%@ page import="com.college.attendance.model.Subject" %>
 <%@ page import="com.college.attendance.dao.SubjectDAO" %>
 <%@ page import="com.college.attendance.dao.AttendanceDAO" %>
+
 <%@ page import="java.util.List" %>
 <%
     Teacher teacher = (Teacher) session.getAttribute("user");
@@ -23,6 +24,8 @@
     
     int defaulterCount = attendanceDAO.getDefaulterCountForTeacher(teacher.getId(), threshold);
     double avgAttendance = attendanceDAO.getAverageAttendanceForTeacher(teacher.getId());
+
+
 %>
 <!DOCTYPE html>
 <html>
@@ -186,6 +189,7 @@
                 </div>
             </div>
             
+
         </div>
     </div>
 

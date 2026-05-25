@@ -7,8 +7,8 @@
 <nav id="sidebar">
     <!-- Brand -->
     <div class="sidebar-brand">
-        <div class="sidebar-brand-icon">
-            <i class="bi bi-shield-lock-fill"></i>
+        <div class="sidebar-brand-icon" style="background: transparent; border: none;">
+            <img src="img/logo.png" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-name">CAS Admin</div>
@@ -55,6 +55,11 @@
             <li>
                 <a href="manageSubjects" class="<%= activePage.contains("subject") ? "active" : "" %>">
                     <i class="bi bi-book"></i> <span>Subjects</span>
+                </a>
+            </li>
+            <li>
+                <a href="manageTimetable" class="<%= activePage.contains("timetable") ? "active" : "" %>">
+                    <i class="bi bi-clock-history"></i> <span>Timetable</span>
                 </a>
             </li>
             <li>

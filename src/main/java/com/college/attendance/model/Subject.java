@@ -8,13 +8,11 @@ public class Subject {
     private int year;
     private String section;
     private int teacherId;
-    
-    // Extra field for joining with Teacher table to display teacher's name
-    private String teacherName;
+    private int altTeacherId;
 
-    // Getters and Setters
-    public String getSection() { return section; }
-    public void setSection(String section) { this.section = section; }
+    // Extra fields for joining with Teacher table
+    private String teacherName;
+    private String altTeacherName;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -32,9 +30,18 @@ public class Subject {
     public int getYear() { return year; }
     public void setYear(int year) { this.year = year; }
 
+    public String getSection() { return section; }
+    public void setSection(String section) { this.section = section; }
+
     public int getTeacherId() { return teacherId; }
     public void setTeacherId(int teacherId) { this.teacherId = teacherId; }
 
+    public int getAltTeacherId() { return altTeacherId; }
+    public void setAltTeacherId(int altTeacherId) { this.altTeacherId = altTeacherId; }
+
     public String getTeacherName() { return teacherName; }
     public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
+
+    public String getAltTeacherName() { return altTeacherName; }
+    public void setAltTeacherName(String altTeacherName) { this.altTeacherName = altTeacherName; }
 }

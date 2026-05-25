@@ -65,4 +65,36 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
+
+// Universal Search Filter (Event Delegation for reliability)
+document.addEventListener("input", function(e) {
+    if (e.target && e.target.matches(".header-search input")) {
+        var val = e.target.value.toLowerCase().trim();
+        
+        // Filter Tables
+        var tableRows = document.querySelectorAll("table tbody tr");
+        tableRows.forEach(function(row) {
+            var text = (row.textContent || row.innerText || "").toLowerCase();
+            // skip empty state rows
+            if (text.indexOf('no data') > -1 || (text.indexOf('no ') > -1 && row.cells && row.cells.length === 1)) return;
+            
+            if (text.indexOf(val) > -1) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Filter Cards
+        var cards = document.querySelectorAll(".subject-card, .slot-item, .card-item, .user-card");
+        cards.forEach(function(card) {
+            var text = (card.textContent || card.innerText || "").toLowerCase();
+            if (text.indexOf(val) > -1) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+});
 </script>

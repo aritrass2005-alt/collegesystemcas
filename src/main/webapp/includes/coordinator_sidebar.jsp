@@ -17,8 +17,8 @@
 <nav id="coord-sidebar">
     <!-- Brand -->
     <div class="sidebar-brand coord-brand">
-        <div class="sidebar-brand-icon">
-            <i class="bi bi-person-badge-fill"></i>
+        <div class="sidebar-brand-icon" style="background: transparent; border: none;">
+            <img src="img/logo.png" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-name">Coordinator</div>

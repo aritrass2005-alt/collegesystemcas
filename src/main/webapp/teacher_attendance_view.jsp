@@ -81,7 +81,7 @@
             <% } %>
 
             <!-- Search Logs Panel -->
-            <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: var(--card-radius);">
+            <div class="card p-4 border-0 shadow-sm mb-4 d-print-none" style="border-radius: var(--card-radius);">
                 <h5 class="fw-bold mb-3">Retrieve Attendance History</h5>
                 <form action="teacherAttendanceView" method="get" class="row g-3 align-items-end">
                     <div class="col-md-5">
@@ -114,9 +114,12 @@
             <!-- Attendance Records Table -->
             <% if(selectedSubject != null && selectedDate != null) { %>
                 <div class="card border-0 shadow-sm custom-table">
-                    <div class="card-header bg-white border-0 pt-4 pb-0">
-                        <h5 class="fw-bold mb-1">Attendance Log for <span class="text-primary"><%= selectedDate %></span></h5>
-                        <p class="text-muted small mb-0">View student attendance. You can appeal to Admin for corrections if needed.</p>
+                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="fw-bold mb-1">Attendance Log for <span class="text-primary"><%= selectedDate %></span></h5>
+                            <p class="text-muted small mb-0 d-print-none">View student attendance. You can appeal to Admin for corrections if needed.</p>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm d-print-none" onclick="window.print()"><i class="bi bi-printer"></i> Print / Download Log</button>
                     </div>
                     <div class="card-body mt-3">
                         <% if(records != null && !records.isEmpty()) { %>

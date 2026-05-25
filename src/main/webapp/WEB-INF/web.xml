@@ -8,6 +8,7 @@
     <display-name>College Attendance Management System</display-name>
     
     <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
 

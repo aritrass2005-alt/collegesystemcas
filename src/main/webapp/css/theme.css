@@ -1,11 +1,11 @@
-/* ============================================================
-   CAS Portal — Global Theme
-   Matches login.jsp color palette · Inter font · Navy + White
+﻿/* ============================================================
+   CAS Portal â€” Global Theme
+   Matches login.jsp color palette Â· Inter font Â· Navy + White
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ── Design Tokens ── */
+/* â”€â”€ Design Tokens â”€â”€ */
 :root {
     --primary:        #1e3a5f;   /* Deep navy */
     --primary-dark:   #0f2240;   /* Darker navy */
@@ -51,7 +51,7 @@
     --radius-xl:   16px;
 }
 
-/* ── Base ── */
+/* â”€â”€ Base â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -62,7 +62,7 @@ body {
     line-height: 1.6;
 }
 
-/* ── Sidebar ── */
+/* â”€â”€ Sidebar â”€â”€ */
 #sidebar, #coord-sidebar {
     width: var(--sidebar-width);
     min-height: 100vh;
@@ -88,7 +88,7 @@ body {
     transition: scrollbar-color 0.3s ease;
 }
 
-/* Custom scrollbar — hidden by default, glows on hover */
+/* Custom scrollbar â€” hidden by default, glows on hover */
 .sidebar-content::-webkit-scrollbar {
     width: 4px;
 }
@@ -220,7 +220,7 @@ body {
     border-left-color: #ef4444;
 }
 
-/* ── Main Content Wrapper ── */
+/* â”€â”€ Main Content Wrapper â”€â”€ */
 #content-wrapper {
     margin-left: var(--sidebar-width);
     min-height: 100vh;
@@ -231,7 +231,7 @@ body {
 
 #content-wrapper.expanded { margin-left: 0; }
 
-/* ── Top Header ── */
+/* â”€â”€ Top Header â”€â”€ */
 .top-header {
     display: flex;
     justify-content: space-between;
@@ -415,7 +415,7 @@ body {
 
 .profile-dropdown-menu a.logout-item:hover { background: #fef2f2; }
 
-/* ── Coordinator switch button ── */
+/* â”€â”€ Coordinator switch button â”€â”€ */
 .switch-view-btn {
     display: inline-flex;
     align-items: center;
@@ -438,7 +438,7 @@ body {
     box-shadow: 0 4px 14px rgba(30,58,95,0.3);
 }
 
-/* ── Metric / Stat Cards ── */
+/* â”€â”€ Metric / Stat Cards â”€â”€ */
 .metric-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -493,7 +493,7 @@ body {
 .bg-orange-light { background: rgba(245,158,11,0.10); color: #d97706; }
 .bg-green-light  { background: rgba(34,197,94,0.10);  color: #16a34a; }
 
-/* ── Cards & Panels ── */
+/* â”€â”€ Cards & Panels â”€â”€ */
 .panel-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -520,7 +520,7 @@ body {
 
 .panel-card-body { padding: 20px 24px; }
 
-/* ── Tables ── */
+/* â”€â”€ Tables â”€â”€ */
 .custom-table {
     background: var(--bg-card);
     border-radius: var(--radius-xl);
@@ -554,7 +554,7 @@ body {
 
 .custom-table tbody tr:hover { background: #f9fafb; }
 
-/* ── Form Elements ── */
+/* â”€â”€ Form Elements â”€â”€ */
 .form-label-custom {
     display: block;
     font-size: 0.75rem;
@@ -584,7 +584,7 @@ body {
     box-shadow: 0 0 0 3px rgba(30,58,95,0.07);
 }
 
-/* ── Buttons ── */
+/* â”€â”€ Buttons â”€â”€ */
 .btn-cas-primary {
     display: inline-flex;
     align-items: center;
@@ -679,7 +679,7 @@ body {
     box-shadow: 0 4px 12px rgba(30,58,95,0.25);
 }
 
-/* ── Alerts ── */
+/* â”€â”€ Alerts â”€â”€ */
 .alert-cas {
     border-radius: var(--radius-md);
     padding: 11px 15px;
@@ -696,7 +696,7 @@ body {
 .alert-cas-info    { background: rgba(30,58,95,0.05); border: 1px solid rgba(30,58,95,0.15); color: var(--primary); }
 .alert-cas-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
 
-/* ── Badges ── */
+/* â”€â”€ Badges â”€â”€ */
 .badge-cas {
     display: inline-flex;
     align-items: center;
@@ -715,7 +715,7 @@ body {
 .badge-warning { background: #fef9c3; color: #854d0e; }
 .badge-info    { background: rgba(79,156,249,0.12); color: #2563eb; }
 
-/* ── Page Title row ── */
+/* â”€â”€ Page Title row â”€â”€ */
 .page-title-row {
     display: flex;
     align-items: center;
@@ -740,7 +740,7 @@ body {
     font-weight: 400;
 }
 
-/* ── Sidebar footer (switch-view / logout) ── */
+/* â”€â”€ Sidebar footer (switch-view / logout) â”€â”€ */
 .sidebar-footer {
     padding: 12px 10px;
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -767,7 +767,7 @@ body {
 .sidebar-footer a.danger { color: rgba(239,68,68,0.75); }
 .sidebar-footer a.danger:hover { background: rgba(239,68,68,0.1); color: #f87171; }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 991px) {
     #sidebar, #coord-sidebar { left: calc(var(--sidebar-width) * -1); }
     #sidebar.open, #coord-sidebar.open { left: 0; }
@@ -781,3 +781,15 @@ body {
     #content-wrapper { padding: 14px; }
     .metric-card { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
+@media print {
+    #sidebar, #coord-sidebar, .top-header, .d-print-none { display: none !important; }
+    #content-wrapper { margin-left: 0 !important; padding: 0 !important; background: white !important; }
+    .card { box-shadow: none !important; border: 1px solid #000 !important; }
+    body { background: white !important; }
+    .table { width: 100% !important; margin-bottom: 1rem; color: #212529; }
+    .table th, .table td { border: 1px solid #000 !important; padding: 0.5rem !important; }
+    .radio-btn-group label { border: none !important; padding: 0 !important; }
+    .btn { display: none !important; }
+    .badge { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+}
+

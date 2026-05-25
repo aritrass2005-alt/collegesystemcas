@@ -364,7 +364,7 @@
     <!-- LEFT PANEL -->
     <div class="left-panel">
         <div class="brand">
-            <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+            <div class="brand-icon" style="background: transparent; border: none;"><img src="img/logo.png" alt="Logo" style="height: 40px; width: 40px; object-fit: contain; border-radius: 10px;"></div>
             <div>
                 <div class="brand-name">CAS Portal</div>
                 <div class="brand-tagline">College Attendance System</div>
