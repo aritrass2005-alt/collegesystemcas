@@ -26,6 +26,12 @@
                 </a>
             </li>
             <li>
+                <a href="facultyAttendance" class="<%= activePage.contains("facultyAttendance") || activePage.contains("teacher_my_attendance.jsp") ? "active" : "" %>">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>My Attendance</span>
+                </a>
+            </li>
+            <li>
                 <a href="takeAttendance" class="<%= activePage.contains("takeAttendance") || activePage.contains("teacher_attendance.jsp") ? "active" : "" %>">
                     <i class="bi bi-calendar-plus"></i>
                     <span>Take Attendance</span>

@@ -153,7 +153,7 @@
     <nav class="landing-nav">
         <div class="container d-flex justify-content-between align-items-center">
             <a href="#" class="d-flex align-items-center text-decoration-none" style="color: var(--primary); font-weight: 800; font-size: 1.3rem;">
-                <img src="img/logo.png" alt="CAS Logo" style="height: 32px; width: 32px; object-fit: contain; margin-right: 8px;"> CAS Portal
+                <img src="img/logo.png" alt="CAS Logo" style="height: 40px; width: 40px; object-fit: contain; margin-right: 8px;"> CAS Portal
             </a>
             <div class="d-none d-md-flex nav-links">
                 <a href="#about">About</a>
@@ -296,8 +296,8 @@
             <div class="row g-4 align-items-center mt-3">
                 <div class="col-lg-6 reveal-left">
                     <div class="panel-card h-100 d-flex align-items-center justify-content-center" style="background: var(--bg-card); min-height: 380px;">
-                        <div style="width: 180px; height: 180px; background: rgba(79,156,249,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(79,156,249,0.3); box-shadow: 0 0 40px rgba(79,156,249,0.15);">
-                            <img src="img/logo.png" alt="CAS Logo" style="width: 120px; height: 120px; object-fit: contain;">
+                        <div style="width: 280px; height: 280px; background: rgba(79,156,249,0.1); border-radius: 30px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(79,156,249,0.3); box-shadow: 0 0 40px rgba(79,156,249,0.15);">
+                            <img src="img/logo.png" alt="CAS Logo" style="width: 200px; height: 200px; object-fit: contain;">
                         </div>
                     </div>
                 </div>

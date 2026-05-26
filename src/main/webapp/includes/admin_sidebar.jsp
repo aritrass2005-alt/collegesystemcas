@@ -43,6 +43,11 @@
                 </a>
             </li>
             <li>
+                <a href="adminFacultyAttendance" class="<%= activePage.contains("adminFacultyAttendance") || activePage.contains("admin_faculty_attendance.jsp") ? "active" : "" %>">
+                    <i class="bi bi-person-lines-fill"></i> <span>Faculty Attendance</span>
+                </a>
+            </li>
+            <li>
                 <a href="manageCoordinator" class="<%= activePage.contains("Coordinator") || activePage.contains("coordinat") ? "active" : "" %>">
                     <i class="bi bi-person-badge"></i> <span>Coordinators</span>
                 </a>

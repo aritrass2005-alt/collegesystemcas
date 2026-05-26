@@ -5,6 +5,9 @@
 <%@ page import="com.college.attendance.dao.AttendanceDAO" %>
 
 <%@ page import="java.util.List" %>
+<%@ page import="com.college.attendance.model.FacultyAttendance" %>
+<%@ page import="com.college.attendance.dao.FacultyAttendanceDAO" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%
     Teacher teacher = (Teacher) session.getAttribute("user");
     if (teacher == null || !"Teacher".equals(session.getAttribute("role"))) {
@@ -25,6 +28,11 @@
     int defaulterCount = attendanceDAO.getDefaulterCountForTeacher(teacher.getId(), threshold);
     double avgAttendance = attendanceDAO.getAverageAttendanceForTeacher(teacher.getId());
 
+    FacultyAttendanceDAO fDao = new FacultyAttendanceDAO();
+    FacultyAttendance myTodayAttendance = fDao.getTodayAttendance(teacher.getId());
+    boolean isCheckedIn = (myTodayAttendance != null && myTodayAttendance.getCheckInTime() != null);
+    boolean isCheckedOut = (myTodayAttendance != null && myTodayAttendance.getCheckOutTime() != null);
+    SimpleDateFormat timeFmt = new SimpleDateFormat("hh:mm a");
 
 %>
 <!DOCTYPE html>
@@ -47,9 +55,42 @@
         <jsp:include page="includes/teacher_header.jsp" />
 
         <div class="container-fluid p-0">
-            <h3 class="fw-bold mb-4">Faculty Dashboard</h3>
+            <% if (request.getParameter("msg") != null) { %>
+                <div class="alert alert-success alert-dismissible fade show mx-4 mt-4">
+                    <i class="bi bi-check-circle-fill me-2"></i> <%= request.getParameter("msg") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
             
-            <div class="row g-4 mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center px-4 pt-4 mb-4">
+                <h3 class="fw-bold m-0">Faculty Dashboard</h3>
+                
+                <div class="d-flex gap-3 align-items-center mt-3 mt-md-0 p-3 rounded" style="background: white; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                    <div class="me-3">
+                        <small class="text-muted d-block fw-bold mb-1">Today's Status</small>
+                        <% if (isCheckedOut) { %>
+                            <span class="badge bg-secondary px-3 py-2 fs-6"><i class="bi bi-calendar-check me-1"></i> Shift Complete</span>
+                        <% } else if (isCheckedIn) { %>
+                            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-check-circle me-1"></i> Checked In</span>
+                            <small class="text-muted ms-2 d-block mt-1">In at: <%= timeFmt.format(myTodayAttendance.getCheckInTime()) %></small>
+                        <% } else { %>
+                            <span class="badge bg-warning text-dark px-3 py-2 fs-6"><i class="bi bi-clock me-1"></i> Pending Check-In</span>
+                        <% } %>
+                    </div>
+                    
+                    <div>
+                        <% if (!isCheckedIn) { %>
+                            <a href="facultyAttendance?action=checkin" class="btn btn-primary-custom shadow-sm"><i class="bi bi-box-arrow-in-right me-1"></i> Check In</a>
+                        <% } else if (!isCheckedOut) { %>
+                            <a href="facultyAttendance?action=checkout" class="btn btn-danger shadow-sm"><i class="bi bi-box-arrow-right me-1"></i> Check Out</a>
+                        <% } else { %>
+                            <button class="btn btn-secondary shadow-sm" disabled>Done for Today</button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mb-4 px-4">
                 <div class="col-md-3">
                     <a href="teacherAttendanceView" style="text-decoration:none; color:inherit; display:block;">
                         <div class="metric-card">
@@ -104,7 +145,7 @@
                 </div>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 px-4">
                 <!-- Assigned Subjects Table -->
                 <div class="col-md-8">
                     <div class="card custom-table p-4 border-0">
