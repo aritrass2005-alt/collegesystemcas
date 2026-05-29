@@ -28,11 +28,6 @@
     int defaulterCount = attendanceDAO.getDefaulterCountForTeacher(teacher.getId(), threshold);
     double avgAttendance = attendanceDAO.getAverageAttendanceForTeacher(teacher.getId());
 
-    FacultyAttendanceDAO fDao = new FacultyAttendanceDAO();
-    FacultyAttendance myTodayAttendance = fDao.getTodayAttendance(teacher.getId());
-    boolean isCheckedIn = (myTodayAttendance != null && myTodayAttendance.getCheckInTime() != null);
-    boolean isCheckedOut = (myTodayAttendance != null && myTodayAttendance.getCheckOutTime() != null);
-    SimpleDateFormat timeFmt = new SimpleDateFormat("hh:mm a");
 
 %>
 <!DOCTYPE html>
@@ -62,35 +57,8 @@
                 </div>
             <% } %>
             
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center px-4 pt-4 mb-4">
-                <h3 class="fw-bold m-0">Faculty Dashboard</h3>
-                
-                <div class="d-flex gap-3 align-items-center mt-3 mt-md-0 p-3 rounded" style="background: white; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-                    <div class="me-3">
-                        <small class="text-muted d-block fw-bold mb-1">Today's Status</small>
-                        <% if (isCheckedOut) { %>
-                            <span class="badge bg-secondary px-3 py-2 fs-6"><i class="bi bi-calendar-check me-1"></i> Shift Complete</span>
-                        <% } else if (isCheckedIn) { %>
-                            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-check-circle me-1"></i> Checked In</span>
-                            <small class="text-muted ms-2 d-block mt-1">In at: <%= timeFmt.format(myTodayAttendance.getCheckInTime()) %></small>
-                        <% } else { %>
-                            <span class="badge bg-warning text-dark px-3 py-2 fs-6"><i class="bi bi-clock me-1"></i> Pending Check-In</span>
-                        <% } %>
-                    </div>
-                    
-                    <div>
-                        <% if (!isCheckedIn) { %>
-                            <a href="facultyAttendance?action=checkin" class="btn btn-primary-custom shadow-sm"><i class="bi bi-box-arrow-in-right me-1"></i> Check In</a>
-                        <% } else if (!isCheckedOut) { %>
-                            <a href="facultyAttendance?action=checkout" class="btn btn-danger shadow-sm"><i class="bi bi-box-arrow-right me-1"></i> Check Out</a>
-                        <% } else { %>
-                            <button class="btn btn-secondary shadow-sm" disabled>Done for Today</button>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row g-4 mb-4 px-4">
+
+            <div class="row g-4 mb-4 px-4 pt-4">
                 <div class="col-md-3">
                     <a href="teacherAttendanceView" style="text-decoration:none; color:inherit; display:block;">
                         <div class="metric-card">
@@ -118,14 +86,14 @@
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href="teacherDefaulterList" style="text-decoration:none; color:inherit; display:block;">
+                    <a href="takeAttendance" style="text-decoration:none; color:inherit; display:block;">
                         <div class="metric-card">
                             <div class="metric-info">
-                                <p>Defaulters (&lt; <%= threshold %>%)</p>
-                                <h3><%= defaulterCount %></h3>
+                                <p>Take Attendance</p>
+                                <h3 class="fs-4 mt-2">Start <i class="bi bi-arrow-right-short"></i></h3>
                             </div>
-                            <div class="metric-icon bg-orange-light">
-                                <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                            <div class="metric-icon" style="background-color: #ffedd5; color: #ea580c;">
+                                <i class="bi bi-calendar-plus-fill"></i>
                             </div>
                         </div>
                     </a>
@@ -143,6 +111,10 @@
                         </div>
                     </a>
                 </div>
+            </div>
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center px-4 mb-4">
+                <h3 class="fw-bold m-0">Faculty Dashboard</h3>
             </div>
             
             <div class="row g-4 px-4">
@@ -197,10 +169,10 @@
                     <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: var(--card-radius); background: white;">
                         <h5 class="fw-bold mb-3">Quick Actions</h5>
                         <div class="d-grid gap-2">
-                            <a href="takeAttendance" class="btn btn-primary-custom text-start d-flex align-items-center justify-content-between p-3">
+                            <a href="facultyAttendance" class="btn btn-primary-custom text-start d-flex align-items-center justify-content-between p-3">
                                 <div>
-                                    <i class="bi bi-calendar-plus fs-5 me-2"></i>
-                                    <span class="fw-bold">Take Daily Attendance</span>
+                                    <i class="bi bi-person-badge fs-5 me-2"></i>
+                                    <span class="fw-bold">My Attendance</span>
                                 </div>
                                 <i class="bi bi-chevron-right"></i>
                             </a>
@@ -218,10 +190,10 @@
                                 </div>
                                 <i class="bi bi-chevron-right"></i>
                             </a>
-                            <a href="teacherAttendanceView" class="btn btn-info text-start d-flex align-items-center justify-content-between p-3" style="background-color: #ecfeff; color: #0891b2; border: 1px solid #cffafe;">
+                            <a href="teacherTimetable" class="btn btn-info text-start d-flex align-items-center justify-content-between p-3" style="background-color: #ecfeff; color: #0891b2; border: 1px solid #cffafe;">
                                 <div>
-                                    <i class="bi bi-calendar-check fs-5 me-2"></i>
-                                    <span class="fw-bold">Edit Attendance Logs</span>
+                                    <i class="bi bi-clock-history fs-5 me-2"></i>
+                                    <span class="fw-bold">Class Routine</span>
                                 </div>
                                 <i class="bi bi-chevron-right"></i>
                             </a>

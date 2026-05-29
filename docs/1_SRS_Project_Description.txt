@@ -1,0 +1,264 @@
+================================================================================
+       SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+       College Attendance System (CAS)
+       Version 1.0
+================================================================================
+
+1. INTRODUCTION
+--------------------------------------------------------------------------------
+
+1.1 Purpose
+    This document provides a complete Software Requirements Specification for
+    the College Attendance System (CAS). It describes the purpose, scope,
+    functional and non-functional requirements, system architecture, and user
+    roles of the application. This document is intended for developers,
+    evaluators, faculty members, and college administrators.
+
+1.2 Project Overview
+    The College Attendance System (CAS) is a web-based application designed
+    to digitize and streamline the attendance management process in a college
+    or university environment. The system replaces traditional paper-based
+    attendance registers with a centralized, real-time digital platform that
+    serves Students, Teachers, Coordinators, and Administrators.
+
+    The system supports:
+    - Daily student attendance tracking by teachers (subject-wise)
+    - Faculty self-attendance via check-in / check-out
+    - Leave management for both students and faculty
+    - Defaulter identification and notification
+    - Administrative oversight with full audit trail
+
+1.3 Scope
+    CAS covers the complete lifecycle of attendance management:
+    - Student registration, profile management, and attendance tracking
+    - Teacher registration (with admin approval), attendance taking, and
+      timetable-based class detection
+    - Coordinator-level oversight for a designated department/section/year
+    - Administrator-level control over all system entities
+    - Multi-day leave application, approval, and cancellation workflows
+    - Notification and announcement broadcasting
+    - Activity logging for complete traceability
+
+1.4 Definitions, Acronyms, and Abbreviations
+    - CAS       : College Attendance System
+    - SRS       : Software Requirements Specification
+    - RBAC      : Role-Based Access Control
+    - CL        : Casual Leave
+    - CCL       : Child Care Leave
+    - EL        : Earned Leave
+    - JSP       : JavaServer Pages
+    - DAO       : Data Access Object
+    - MVC       : Model-View-Controller
+    - CRUD      : Create, Read, Update, Delete
+
+
+2. OVERALL DESCRIPTION
+--------------------------------------------------------------------------------
+
+2.1 Product Perspective
+    CAS is a standalone web application deployed on Apache Tomcat. It uses
+    MySQL as its relational database management system. The application
+    follows the MVC (Model-View-Controller) design pattern with Java Servlets
+    acting as controllers, DAO classes handling data persistence, and JSP
+    pages rendering the user interface.
+
+2.2 Technology Stack
+    +-----------------------+-----------------------------------------------+
+    | Component             | Technology                                    |
+    +-----------------------+-----------------------------------------------+
+    | Backend Language      | Java (JDK 11+)                                |
+    | Web Framework         | Java Servlets (javax.servlet)                 |
+    | View Layer            | JSP (JavaServer Pages)                        |
+    | Database              | MySQL 8.x                                     |
+    | Web Server            | Apache Tomcat 9.x / 10.x                      |
+    | Frontend Framework    | Bootstrap 5.3, Bootstrap Icons                |
+    | Calendar Library      | FullCalendar 5.11                             |
+    | Build System          | Custom PowerShell build script                |
+    | JDBC Driver           | MySQL Connector/J                             |
+    +-----------------------+-----------------------------------------------+
+
+2.3 User Classes and Characteristics
+
+    (a) Student
+        - Logs in using Roll Number and password
+        - Views personal attendance history, timetable, and notifications
+        - Applies for leave with start/end dates, reason, proof, and a
+          declaration
+        - Can cancel pending leave applications
+        - Views defaulter status and attendance percentage per subject
+
+    (b) Teacher (Faculty)
+        - Logs in using Email and password (requires admin approval)
+        - Takes daily attendance for assigned subjects
+        - Views and manages personal attendance via check-in / check-out
+        - Applies for leave (CL, CCL, EL, Normal, Other) with tenure
+          (start date to end date)
+        - Can cancel pending leave applications
+        - Views class routines, student directories, and defaulter lists
+        - Views their own attendance history on a calendar
+
+    (c) Coordinator
+        - A Teacher assigned to oversee a specific department/year/section
+        - All Teacher capabilities plus:
+          - Approves or rejects student leave applications
+          - Views attendance reports for their assigned students
+          - Identifies and publishes defaulter lists
+          - Monitors student attendance trends
+
+    (d) Admin
+        - Full administrative control over the system
+        - Manages Students, Teachers, Coordinators, Subjects, Timetables,
+          Departments, and Sections
+        - Verifies/rejects faculty attendance and leave applications
+        - Overrides and edits student attendance records
+        - Handles attendance appeal approvals
+        - Sends notifications/announcements with file attachments
+        - Views the system Activity Log for full traceability
+        - Performs bulk data uploads (CSV)
+        - Accesses the Faculty Attendance dashboard
+
+    (e) SuperAdmin
+        - All Admin capabilities plus:
+          - Manages other Admin accounts (create, delete)
+          - Access to Database Backup & Restore tools
+
+
+3. FUNCTIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+
+3.1 Authentication & Authorization
+    FR-01: The system shall support login for four roles: Student, Teacher,
+           Admin, and SuperAdmin.
+    FR-02: Teachers must be approved by Admin before they can log in.
+    FR-03: Banned users shall be blocked from logging in with a clear message.
+    FR-04: Session management shall prevent session fixation attacks.
+    FR-05: Each login event shall be recorded in the activity log.
+
+3.2 Student Attendance Management
+    FR-06: Teachers shall take attendance for students subject-wise.
+    FR-07: Only one attendance record per subject per student per day
+           (enforced at the database level).
+    FR-08: Attendance records can be locked to prevent further edits.
+    FR-09: Students can view their attendance history on a calendar.
+    FR-10: Students can appeal incorrect attendance via the appeals system.
+
+3.3 Faculty Attendance Management
+    FR-11: Faculty shall check in and check out daily.
+    FR-12: Faculty attendance records are initially unverified and require
+           admin approval.
+    FR-13: Faculty can apply for multi-day leave (CL, CCL, EL, Normal, Other)
+           specifying start and end dates.
+    FR-14: Faculty can cancel their pending (unverified) leave applications.
+    FR-15: Admins can view, verify, approve, or reject faculty leave
+           applications via the Pending Leaves tab.
+
+3.4 Leave Application Management
+    FR-16: Students can apply for leave with start date, end date, reason,
+           proof document upload, and a signed declaration.
+    FR-17: Students can cancel pending leave applications.
+    FR-18: Coordinators can approve or reject student leave applications.
+    FR-19: Leave application status is tracked in real-time (Pending,
+           Approved, Rejected).
+
+3.5 Defaulter Identification
+    FR-20: The system shall identify students whose attendance percentage
+           falls below a configurable threshold (default 75%).
+    FR-21: Teachers and Coordinators can view and publish defaulter lists.
+    FR-22: Defaulter lists can be generated per subject or department-wide.
+
+3.6 Notification System
+    FR-23: Admins and Coordinators can send notifications to students.
+    FR-24: Notifications support file attachments.
+    FR-25: Students can view notifications with read/unread status.
+
+3.7 Timetable Management
+    FR-26: Admins can create and manage timetable entries (subject, day,
+           time, room number).
+    FR-27: Teachers and Students can view their respective timetables.
+
+3.8 Administrative Functions
+    FR-28: Admins can manage all system entities (CRUD operations).
+    FR-29: Admins can ban/unban students and teachers.
+    FR-30: SuperAdmins can manage other admin accounts.
+    FR-31: Admins can perform bulk CSV uploads for students/teachers.
+    FR-32: SuperAdmins can backup and restore the database.
+    FR-33: Admins can view the system Activity Log tracking all actions.
+
+
+4. NON-FUNCTIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+
+4.1 Security
+    NFR-01: All user input shall be validated and sanitized (ValidationUtil).
+    NFR-02: Passwords shall be stored securely.
+    NFR-03: Role-based access control shall be enforced on every servlet.
+    NFR-04: Session timeout shall be set to 1 hour of inactivity.
+    NFR-05: File uploads shall be limited to 5MB with allowed extensions
+             (PDF, JPG, PNG) only.
+
+4.2 Performance
+    NFR-06: Pages shall load within 3 seconds under normal conditions.
+    NFR-07: The system shall support concurrent usage by up to 500 users.
+
+4.3 Usability
+    NFR-08: The interface shall follow a professional Navy/White color theme.
+    NFR-09: All pages shall be responsive and mobile-friendly (Bootstrap 5).
+    NFR-10: Navigation shall be consistent across all role-based dashboards
+             with collapsible sidebars and sticky headers.
+
+4.4 Reliability
+    NFR-11: Database operations shall use proper connection pooling and
+             error handling.
+    NFR-12: All critical actions shall be logged in the activity_log table.
+
+4.5 Maintainability
+    NFR-13: The system follows MVC architecture for separation of concerns.
+    NFR-14: All data access is encapsulated in DAO classes.
+    NFR-15: UI components are modular (JSP includes for headers, sidebars).
+
+
+5. SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+
+5.1 Architecture Pattern: MVC (Model-View-Controller)
+
+    +-------------------+     +-------------------+     +-------------------+
+    |   VIEW (JSP)      |<--->|  CONTROLLER       |<--->|  MODEL (DAO)      |
+    |                   |     |  (Servlets)        |     |                   |
+    | - 39 JSP Pages    |     | - 37 Servlets      |     | - 13 DAO Classes  |
+    | - CSS Theme       |     | - Request routing  |     | - 15 Model POJOs  |
+    | - Bootstrap 5     |     | - Input validation |     | - JDBC/MySQL      |
+    | - FullCalendar    |     | - Session mgmt     |     | - DBConnection    |
+    +-------------------+     +-------------------+     +-------------------+
+
+5.2 Package Structure
+    com.college.attendance
+    ├── controller/     (37 Servlet classes)
+    ├── dao/            (13 DAO classes)
+    ├── model/          (15 Model/POJO classes)
+    ├── util/           (DBConnection, ValidationUtil)
+    └── filter/         (Security filters)
+
+
+6. CONSTRAINTS
+--------------------------------------------------------------------------------
+    - The system requires Java 11 or higher.
+    - MySQL 8.x must be installed and accessible on localhost:3306.
+    - Apache Tomcat 9.x or 10.x is required as the deployment server.
+    - Internet connectivity is required for loading Bootstrap, Bootstrap
+      Icons, and FullCalendar from CDN.
+
+
+7. ASSUMPTIONS AND DEPENDENCIES
+--------------------------------------------------------------------------------
+    - Each student belongs to exactly one department, year, and section.
+    - Each subject is assigned to one primary teacher (with an optional
+      alternate teacher).
+    - Coordinators are existing teachers assigned to a department/year/section.
+    - The academic calendar and holidays are managed by the admin.
+    - File uploads for leave proofs are stored on the server filesystem.
+
+
+================================================================================
+                         END OF DOCUMENT
+================================================================================

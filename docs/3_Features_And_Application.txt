@@ -1,0 +1,467 @@
+================================================================================
+       FEATURES & APPLICATION DOCUMENTATION
+       College Attendance System (CAS)
+       Comprehensive Feature List with Implementation Details
+================================================================================
+
+
+================================================================================
+SECTION 1: AUTHENTICATION & SESSION MANAGEMENT
+================================================================================
+
+1.1 Multi-Role Login System
+    Description : A unified login page supporting four distinct user roles
+                  (Student, Teacher, Admin, SuperAdmin) with role-specific
+                  input fields and validation.
+    Application : Students log in with Roll Number; Teachers and Admins log
+                  in with Email. The system routes each user to their
+                  respective dashboard upon successful authentication.
+    Files       : LoginServlet.java, login.jsp, UserDAO.java
+
+1.2 Teacher Registration with Admin Approval
+    Description : Teachers can self-register through a dedicated registration
+                  form. Their accounts remain inactive until explicitly
+                  approved by an administrator.
+    Application : Prevents unauthorized faculty from accessing the system.
+                  Admins review pending teacher accounts and approve or reject.
+    Files       : TeacherRegisterServlet.java, teacher_register.jsp,
+                  ManageTeacherServlet.java
+
+1.3 Ban / Unban System
+    Description : Administrators can ban any student or teacher account,
+                  blocking their access to the system without deleting data.
+    Application : Useful for disciplinary actions or temporary suspensions.
+                  Banned users see a clear error message when attempting login.
+    Files       : ToggleBanServlet.java, admin_students.jsp, admin_teachers.jsp
+
+1.4 Session Security
+    Description : Sessions are regenerated on login to prevent session
+                  fixation. Sessions timeout after 1 hour of inactivity.
+    Application : Protects against common session-based attacks.
+    Files       : LoginServlet.java
+
+1.5 Logout
+    Description : Secure logout that invalidates the session and redirects
+                  to the login page.
+    Application : Available from the sidebar on all dashboards.
+    Files       : LogoutServlet.java
+
+
+================================================================================
+SECTION 2: STUDENT PORTAL
+================================================================================
+
+2.1 Student Dashboard
+    Description : A comprehensive dashboard showing key metrics at a glance:
+                  total subjects, overall attendance percentage, upcoming
+                  classes, and notifications.
+    Application : Provides students with an immediate overview of their
+                  academic standing. Includes hero cards with direct links to
+                  attendance, timetable, and leave modules.
+    Files       : StudentDashboardServlet.java, student_dashboard.jsp
+
+2.2 Attendance History (Calendar View)
+    Description : Interactive FullCalendar-based view showing daily
+                  attendance records color-coded by status (Present, Absent,
+                  Leave).
+    Application : Students can browse month-by-month to track patterns and
+                  identify missed days. Hover tooltips show detailed info.
+    Files       : StudentAttendanceServlet.java, student_attendance.jsp
+
+2.3 Leave Application System
+    Description : Students can apply for leave by specifying start date,
+                  end date, reason, optional proof upload (PDF/JPG/PNG up to
+                  5MB), and a mandatory declaration checkbox.
+    Application : Formalizes the leave request process. Applications are
+                  submitted to the assigned Coordinator for approval.
+    Features    :
+                  - Multi-day leave (start and end date range)
+                  - File upload with extension validation
+                  - Declaration of truthfulness
+                  - Real-time status tracking (Pending / Approved / Rejected)
+                  - Cancel button for pending applications
+    Files       : StudentLeaveServlet.java, student_leave.jsp,
+                  LeaveApplicationDAO.java
+
+2.4 Student Timetable View
+    Description : Displays the student's weekly class schedule based on their
+                  department, year, and section.
+    Application : Students can plan their day and know which classes are
+                  scheduled, including subject name, time, and room number.
+    Files       : StudentTimetableServlet.java, student_timetable.jsp
+
+2.5 Student Notifications
+    Description : Students receive notifications/announcements from Admins
+                  and Coordinators with read/unread tracking.
+    Application : Used for broadcasting defaulter warnings, general
+                  announcements, and leave status updates.
+    Files       : student_notifications.jsp, NotificationDAO.java
+
+2.6 Student Profile Management
+    Description : Students can view and update their profile information
+                  including name, email, phone, address, and profile photo.
+    Application : Keeps student records current and accurate.
+    Files       : StudentProfileServlet.java, student_profile.jsp
+
+
+================================================================================
+SECTION 3: TEACHER / FACULTY PORTAL
+================================================================================
+
+3.1 Teacher Dashboard
+    Description : Landing page for teachers showing key metrics: total
+                  subjects assigned, total students, today's classes, and
+                  notifications. Includes quick action links to My Attendance
+                  and Class Routine.
+    Application : Gives teachers an at-a-glance overview with fast navigation
+                  to their most-used features.
+    Files       : teacher_dashboard.jsp
+
+3.2 Take Daily Attendance
+    Description : Teachers select a subject (auto-detected from timetable
+                  where possible) and mark each student as Present or Absent.
+    Application : Core feature of the system. Replaces paper attendance
+                  registers with a digital, subject-wise daily attendance form.
+    Features    :
+                  - Subject selection (filtered by teacher assignment)
+                  - Student list with checkboxes
+                  - One-click submission
+                  - Duplicate prevention (one record per student per subject
+                    per day)
+    Files       : TakeAttendanceServlet.java, teacher_attendance.jsp,
+                  AttendanceDAO.java
+
+3.3 View Attendance Records
+    Description : Teachers can view submitted attendance records filtered by
+                  subject, date range, and student.
+    Application : Allows teachers to verify and review previously taken
+                  attendance. Shows percentage calculations.
+    Files       : TeacherAttendanceViewerServlet.java,
+                  teacher_attendance_view.jsp
+
+3.4 Faculty Self-Attendance (Check-In / Check-Out)
+    Description : Faculty members record their daily presence by checking in
+                  when they arrive and checking out when they leave.
+    Application : Creates a traceable attendance record for faculty. Records
+                  are submitted as "unverified" and require admin approval.
+    Files       : FacultyAttendanceServlet.java, teacher_dashboard.jsp
+
+3.5 My Attendance History
+    Description : Two-column layout showing:
+                  - Left: Compact FullCalendar with color-coded attendance
+                    events (green=Present, red=Absent, cyan=Leave, gray=Pending)
+                  - Right: Attendance Summary card (Present/Leave/Absent/Pending
+                    counts) + Apply Leave button + Cancel Pending Leaves list
+    Application : Faculty can track their own attendance and leave history in
+                  one comprehensive view.
+    Files       : FacultyAttendanceServlet.java, teacher_my_attendance.jsp
+
+3.6 Faculty Leave Application (Multi-Day Tenure)
+    Description : Faculty can apply for leave by selecting:
+                  - Start Date and End Date (tenure/duration)
+                  - Leave Type: CL (Casual), CCL (Child Care), EL (Earned),
+                    Normal Leave, or Other
+                  - Reason/Notes
+    Application : The system creates individual attendance records for each
+                  day in the range, all marked as pending admin verification.
+                  Faculty can cancel any pending leave before admin verifies.
+    Files       : FacultyAttendanceServlet.java, teacher_my_attendance.jsp,
+                  FacultyAttendanceDAO.java
+
+3.7 Student Directory
+    Description : Teachers can view all students in their assigned
+                  department/year/section with detailed profiles.
+    Application : Quick reference for teachers to look up student details.
+    Files       : TeacherStudentViewServlet.java, teacher_student_view.jsp
+
+3.8 Defaulter List
+    Description : Teachers can generate and view lists of students whose
+                  attendance falls below the threshold (default 75%).
+    Application : Helps teachers identify at-risk students early and take
+                  corrective action. Lists can be published/saved.
+    Files       : TeacherDefaulterListServlet.java,
+                  teacher_defaulter_list.jsp
+
+3.9 Class Routine / Timetable
+    Description : Teachers view their own weekly teaching schedule with
+                  subject, day, time, and room information.
+    Application : Quick reference for daily class planning.
+    Files       : TeacherTimetableServlet.java, teacher_timetable.jsp
+
+3.10 Teacher Profile Management
+    Description : Teachers can update personal details and profile photo.
+    Application : Keeps faculty records current.
+    Files       : TeacherProfileServlet.java, teacher_profile.jsp
+
+
+================================================================================
+SECTION 4: COORDINATOR PORTAL
+================================================================================
+
+4.1 Coordinator Dashboard
+    Description : Extended dashboard for coordinators showing department-level
+                  metrics: total students under supervision, pending leave
+                  requests, average attendance, and defaulter count.
+    Application : Gives coordinators a bird's-eye view of their assigned
+                  department/year/section.
+    Files       : CoordinatorDashboardServlet.java, coordinator_dashboard.jsp
+
+4.2 Student Leave Approval
+    Description : Coordinators can view all pending leave applications from
+                  students in their assigned department/year/section and
+                  approve or reject them.
+    Application : Decentralizes leave management from admin to department-
+                  level coordinators for faster processing.
+    Files       : CoordinatorLeaveServlet.java, coordinator_leaves.jsp
+
+4.3 Attendance Monitoring
+    Description : Coordinators can view attendance records for all students
+                  under their supervision, filtered by subject and date.
+    Application : Enables department-level attendance monitoring without
+                  requiring admin access.
+    Files       : CoordinatorAttendanceViewerServlet.java,
+                  coordinator_attendance_view.jsp
+
+4.4 Defaulter Management
+    Description : Coordinators can identify, generate, and publish defaulter
+                  lists for their assigned students.
+    Application : Automated identification of students with attendance below
+                  the threshold. Can trigger notifications to students.
+    Files       : CoordinatorDefaulterServlet.java,
+                  coordinator_defaulters.jsp
+
+4.5 Student Overview
+    Description : View student profiles in the coordinator's assigned scope.
+    Application : Quick reference for coordinators.
+    Files       : CoordinatorStudentServlet.java, coordinator_students.jsp
+
+4.6 Coordinator Notifications
+    Description : Coordinators can send targeted notifications/announcements
+                  to students in their department.
+    Application : Used for sending defaulter warnings, meeting notices, etc.
+    Files       : coordinator_notifications.jsp
+
+
+================================================================================
+SECTION 5: ADMIN PORTAL
+================================================================================
+
+5.1 Admin Dashboard
+    Description : Central control panel showing system-wide metrics: total
+                  students, total teachers, total subjects, pending approvals.
+    Application : The admin's primary landing page with navigation to all
+                  management functions.
+    Files       : admin_dashboard.jsp
+
+5.2 Student Management (CRUD)
+    Description : Full management of student accounts: view all, add new,
+                  edit details, delete, ban/unban.
+    Application : Centralized student data management.
+    Files       : ManageStudentServlet.java, admin_students.jsp, StudentDAO.java
+
+5.3 Teacher Management (CRUD + Approval)
+    Description : Full management of teacher accounts including the approval
+                  workflow for new registrations.
+    Application : Admin controls which teachers gain access to the system.
+    Files       : ManageTeacherServlet.java, admin_teachers.jsp, TeacherDAO.java
+
+5.4 Coordinator Management
+    Description : Assign or remove coordinator roles from existing teachers.
+                  Specify department, year, and section for each coordinator.
+    Application : Defines the organizational hierarchy for attendance
+                  oversight.
+    Files       : ManageCoordinatorServlet.java, admin_coordinators.jsp,
+                  CoordinatorDAO.java
+
+5.5 Subject Management (CRUD)
+    Description : Full management of academic subjects including subject code,
+                  name, department, year, section, primary teacher, and
+                  alternate teacher assignments.
+    Application : Forms the foundation for attendance tracking. Subjects are
+                  linked to teachers and timetable entries.
+    Files       : ManageSubjectServlet.java, admin_subjects.jsp, SubjectDAO.java
+
+5.6 Timetable Management
+    Description : Create and manage weekly timetable entries: assign subjects
+                  to specific days, time slots, and rooms.
+    Application : Enables timetable-based class detection for teachers and
+                  provides schedule views for students.
+    Files       : AdminTimetableServlet.java, admin_timetable.jsp,
+                  TimetableDAO.java
+
+5.7 Department & Section Configuration
+    Description : Manage the master list of departments and sections available
+                  in the system.
+    Application : Ensures consistency across all student, teacher, and subject
+                  records.
+    Files       : ManageConfigServlet.java, admin_config.jsp, ConfigDAO.java
+
+5.8 Faculty Attendance Dashboard
+    Description : Three-tab interface for managing faculty attendance:
+                  (a) Present List - View all checked-in faculty for a date
+                  (b) Absent List  - View faculty who haven't checked in,
+                      with options to manually mark attendance
+                  (c) Pending Leaves - View and verify/approve all unverified
+                      faculty leave applications with badge count
+    Application : Gives admins full visibility into faculty presence and
+                  leave status. Supports filtering by date and department.
+    Files       : AdminFacultyAttendanceServlet.java,
+                  admin_faculty_attendance.jsp, FacultyAttendanceDAO.java
+
+5.9 Student Attendance Override
+    Description : Admin can edit historical student attendance records,
+                  override statuses, and manage attendance appeals.
+    Application : Handles exceptional cases where attendance needs correction
+                  (e.g., system errors, valid appeals).
+    Files       : AdminAttendanceOverrideServlet.java, admin_attendance.jsp
+
+5.10 Attendance Appeal Approvals
+    Description : Students can file appeals for incorrect attendance marks.
+                  Admin reviews and approves or rejects these appeals.
+    Application : Provides a formal dispute resolution mechanism.
+    Files       : AdminAppealsServlet.java, admin_appeals.jsp
+
+5.11 Notification / Announcement System
+    Description : Admin can broadcast notifications to students with:
+                  - Title and message body
+                  - Optional file attachment
+                  - Targeted or mass distribution
+    Application : Used for college-wide announcements, defaulter warnings,
+                  and administrative notices.
+    Files       : SendNotificationServlet.java, admin_notifications.jsp,
+                  NotificationDAO.java
+
+5.12 Bulk CSV Upload
+    Description : Admin can upload CSV files to bulk-import student or
+                  teacher records into the system.
+    Application : Speeds up initial data population at the start of a
+                  semester. Supports large-scale data entry.
+    Files       : BulkUploadServlet.java, admin_bulk_upload.jsp
+
+5.13 Activity Log (Audit Trail)
+    Description : A comprehensive, real-time log recording all significant
+                  system events including:
+                  - User logins (all roles)
+                  - Faculty check-in / check-out
+                  - Leave applications (student and faculty)
+                  - Leave cancellations
+                  - Admin attendance verifications/overrides
+    Application : Provides full traceability for administrative oversight,
+                  compliance, and dispute resolution. Color-coded badges
+                  identify the user type (Admin=red, Teacher=blue,
+                  Student=green).
+    Files       : AdminActivityLogServlet.java, admin_activity_log.jsp,
+                  ActivityLogDAO.java, ActivityLog.java
+
+5.14 Admin Account Management (SuperAdmin Only)
+    Description : SuperAdmin can view, add, and delete other admin accounts.
+    Application : Enables hierarchical admin management. Only SuperAdmin
+                  has access to this feature.
+    Files       : ManageAdminServlet.java, admin_admins.jsp
+
+5.15 Database Backup & Restore (SuperAdmin Only)
+    Description : SuperAdmin can create MySQL database backups and restore
+                  from previous backups.
+    Application : Disaster recovery and data protection. Critical for
+                  production deployments.
+    Files       : DatabaseToolServlet.java, admin_db_tools.jsp
+
+
+================================================================================
+SECTION 6: CROSS-CUTTING FEATURES
+================================================================================
+
+6.1 Input Validation & Sanitization
+    Description : All user inputs are validated and sanitized using a
+                  centralized ValidationUtil class. Checks include email
+                  format, roll number format, date validity, text length,
+                  and file extension restrictions.
+    Application : Prevents SQL injection, XSS, and other input-based attacks.
+    Files       : ValidationUtil.java
+
+6.2 Role-Based Access Control (RBAC)
+    Description : Every servlet checks the user's role from the session
+                  before processing. Unauthorized access is redirected to
+                  the login page.
+    Application : Ensures students cannot access teacher functions, teachers
+                  cannot access admin functions, etc.
+    Files       : All Servlet files (doGet/doPost methods)
+
+6.3 Responsive UI Design
+    Description : All pages use Bootstrap 5.3 with a consistent Navy/White
+                  professional theme. Collapsible sidebars, sticky headers,
+                  and responsive grids ensure usability on all screen sizes.
+    Application : Works on desktop, tablet, and mobile browsers.
+    Files       : css/theme.css, includes/*.jsp
+
+6.4 Modular JSP Architecture
+    Description : Common UI elements (sidebar, header) are extracted into
+                  reusable JSP includes for each role:
+                  - includes/admin_sidebar.jsp, admin_header.jsp
+                  - includes/teacher_sidebar.jsp, teacher_header.jsp
+                  - includes/student_sidebar.jsp, student_header.jsp
+                  - includes/coordinator_sidebar.jsp, coordinator_header.jsp
+    Application : Ensures visual consistency and reduces code duplication.
+    Files       : includes/ directory
+
+6.5 Profile Photo Management
+    Description : All user types (Admin, Teacher, Student) can upload and
+                  display profile photos. Fallback to ui-avatars.com for
+                  users without photos.
+    Application : Professional visual identity across the system.
+    Files       : *ProfileServlet.java, *_profile.jsp
+
+6.6 Configurable Defaulter Threshold
+    Description : The attendance percentage threshold for defaulter
+                  identification is configurable (default: 75%).
+    Application : Different institutions can set their own minimum attendance
+                  requirements.
+    Files       : AttendanceDAO.java, teacher_defaulter_list.jsp
+
+
+================================================================================
+SECTION 7: TECHNOLOGY SUMMARY
+================================================================================
+
++---------------------------+--------------------------------------------------+
+| Category                  | Technology / Library                             |
++---------------------------+--------------------------------------------------+
+| Backend Language          | Java 11+                                         |
+| Web Framework             | Java Servlets (javax.servlet)                    |
+| View Engine               | JSP (JavaServer Pages)                           |
+| Database                  | MySQL 8.x                                        |
+| Web Server                | Apache Tomcat 9.x / 10.x                         |
+| JDBC Driver               | MySQL Connector/J                                |
+| CSS Framework             | Bootstrap 5.3                                    |
+| Icon Library              | Bootstrap Icons 1.11                             |
+| Calendar Component        | FullCalendar 5.11.3                              |
+| Avatar Fallback           | ui-avatars.com API                               |
+| Build Tool                | Custom PowerShell script (build.ps1)             |
+| Architecture Pattern      | MVC (Model-View-Controller)                      |
+| Design Pattern            | DAO (Data Access Object)                         |
++---------------------------+--------------------------------------------------+
+
+
+================================================================================
+SECTION 8: FILE COUNT SUMMARY
+================================================================================
+
++---------------------------+-------+
+| Component                 | Count |
++---------------------------+-------+
+| Java Servlet Controllers  |  37   |
+| Java DAO Classes          |  13   |
+| Java Model / POJO Classes |  15   |
+| Java Utility Classes      |   2   |
+| JSP View Pages            |  39   |
+| Database Tables           |  16   |
++---------------------------+-------+
+| TOTAL Java Files          |  67   |
+| TOTAL JSP Files           |  39   |
+| TOTAL Database Tables     |  16   |
++---------------------------+-------+
+
+
+================================================================================
+                         END OF DOCUMENT
+================================================================================

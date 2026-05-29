@@ -2,6 +2,7 @@ package com.college.attendance.controller;
 
 import com.college.attendance.dao.FacultyAttendanceDAO;
 import com.college.attendance.model.FacultyAttendance;
+import com.college.attendance.model.Teacher;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,8 +41,12 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
         }
 
         List<FacultyAttendance> records = dao.getAllFacultyAttendance(targetDate, deptParam);
+        List<Teacher> absentRecords = dao.getAbsentFaculty(targetDate, deptParam);
+        List<FacultyAttendance> pendingLeaves = dao.getPendingLeaves();
         
         request.setAttribute("records", records);
+        request.setAttribute("absentRecords", absentRecords);
+        request.setAttribute("pendingLeaves", pendingLeaves);
         request.setAttribute("targetDate", targetDate);
         request.setAttribute("department", deptParam);
         
@@ -59,11 +64,22 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
         }
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            String action = request.getParameter("action");
             String status = request.getParameter("status");
             String notes = request.getParameter("notes");
             
-            dao.updateAttendanceByAdmin(id, status, notes);
+            com.college.attendance.model.Admin admin = (com.college.attendance.model.Admin) session.getAttribute("user");
+            
+            if ("add".equals(action)) {
+                int teacherId = Integer.parseInt(request.getParameter("teacherId"));
+                Date targetDate = Date.valueOf(request.getParameter("targetDate"));
+                dao.addAttendanceByAdmin(teacherId, targetDate, status, notes);
+                com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Added faculty attendance for Teacher ID " + teacherId + " on " + targetDate + " as " + status);
+            } else {
+                int id = Integer.parseInt(request.getParameter("id"));
+                dao.updateAttendanceByAdmin(id, status, notes);
+                com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified/Updated faculty attendance ID " + id + " to " + status);
+            }
             
             String dateParam = request.getParameter("currentDate");
             String deptParam = request.getParameter("currentDept");

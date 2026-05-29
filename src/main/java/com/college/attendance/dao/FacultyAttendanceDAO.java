@@ -1,6 +1,7 @@
 package com.college.attendance.dao;
 
 import com.college.attendance.model.FacultyAttendance;
+import com.college.attendance.model.Teacher;
 import com.college.attendance.util.DBConnection;
 
 import java.sql.Connection;
@@ -14,14 +15,27 @@ import java.util.List;
 public class FacultyAttendanceDAO {
 
     public boolean checkIn(int teacherId) {
-        String sql = "INSERT INTO faculty_attendance (teacher_id, date, check_in_time, status) VALUES (?, CURDATE(), CURTIME(), 'Present')";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, teacherId);
-            return stmt.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        FacultyAttendance today = getTodayAttendance(teacherId);
+        if (today != null) {
+            String sql = "UPDATE faculty_attendance SET check_in_time = CURTIME(), status = 'Present' WHERE id = ?";
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, today.getId());
+                return stmt.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            String sql = "INSERT INTO faculty_attendance (teacher_id, date, check_in_time, status) VALUES (?, CURDATE(), CURTIME(), 'Present')";
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, teacherId);
+                return stmt.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
     }
 
@@ -138,5 +152,132 @@ public class FacultyAttendanceDAO {
         fa.setVerifiedByAdmin(rs.getBoolean("verified_by_admin"));
         fa.setAdminNotes(rs.getString("admin_notes"));
         return fa;
+    }
+
+    public List<FacultyAttendance> getPendingLeaves() {
+        List<FacultyAttendance> list = new ArrayList<>();
+        String sql = "SELECT fa.*, t.name as teacher_name, t.department as teacher_department, t.email as teacher_email " +
+                     "FROM faculty_attendance fa " +
+                     "JOIN teacher t ON fa.teacher_id = t.id " +
+                     "WHERE fa.verified_by_admin = 0 " +
+                     "ORDER BY fa.date ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                FacultyAttendance fa = mapRowToFacultyAttendance(rs);
+                fa.setTeacherName(rs.getString("teacher_name"));
+                fa.setTeacherDepartment(rs.getString("teacher_department"));
+                fa.setTeacherEmail(rs.getString("teacher_email"));
+                list.add(fa);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean addAttendanceByAdmin(int teacherId, Date date, String status, String notes) {
+        String sql = "INSERT INTO faculty_attendance (teacher_id, date, status, admin_notes, verified_by_admin) VALUES (?, ?, ?, ?, 1)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            stmt.setDate(2, date);
+            stmt.setString(3, status);
+            stmt.setString(4, notes);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public boolean deleteFacultyLeave(int id) {
+        String sql = "DELETE FROM faculty_attendance WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public FacultyAttendance getAttendanceById(int id) {
+        String sql = "SELECT * FROM faculty_attendance WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToFacultyAttendance(rs);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean applyLeaveByFaculty(int teacherId, Date date, String status, String notes) {
+        String sql = "INSERT INTO faculty_attendance (teacher_id, date, status, admin_notes, verified_by_admin) VALUES (?, ?, ?, ?, 0)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            stmt.setDate(2, date);
+            stmt.setString(3, status);
+            stmt.setString(4, notes);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Teacher> getAbsentFaculty(Date targetDate, String department) {
+        List<Teacher> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT t.* FROM teacher t " +
+            "WHERE t.id NOT IN (" +
+            "   SELECT teacher_id FROM faculty_attendance WHERE date = ?" +
+            ") AND t.is_approved = 1 AND t.is_banned = 0 "
+        );
+
+        if (department != null && !department.isEmpty()) {
+            sql.append(" AND t.department = ? ");
+        }
+        sql.append(" ORDER BY t.name ASC");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            
+            int paramIndex = 1;
+            stmt.setDate(paramIndex++, targetDate);
+            
+            if (department != null && !department.isEmpty()) {
+                stmt.setString(paramIndex++, department);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Teacher t = new Teacher();
+                    t.setId(rs.getInt("id"));
+                    t.setName(rs.getString("name"));
+                    t.setEmail(rs.getString("email"));
+                    t.setPhone(rs.getString("phone"));
+                    t.setDepartment(rs.getString("department"));
+                    t.setProfilePhoto(rs.getString("profile_photo"));
+                    t.setApproved(rs.getBoolean("is_approved"));
+                    t.setBanned(rs.getBoolean("is_banned"));
+                    list.add(t);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

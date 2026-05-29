@@ -18,61 +18,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Take Attendance - Teacher</title>
+    <title>Take Attendance - Faculty</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="css/theme.css?v=2" rel="stylesheet">
     <style>
         .radio-btn-group input[type="radio"] {
             display: none;
         }
         .radio-btn-group label {
             cursor: pointer;
-            padding: 5px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 6px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
             user-select: none;
+            font-weight: 600;
+            transition: all 0.2s;
         }
         .radio-btn-group input[type="radio"]:checked + label.present-label {
-            background-color: #198754;
-            color: white;
-            border-color: #198754;
+            background-color: #198754 !important;
+            color: white !important;
+            border-color: #198754 !important;
+            box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
         }
         .radio-btn-group input[type="radio"]:checked + label.absent-label {
-            background-color: #dc3545;
-            color: white;
-            border-color: #dc3545;
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-color: #dc3545 !important;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+        }
+        .radio-btn-group label:hover {
+            background-color: #f8f9fa;
+        }
+        .radio-btn-group input[type="radio"]:checked + label:hover {
+            opacity: 0.95;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="teacher_dashboard.jsp">Teacher Dashboard</a>
-            <div class="d-flex">
-                <span class="navbar-text me-3 text-light">Welcome, <%= teacher.getName() %></span>
-                <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
-            </div>
-        </div>
-    </nav>
+    
+    <!-- Sidebar Include -->
+    <jsp:include page="includes/teacher_sidebar.jsp" />
 
-    <div class="container mt-4">
-        <h3>Take Daily Attendance</h3>
-        <hr>
+    <!-- Main Content -->
+    <div id="content-wrapper">
         
-        <% if(request.getParameter("error") != null) { %>
-            <div class="alert alert-danger"><%= request.getParameter("error") %></div>
-        <% } %>
-        <% if(request.getParameter("msg") != null) { %>
-            <div class="alert alert-success"><%= request.getParameter("msg") %></div>
-        <% } %>
+        <!-- Header Include -->
+        <jsp:include page="includes/teacher_header.jsp" />
 
-        <!-- Subject and Section Selection Form -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body bg-light">
-                <form action="takeAttendance" method="get" class="row g-3 align-items-center">
-                    <div class="col-auto">
-                        <label class="fw-bold">Select Class / Subject:</label>
-                    </div>
-                    <div class="col-auto">
+        <div class="container-fluid p-0">
+            <h3 class="fw-bold mb-4">Take Daily Attendance</h3>
+            
+            <% if(request.getParameter("error") != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show mb-4">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i><%= request.getParameter("error") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+            <% if(request.getParameter("msg") != null) { %>
+                <div class="alert alert-success alert-dismissible fade show mb-4">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= request.getParameter("msg") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <!-- Subject and Section Selection Card -->
+            <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: var(--card-radius);">
+                <h5 class="fw-bold mb-3">Class & Subject Selection</h5>
+                <form action="takeAttendance" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label text-muted small fw-bold">Select Assigned Subject</label>
                         <select name="subjectId" class="form-select" required>
                             <option value="">-- Choose Subject --</option>
                             <% if(subjects != null) { 
@@ -86,10 +101,8 @@
                                } %>
                         </select>
                     </div>
-                    <div class="col-auto">
-                        <label class="fw-bold">Section:</label>
-                    </div>
-                    <div class="col-auto">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Section</label>
                         <select name="section" class="form-select" required>
                             <option value="">-- Choose Section --</option>
                             <% if(availableSections != null) { 
@@ -99,65 +112,93 @@
                                } %>
                         </select>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Load Students</button>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                            <i class="bi bi-people me-2"></i>Load Students
+                        </button>
                     </div>
                 </form>
             </div>
-        </div>
 
-        <!-- Student List Form -->
-        <% if(selectedSubject != null && selectedSection != null) { %>
-            <form action="takeAttendance" method="post">
-                <input type="hidden" name="subjectId" value="<%= selectedSubject.getId() %>">
-                
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>Students Enrolled: <%= students != null ? students.size() : 0 %></h5>
-                    <div class="text-muted"><strong>Date:</strong> <%= new java.text.SimpleDateFormat("dd MMM yyyy").format(new java.util.Date()) %></div>
-                </div>
+            <!-- Student List Form -->
+            <% if(selectedSubject != null && selectedSection != null) { %>
+                <div class="card border-0 shadow-sm custom-table">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Students Enrolled: <span class="text-primary"><%= students != null ? students.size() : 0 %></span></h5>
+                            <small class="text-muted"><%= selectedSubject.getName() %> (<%= selectedSubject.getSubjectCode() %>) - Section <%= selectedSection %></small>
+                        </div>
+                        <div class="datetime-widget py-1 px-3" style="font-size: 0.9rem;">
+                            <i class="bi bi-calendar-event me-1"></i> <%= new java.text.SimpleDateFormat("dd MMM yyyy").format(new java.util.Date()) %>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body mt-3">
+                        <form action="takeAttendance" method="post">
+                            <input type="hidden" name="subjectId" value="<%= selectedSubject.getId() %>">
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 20%">Roll No</th>
+                                            <th>Student Name</th>
+                                            <th class="text-center" style="width: 40%">Attendance Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if(students != null && !students.isEmpty()) { 
+                                            for(Student s : students) { %>
+                                        <tr>
+                                            <td class="fw-bold text-dark"><%= s.getRollNo() %></td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="https://ui-avatars.com/api/?name=<%= s.getName() %>&background=e0b1cb&color=7b2cbf&bold=true" 
+                                                         style="width: 32px; height: 32px; border-radius: 50%;">
+                                                    <span class="fw-semibold"><%= s.getName() %></span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="hidden" name="studentIds" value="<%= s.getId() %>">
+                                                <div class="radio-btn-group d-inline-flex gap-2">
+                                                    <!-- Default is Present -->
+                                                    <input type="radio" id="p_<%= s.getId() %>" name="status_<%= s.getId() %>" value="Present" checked <%= request.getAttribute("alreadySubmitted") != null ? "disabled" : "" %>>
+                                                    <label for="p_<%= s.getId() %>" class="present-label text-success present-btn">Present</label>
+                                                    
+                                                    <input type="radio" id="a_<%= s.getId() %>" name="status_<%= s.getId() %>" value="Absent" <%= request.getAttribute("alreadySubmitted") != null ? "disabled" : "" %>>
+                                                    <label for="a_<%= s.getId() %>" class="absent-label text-danger absent-btn">Absent</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <%  } 
+                                           } else { %>
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-4">No active students found for this class.</td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                <div class="table-responsive shadow-sm">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Roll No</th>
-                                <th>Student Name</th>
-                                <th class="text-center">Attendance Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
                             <% if(students != null && !students.isEmpty()) { 
-                                for(Student s : students) { %>
-                            <tr>
-                                <td><%= s.getRollNo() %></td>
-                                <td><%= s.getName() %></td>
-                                <td class="text-center">
-                                    <input type="hidden" name="studentIds" value="<%= s.getId() %>">
-                                    <div class="radio-btn-group">
-                                        <!-- Default is Present -->
-                                        <input type="radio" id="p_<%= s.getId() %>" name="status_<%= s.getId() %>" value="Present" checked>
-                                        <label for="p_<%= s.getId() %>" class="present-label fw-bold me-2">Present</label>
-                                        
-                                        <input type="radio" id="a_<%= s.getId() %>" name="status_<%= s.getId() %>" value="Absent">
-                                        <label for="a_<%= s.getId() %>" class="absent-label fw-bold">Absent</label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <%  } 
-                               } else { %>
-                            <tr><td colspan="3" class="text-center">No active students found for this class.</td></tr>
-                            <% } %>
-                        </tbody>
-                    </table>
+                                   if (request.getAttribute("alreadySubmitted") == null) { %>
+                                <div class="text-end mt-4">
+                                    <button type="submit" class="btn btn-primary-custom fw-bold px-5 py-2">
+                                        <i class="bi bi-cloud-upload me-2"></i>Submit Attendance
+                                    </button>
+                                </div>
+                            <%     } else { %>
+                                <div class="alert alert-info mt-4">
+                                    <i class="bi bi-info-circle me-2"></i> Attendance has been locked. Only an administrator can modify it now.
+                                </div>
+                            <%     }
+                               } %>
+                        </form>
+                    </div>
                 </div>
-
-                <% if(students != null && !students.isEmpty()) { %>
-                <div class="text-end mt-3 mb-5">
-                    <button type="submit" class="btn btn-primary btn-lg fw-bold px-5">Submit Attendance</button>
-                </div>
-                <% } %>
-            </form>
-        <% } %>
+            <% } %>
+            
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

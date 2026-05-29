@@ -153,6 +153,17 @@
                                     </div>
                                 </a>
                             </div>
+                            <div class="col-md-6">
+                                <a href="adminLogs" class="text-decoration-none">
+                                    <div class="p-3 border rounded d-flex align-items-center gap-3 bg-light text-dark hover-shadow">
+                                        <i class="bi bi-activity fs-4 text-danger"></i>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">Activity Log</h6>
+                                            <small class="text-muted">View system activity and audit logs</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

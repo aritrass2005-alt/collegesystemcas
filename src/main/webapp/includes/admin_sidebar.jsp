@@ -8,7 +8,7 @@
     <!-- Brand -->
     <div class="sidebar-brand">
         <div class="sidebar-brand-icon" style="background: transparent; border: none;">
-            <img src="img/logo.png" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
+            <img src="img/main_logo.jpg" alt="Logo" style="height: 36px; width: 36px; object-fit: contain; border-radius: 8px;">
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-name">CAS Admin</div>
@@ -27,7 +27,7 @@
             </li>
             <% if ("SuperAdmin".equals(roleName)) { %>
             <li>
-                <a href="admin_admins.jsp" class="<%= activePage.equals("admin_admins.jsp") ? "active" : "" %>">
+                <a href="manageAdmins" class="<%= activePage.equals("admin_admins.jsp") || activePage.equals("manageAdmins") ? "active" : "" %>">
                     <i class="bi bi-shield-lock"></i> <span>Administrators</span>
                 </a>
             </li>

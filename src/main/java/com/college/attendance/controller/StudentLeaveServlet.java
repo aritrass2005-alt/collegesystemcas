@@ -35,6 +35,25 @@ public class StudentLeaveServlet extends HttpServlet {
             response.sendRedirect("login.jsp?error=Unauthorized+Access");
             return;
         }
+        
+        String action = request.getParameter("action");
+        if ("cancel".equals(action)) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                LeaveApplication leave = leaveDAO.getLeaveById(id);
+                // Ensure the student owns this leave application and it is pending
+                if (leave != null && leave.getStudentId() == student.getId() && "Pending".equals(leave.getStatus())) {
+                    leaveDAO.deleteLeave(id);
+                    response.sendRedirect("studentLeave?msg=Leave+application+canceled");
+                } else {
+                    response.sendRedirect("studentLeave?error=Cannot+cancel+this+application");
+                }
+            } catch (Exception e) {
+                response.sendRedirect("studentLeave?error=Invalid+ID");
+            }
+            return;
+        }
+
         List<LeaveApplication> leaves = leaveDAO.getLeavesByStudent(student.getId());
         request.setAttribute("leaves", leaves);
         request.getRequestDispatcher("student_leave.jsp").forward(request, response);
@@ -109,6 +128,7 @@ public class StudentLeaveServlet extends HttpServlet {
 
         boolean success = leaveDAO.submitLeave(leave);
         if (success) {
+            com.college.attendance.dao.ActivityLogDAO.log("Student", student.getName(), "Submitted a leave application from " + startDate + " to " + endDate);
             response.sendRedirect("studentLeave?msg=Leave+application+submitted+successfully");
         } else {
             response.sendRedirect("studentLeave?error=Failed+to+submit+leave+application");

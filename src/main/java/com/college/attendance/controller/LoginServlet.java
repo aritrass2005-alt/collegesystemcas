@@ -7,6 +7,7 @@ import com.college.attendance.model.Teacher;
 import com.college.attendance.dao.CoordinatorDAO;
 import com.college.attendance.util.ValidationUtil;
 
+import com.college.attendance.dao.ActivityLogDAO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -77,6 +78,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("user", admin);
                 session.setAttribute("role", admin.getRole());
                 session.setMaxInactiveInterval(3600); // 1 hour
+                ActivityLogDAO.log(admin.getRole(), admin.getName(), "Logged into the system");
                 response.sendRedirect("admin_dashboard.jsp");
                 return;
             }
@@ -105,6 +107,9 @@ public class LoginServlet extends HttpServlet {
                 session.setMaxInactiveInterval(3600);
                 if (coordinatorDAO.isCoordinator(teacher.getId())) {
                     session.setAttribute("isCoordinator", true);
+                    ActivityLogDAO.log("Coordinator", teacher.getName(), "Logged into the system as Coordinator");
+                } else {
+                    ActivityLogDAO.log("Teacher", teacher.getName(), "Logged into the system");
                 }
                 response.sendRedirect("teacher_dashboard.jsp");
                 return;
@@ -127,6 +132,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("user", student);
                 session.setAttribute("role", "Student");
                 session.setMaxInactiveInterval(3600);
+                ActivityLogDAO.log("Student", student.getName(), "Logged into the system");
                 response.sendRedirect("studentDashboard");
                 return;
             }

@@ -11,10 +11,10 @@
     <title>Bulk Upload - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="css/admin_theme.css" rel="stylesheet">
+    <link href="css/theme.css?v=2" rel="stylesheet">
     <style>
         .upload-area {
-            border: 2px dashed var(--primary-color);
+            border: 2px dashed var(--primary);
             border-radius: var(--card-radius);
             padding: 40px;
             text-align: center;

@@ -7,20 +7,17 @@
     String adminPhotoUrl = "https://ui-avatars.com/api/?name=" + java.net.URLEncoder.encode(adminName, "UTF-8") + "&background=1e3a5f&color=fff&bold=true";
 %>
 <header class="top-header">
-    <div class="header-left">
+    <div class="header-left d-flex align-items-center gap-3">
         <button class="toggle-btn" id="sidebarToggle">
             <i class="bi bi-list"></i>
         </button>
-        <div class="header-search d-none d-md-block">
-            <i class="bi bi-search search-icon"></i>
-            <input type="text" placeholder="What do you want to find?">
+        <!-- Datetime -->
+        <div class="datetime-widget d-none d-lg-flex m-0">
+            <i class="bi bi-calendar3"></i> <span id="currentDate" class="ms-1"></span>
+            <i class="bi bi-clock ms-3"></i> <span id="currentTime" class="ms-1"></span>
         </div>
     </div>
     <div class="header-right">
-        <div class="datetime-widget d-none d-lg-flex">
-            <i class="bi bi-calendar3"></i> <span id="currentDate"></span>
-            <i class="bi bi-clock ms-2"></i> <span id="currentTime"></span>
-        </div>
         <!-- Profile -->
         <div style="position:relative;">
             <div class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">

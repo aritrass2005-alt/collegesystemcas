@@ -21,6 +21,22 @@ public class StudentProfileServlet extends HttpServlet {
             response.sendRedirect("login.jsp");
             return;
         }
+
+        String action = request.getParameter("action");
+        if ("remove_photo".equals(action)) {
+            try (Connection conn = DBConnection.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("UPDATE student SET profile_photo=NULL WHERE id=?");
+                stmt.setInt(1, student.getId());
+                stmt.executeUpdate();
+                student.setProfilePhoto(null);
+                session.setAttribute("user", student);
+                response.sendRedirect("studentProfile?msg=Profile photo removed");
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         request.getRequestDispatcher("student_profile.jsp").forward(request, response);
     }
 
@@ -42,10 +58,10 @@ public class StudentProfileServlet extends HttpServlet {
         Part photoPart = request.getPart("profile_photo");
         if (photoPart != null && photoPart.getSize() > 0) {
             String fileName = "student_" + student.getId() + "_" + System.currentTimeMillis() + getExtension(photoPart.getSubmittedFileName());
-            String uploadDir = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "profiles";
+            String uploadDir = getServletContext().getRealPath("/") + "img" + File.separator + "profiles";
             new File(uploadDir).mkdirs();
             photoPart.write(uploadDir + File.separator + fileName);
-            photoPath = "uploads/profiles/" + fileName;
+            photoPath = "img/profiles/" + fileName;
         }
 
         try (Connection conn = DBConnection.getConnection()) {

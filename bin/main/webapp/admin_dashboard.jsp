@@ -33,7 +33,7 @@
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="css/admin_theme.css" rel="stylesheet">
+    <link href="css/theme.css?v=2" rel="stylesheet">
 </head>
 <body>
     
@@ -51,48 +51,56 @@
             
             <div class="row g-4 mb-4">
                 <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Students</p>
-                            <h3><%= studentCount %></h3>
+                    <a href="manageStudents" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <p>Students</p>
+                                <h3><%= studentCount %></h3>
+                            </div>
+                            <div class="metric-icon bg-purple-light">
+                                <i class="bi bi-mortarboard"></i>
+                            </div>
                         </div>
-                        <div class="metric-icon bg-purple-light">
-                            <i class="bi bi-mortarboard"></i>
-                        </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Teachers</p>
-                            <h3><%= teacherCount %></h3>
+                    <a href="manageTeachers" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <p>Teachers</p>
+                                <h3><%= teacherCount %></h3>
+                            </div>
+                            <div class="metric-icon bg-blue-light">
+                                <i class="bi bi-person-video3"></i>
+                            </div>
                         </div>
-                        <div class="metric-icon bg-blue-light">
-                            <i class="bi bi-person-video3"></i>
-                        </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Departments</p>
-                            <h3><%= deptCount %></h3>
+                    <a href="admin_config.jsp" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <p>Departments</p>
+                                <h3><%= deptCount %></h3>
+                            </div>
+                            <div class="metric-icon bg-orange-light">
+                                <i class="bi bi-building"></i>
+                            </div>
                         </div>
-                        <div class="metric-icon bg-orange-light">
-                            <i class="bi bi-building"></i>
-                        </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Subjects</p>
-                            <h3><%= subjectCount %></h3>
+                    <a href="manageSubjects" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <p>Subjects</p>
+                                <h3><%= subjectCount %></h3>
+                            </div>
+                            <div class="metric-icon bg-green-light">
+                                <i class="bi bi-book"></i>
+                            </div>
                         </div>
-                        <div class="metric-icon bg-green-light">
-                            <i class="bi bi-book"></i>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
             
@@ -141,6 +149,17 @@
                                         <div>
                                             <h6 class="mb-0 fw-bold">Configuration</h6>
                                             <small class="text-muted">Configure Depts, Sections & Years</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="adminLogs" class="text-decoration-none">
+                                    <div class="p-3 border rounded d-flex align-items-center gap-3 bg-light text-dark hover-shadow">
+                                        <i class="bi bi-activity fs-4 text-danger"></i>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">Activity Log</h6>
+                                            <small class="text-muted">View system activity and audit logs</small>
                                         </div>
                                     </div>
                                 </a>

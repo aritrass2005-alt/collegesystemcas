@@ -170,10 +170,14 @@
                 <div>
                     <h1 class="fw-bold mb-2">Hello, <%= student.getName() %>! 👋</h1>
                     <p class="fs-5 opacity-75 mb-0">Here is your attendance performance at a glance.</p>
-                    <div class="mt-3 d-inline-block px-3 py-2 rounded" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                        <i class="bi bi-clock me-2"></i> <span id="realTimeClock" class="fw-bold fs-5"></span>
-                        <span class="mx-2">|</span>
-                        <i class="bi bi-calendar3 me-2"></i> <span id="realTimeDate" class="fw-medium"></span>
+                    <div class="mt-3 d-inline-block px-3 py-2 rounded" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size: 0.95rem;">
+                        <span class="fw-bold"><i class="bi bi-person-badge me-1"></i> Roll: <%= student.getRollNo() %></span>
+                        <span class="mx-2 opacity-50">|</span>
+                        <span class="fw-medium"><i class="bi bi-building me-1"></i> <%= student.getDepartment() %></span>
+                        <span class="mx-2 opacity-50">|</span>
+                        <span class="fw-medium"><i class="bi bi-mortarboard me-1"></i> Year <%= student.getYear() %></span>
+                        <span class="mx-2 opacity-50">|</span>
+                        <span class="fw-medium"><i class="bi bi-people me-1"></i> Sec <%= student.getSection() %></span>
                     </div>
                 </div>
                 <div class="mt-4 mt-md-0 d-flex flex-column align-items-center">
@@ -367,29 +371,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script>
-    function updateClock() {
-        const now = new Date();
-        let hours = now.getHours();
-        let minutes = now.getMinutes();
-        let seconds = now.getSeconds();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        
-        const timeStr = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
-        
-        const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
-        const dateStr = now.toLocaleDateString('en-US', options);
-        
-        document.getElementById('realTimeClock').innerText = timeStr;
-        document.getElementById('realTimeDate').innerText = dateStr;
-    }
-    setInterval(updateClock, 1000);
-    updateClock(); // initial call
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         const events = [];
         <% if (history != null) {

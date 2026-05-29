@@ -42,6 +42,18 @@ public class LeaveApplicationDAO {
             return false;
         }
     }
+    public boolean deleteLeave(int id) {
+        String sql = "DELETE FROM leave_application WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     public List<LeaveApplication> getLeavesByStudent(int studentId) {
         List<LeaveApplication> list = new ArrayList<>();

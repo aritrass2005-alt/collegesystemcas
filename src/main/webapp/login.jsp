@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – College Attendance System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="css/theme.css?v=2" rel="stylesheet">
+    <link href="css/theme.css?v=5" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -364,7 +364,7 @@
     <!-- LEFT PANEL -->
     <div class="left-panel">
         <div class="brand">
-            <div class="brand-icon" style="background: transparent; border: none;"><img src="img/logo.png" alt="Logo" style="height: 40px; width: 40px; object-fit: contain; border-radius: 10px;"></div>
+            <div class="brand-icon" style="background: transparent; border: none;"><img src="img/main_logo.jpg" alt="Logo" style="height: 40px; width: 40px; object-fit: contain; border-radius: 10px;"></div>
             <div>
                 <div class="brand-name">CAS Portal</div>
                 <div class="brand-tagline">College Attendance System</div>

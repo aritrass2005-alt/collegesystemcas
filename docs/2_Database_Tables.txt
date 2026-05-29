@@ -1,0 +1,386 @@
+================================================================================
+       DATABASE SCHEMA DOCUMENTATION
+       College Attendance System (CAS)
+       Database: college_attendance (MySQL 8.x)
+================================================================================
+
+The system uses 16 database tables. Below is the complete schema for each.
+
+================================================================================
+TABLE 1: admin
+================================================================================
+Purpose: Stores administrator accounts (Admin and SuperAdmin).
+
++----------------+---------------------------+------+-----+-------------------+----------------+
+| Field          | Type                      | Null | Key | Default           | Extra          |
++----------------+---------------------------+------+-----+-------------------+----------------+
+| id             | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| name           | VARCHAR(100)              | NO   |     | NULL              |                |
+| email          | VARCHAR(100)              | NO   | UNI | NULL              |                |
+| password       | VARCHAR(255)              | NO   |     | NULL              |                |
+| role           | ENUM('SuperAdmin','Admin')| YES  |     | Admin             |                |
+| created_at     | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
+| profile_photo  | VARCHAR(255)              | YES  |     | NULL              |                |
++----------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - None (standalone table).
+
+
+================================================================================
+TABLE 2: student
+================================================================================
+Purpose: Stores registered student accounts and their academic details.
+
++----------------+---------------------------+------+-----+-------------------+----------------+
+| Field          | Type                      | Null | Key | Default           | Extra          |
++----------------+---------------------------+------+-----+-------------------+----------------+
+| id             | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| roll_no        | VARCHAR(50)               | NO   | UNI | NULL              |                |
+| name           | VARCHAR(100)              | NO   |     | NULL              |                |
+| email          | VARCHAR(100)              | NO   | UNI | NULL              |                |
+| phone          | VARCHAR(20)               | YES  |     | NULL              |                |
+| password       | VARCHAR(255)              | NO   |     | NULL              |                |
+| address        | TEXT                      | YES  |     | NULL              |                |
+| department     | VARCHAR(100)              | YES  |     | NULL              |                |
+| year           | INT                       | YES  |     | NULL              |                |
+| section        | VARCHAR(10)               | YES  |     | NULL              |                |
+| status         | ENUM('Active','Inactive') | YES  |     | Active            |                |
+| created_at     | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
+| profile_photo  | VARCHAR(255)              | YES  |     | NULL              |                |
+| is_banned      | TINYINT(1)                | YES  |     | 0                 |                |
++----------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - Referenced by: attendance.student_id, leave_application.student_id,
+    defaulter_list.student_id, notification.receiver_id
+
+
+================================================================================
+TABLE 3: teacher
+================================================================================
+Purpose: Stores registered teacher/faculty accounts.
+
++----------------+---------------------------+------+-----+-------------------+----------------+
+| Field          | Type                      | Null | Key | Default           | Extra          |
++----------------+---------------------------+------+-----+-------------------+----------------+
+| id             | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| name           | VARCHAR(100)              | NO   |     | NULL              |                |
+| email          | VARCHAR(100)              | NO   | UNI | NULL              |                |
+| phone          | VARCHAR(20)               | YES  |     | NULL              |                |
+| password       | VARCHAR(255)              | NO   |     | NULL              |                |
+| department     | VARCHAR(100)              | YES  |     | NULL              |                |
+| year           | INT                       | YES  |     | NULL              |                |
+| section        | VARCHAR(10)               | YES  |     | NULL              |                |
+| is_approved    | TINYINT(1)                | YES  |     | 0                 |                |
+| created_at     | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
+| profile_photo  | VARCHAR(255)              | YES  |     | NULL              |                |
+| is_banned      | TINYINT(1)                | YES  |     | 0                 |                |
++----------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - Referenced by: faculty_attendance.teacher_id, coordinator.teacher_id,
+    subject.teacher_id, subject.alt_teacher_id
+
+
+================================================================================
+TABLE 4: attendance
+================================================================================
+Purpose: Stores daily student attendance records per subject.
+
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+| Field          | Type                                 | Null | Key | Default           | Extra          |
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+| id             | INT                                  | NO   | PRI | NULL              | AUTO_INCREMENT |
+| student_id     | INT                                  | NO   | MUL | NULL              |                |
+| subject_id     | INT                                  | NO   | MUL | NULL              |                |
+| status         | ENUM('Present','Absent','Leave')     | NO   |     | NULL              |                |
+| date_time      | DATETIME                             | YES  |     | CURRENT_TIMESTAMP |                |
+| is_locked      | TINYINT(1)                           | YES  |     | 0                 |                |
+| appeal_status  | VARCHAR(50)                          | YES  |     | NULL              |                |
+| admin_edited   | TINYINT(1)                           | YES  |     | 0                 |                |
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - student_id -> student.id (FK)
+  - subject_id -> subject.id (FK)
+
+Notes:
+  - A unique constraint prevents duplicate attendance records for the same
+    student, subject, and date.
+  - is_locked: When true, prevents further teacher edits.
+  - appeal_status: Tracks attendance appeals ("Pending", "Approved", etc.).
+  - admin_edited: Flags records modified by admin override.
+
+
+================================================================================
+TABLE 5: faculty_attendance
+================================================================================
+Purpose: Stores daily teacher/faculty attendance and leave records.
+
++-------------------+---------------------------+------+-----+-------------------+----------------+
+| Field             | Type                      | Null | Key | Default           | Extra          |
++-------------------+---------------------------+------+-----+-------------------+----------------+
+| id                | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| teacher_id        | INT                       | NO   | MUL | NULL              |                |
+| date              | DATE                      | NO   |     | NULL              |                |
+| check_in_time     | TIME                      | YES  |     | NULL              |                |
+| check_out_time    | TIME                      | YES  |     | NULL              |                |
+| status            | VARCHAR(20)               | YES  |     | Present           |                |
+| verified_by_admin | TINYINT(1)                | YES  |     | 0                 |                |
+| admin_notes       | TEXT                      | YES  |     | NULL              |                |
++-------------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - teacher_id -> teacher.id (FK)
+
+Notes:
+  - status can be: Present, Absent, Half Day, CL, CCL, EL, Normal Leave, etc.
+  - verified_by_admin: 0 = Pending verification, 1 = Admin-verified.
+  - Also used for faculty leave requests (where check_in_time is NULL and
+    status indicates the leave type).
+
+
+================================================================================
+TABLE 6: leave_application
+================================================================================
+Purpose: Stores student leave applications with proof and declaration.
+
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+| Field          | Type                                 | Null | Key | Default           | Extra          |
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+| id             | INT                                  | NO   | PRI | NULL              | AUTO_INCREMENT |
+| student_id     | INT                                  | NO   | MUL | NULL              |                |
+| reason         | TEXT                                 | NO   |     | NULL              |                |
+| proof_path     | VARCHAR(255)                         | YES  |     | NULL              |                |
+| status         | ENUM('Pending','Approved','Rejected')| YES  |     | Pending           |                |
+| applied_on     | TIMESTAMP                            | YES  |     | CURRENT_TIMESTAMP |                |
+| start_date     | DATE                                 | NO   |     | NULL              |                |
+| end_date       | DATE                                 | NO   |     | NULL              |                |
+| declaration    | TINYINT(1)                           | YES  |     | 0                 |                |
++----------------+--------------------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - student_id -> student.id (FK)
+
+Notes:
+  - Supports multi-day leave via start_date and end_date.
+  - proof_path stores uploaded file (PDF/JPG/PNG, max 5MB).
+  - declaration must be true for submission.
+  - Pending applications can be canceled (deleted) by the student.
+  - Approved/Rejected by Coordinator.
+
+
+================================================================================
+TABLE 7: coordinator
+================================================================================
+Purpose: Maps teacher accounts to coordinator roles for specific departments.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| teacher_id     | INT                       | NO   | MUL | NULL    |                |
+| department     | VARCHAR(100)              | YES  |     | NULL    |                |
+| section        | VARCHAR(10)               | YES  |     | NULL    |                |
+| year           | INT                       | YES  |     | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+Relationships:
+  - teacher_id -> teacher.id (FK)
+
+Notes:
+  - A teacher becomes a Coordinator when a record exists in this table.
+  - The coordinator oversees students matching the department + year + section.
+  - If section is NULL or empty, the coordinator oversees all sections.
+
+
+================================================================================
+TABLE 8: subject
+================================================================================
+Purpose: Stores academic subjects with teacher assignments.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| subject_code   | VARCHAR(50)               | NO   | UNI | NULL    |                |
+| name           | VARCHAR(100)              | NO   |     | NULL    |                |
+| department     | VARCHAR(100)              | YES  |     | NULL    |                |
+| year           | INT                       | YES  |     | NULL    |                |
+| teacher_id     | INT                       | YES  | MUL | NULL    |                |
+| section        | VARCHAR(10)               | YES  |     | NULL    |                |
+| alt_teacher_id | INT                       | YES  |     | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+Relationships:
+  - teacher_id -> teacher.id (FK, primary teacher)
+  - alt_teacher_id -> teacher.id (FK, alternate teacher)
+  - Referenced by: attendance.subject_id, timetable.subject_id,
+    defaulter_list.subject_id
+
+
+================================================================================
+TABLE 9: timetable
+================================================================================
+Purpose: Stores the weekly class schedule (routine) for subjects.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| subject_id     | INT                       | NO   | MUL | NULL    |                |
+| day_of_week    | VARCHAR(20)               | NO   |     | NULL    |                |
+| start_time     | TIME                      | NO   |     | NULL    |                |
+| end_time       | TIME                      | NO   |     | NULL    |                |
+| room_no        | VARCHAR(50)               | YES  |     | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+Relationships:
+  - subject_id -> subject.id (FK)
+
+
+================================================================================
+TABLE 10: notification
+================================================================================
+Purpose: Stores announcements and notifications sent to students.
+
++------------------+---------------------------+------+-----+-------------------+----------------+
+| Field            | Type                      | Null | Key | Default           | Extra          |
++------------------+---------------------------+------+-----+-------------------+----------------+
+| id               | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| sender_name      | VARCHAR(100)              | NO   |     | NULL              |                |
+| sender_role      | VARCHAR(50)               | NO   |     | NULL              |                |
+| receiver_id      | INT                       | NO   | MUL | NULL              |                |
+| title            | VARCHAR(255)              | NO   |     | NULL              |                |
+| message          | TEXT                      | NO   |     | NULL              |                |
+| is_read          | TINYINT(1)                | YES  |     | 0                 |                |
+| created_at       | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
+| attachment_path  | VARCHAR(255)              | YES  |     | NULL              |                |
++------------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - receiver_id -> student.id (FK)
+
+Notes:
+  - Supports file attachments via attachment_path.
+  - is_read tracks whether the student has viewed the notification.
+
+
+================================================================================
+TABLE 11: defaulter_list
+================================================================================
+Purpose: Stores generated defaulter records for students with low attendance.
+
++--------------------------+---------------------------+------+-----+-------------------+----------------+
+| Field                    | Type                      | Null | Key | Default           | Extra          |
++--------------------------+---------------------------+------+-----+-------------------+----------------+
+| id                       | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| student_id               | INT                       | NO   | MUL | NULL              |                |
+| subject_id               | INT                       | NO   | MUL | NULL              |                |
+| attendance_percentage    | DECIMAL(5,2)              | NO   |     | NULL              |                |
+| generated_on             | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
++--------------------------+---------------------------+------+-----+-------------------+----------------+
+
+Relationships:
+  - student_id -> student.id (FK)
+  - subject_id -> subject.id (FK)
+
+
+================================================================================
+TABLE 12: department
+================================================================================
+Purpose: Master list of academic departments in the college.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| name           | VARCHAR(100)              | NO   | UNI | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+
+================================================================================
+TABLE 13: section
+================================================================================
+Purpose: Master list of class sections (e.g., A, B, C).
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| name           | VARCHAR(10)               | NO   | UNI | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+
+================================================================================
+TABLE 14: academic_year
+================================================================================
+Purpose: Master list of academic years.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| year_name      | VARCHAR(50)               | NO   | UNI | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+
+================================================================================
+TABLE 15: holiday_calendar
+================================================================================
+Purpose: Stores official holiday dates for attendance exclusion.
+
++----------------+---------------------------+------+-----+---------+----------------+
+| Field          | Type                      | Null | Key | Default | Extra          |
++----------------+---------------------------+------+-----+---------+----------------+
+| id             | INT                       | NO   | PRI | NULL    | AUTO_INCREMENT |
+| holiday_date   | DATE                      | NO   | UNI | NULL    |                |
+| description    | VARCHAR(255)              | NO   |     | NULL    |                |
++----------------+---------------------------+------+-----+---------+----------------+
+
+
+================================================================================
+TABLE 16: activity_log
+================================================================================
+Purpose: Audit trail recording all significant system events.
+
++----------------+---------------------------+------+-----+-------------------+----------------+
+| Field          | Type                      | Null | Key | Default           | Extra          |
++----------------+---------------------------+------+-----+-------------------+----------------+
+| id             | INT                       | NO   | PRI | NULL              | AUTO_INCREMENT |
+| user_type      | VARCHAR(50)               | YES  |     | NULL              |                |
+| user_name      | VARCHAR(100)              | YES  |     | NULL              |                |
+| action         | TEXT                      | YES  |     | NULL              |                |
+| created_at     | TIMESTAMP                 | YES  |     | CURRENT_TIMESTAMP |                |
++----------------+---------------------------+------+-----+-------------------+----------------+
+
+Notes:
+  - Logs events like logins, attendance check-in/out, leave applications,
+    leave cancellations, admin verifications, and more.
+  - Visible to Admin/SuperAdmin via the Activity Log page.
+
+
+================================================================================
+ENTITY-RELATIONSHIP SUMMARY
+================================================================================
+
+  admin (standalone)
+  student ──< attendance (via student_id)
+  student ──< leave_application (via student_id)
+  student ──< defaulter_list (via student_id)
+  student ──< notification (via receiver_id)
+  teacher ──< faculty_attendance (via teacher_id)
+  teacher ──< coordinator (via teacher_id)
+  teacher ──< subject (via teacher_id, alt_teacher_id)
+  subject ──< attendance (via subject_id)
+  subject ──< timetable (via subject_id)
+  subject ──< defaulter_list (via subject_id)
+  department, section, academic_year (master/config tables)
+  holiday_calendar (standalone reference table)
+  activity_log (standalone audit table)
+
+
+================================================================================
+                         END OF DOCUMENT
+================================================================================
