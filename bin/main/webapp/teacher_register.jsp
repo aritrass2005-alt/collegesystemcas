@@ -4,396 +4,600 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Registration - College Attendance System</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Faculty Registration – College Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/theme.css?v=6" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root {
-            --bg-color: #0f0c29;
-            --accent-color: #302b63;
-            --highlight-color: #24243e;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --text-color: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: linear-gradient(135deg, #2c1b4d 0%, #1a0b2e 50%, #0d041a 100%);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
+            display: flex;
+            background: #f0f2f5;
+        }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            width: 42%;
+            background: linear-gradient(160deg, #1e3a5f 0%, #0f2240 60%, #071629 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 52px;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 420px; height: 420px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            top: -80px; left: -80px;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            bottom: -60px; right: -60px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 46px; height: 46px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-tagline {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .panel-center {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-block {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid #4f9cf9;
+            border-radius: 0 12px 12px 0;
+            padding: 24px 26px;
+            margin-bottom: 32px;
+        }
+
+        .quote-text {
+            font-size: 1.05rem;
+            font-weight: 300;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.88);
+            font-style: italic;
+        }
+
+        .quote-author {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+            font-style: normal;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(79,156,249,0.15);
+            border: 1px solid rgba(79,156,249,0.3);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: #7bb8fb;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .steps-list {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .step-num {
+            width: 30px; height: 30px;
+            min-width: 30px;
+            background: rgba(79,156,249,0.2);
+            border: 1px solid rgba(79,156,249,0.4);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #7bb8fb;
+        }
+
+        .step-info h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2px;
+        }
+
+        .step-info p {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.5;
+        }
+
+        .panel-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-info {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            line-height: 1.8;
+        }
+
+        /* ── Right Panel ── */
+        .right-panel {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
-            color: var(--text-color);
-            padding: 20px 0;
+            padding: 40px 40px;
+            background: #fff;
+            overflow-y: auto;
         }
 
-        /* Animated Blobs */
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.3;
-            animation: move 20s infinite alternate;
-        }
-
-        .blob-1 {
-            top: -100px;
-            left: -100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .blob-2 {
-            bottom: -150px;
-            right: -100px;
-            width: 600px;
-            height: 600px;
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            animation-delay: -5s;
-        }
-
-        .blob-3 {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            animation-duration: 15s;
-        }
-
-        .blob-4 {
-            top: 10%;
-            right: 20%;
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            animation-delay: -2s;
-        }
-
-        .blob-5 {
-            bottom: 20%;
-            left: 10%;
-            width: 350px;
-            height: 350px;
-            background: linear-gradient(135deg, #a6c0fe 0%, #f68084 100%);
-            animation-delay: -8s;
-        }
-
-        @keyframes move {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(10%, 10%) scale(1.1); }
-        }
-
-        /* Snow Canvas */
-        #snow-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .register-box {
             width: 100%;
-            height: 100%;
-            z-index: 0;
+            max-width: 440px;
+        }
+
+        .register-heading {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f2240;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .register-subtext {
+            font-size: 0.88rem;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .form-label-custom {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #374151;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1rem;
             pointer-events: none;
         }
 
-        .register-wrapper {
-            z-index: 10;
+        .form-input {
             width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            text-align: center;
-            /* Allow vertical scrolling if content is too tall */
-            max-height: 100vh;
-            overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-        }
-        
-        .register-wrapper::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-        .welcome-text {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 14px 12px 42px;
+            font-size: 0.93rem;
+            font-family: 'Inter', sans-serif;
+            color: #111827;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            appearance: none;
         }
 
-        .register-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        .form-input:focus {
+            border-color: #1e3a5f;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(30,58,95,0.07);
         }
 
-        .register-card h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 1rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .password-toggle:hover { color: #374151; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 13px;
+            background: #1e3a5f;
             color: #fff;
-        }
-
-        .register-card p {
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            opacity: 0.8;
-            color: #eee;
-        }
-
-        .input-group {
-            background: #ffffff;
-            border-radius: 50px;
-            margin-bottom: 15px;
-            padding: 2px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
             display: flex;
             align-items: center;
-            flex-wrap: nowrap !important;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
         }
 
-        .input-group i:not(#togglePassword) {
-            color: #555;
-            margin-right: 12px;
-            font-size: 1.1rem;
-            width: 25px;
-            text-align: center;
+        .btn-register:hover {
+            background: #0f2240;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(30,58,95,0.3);
         }
 
-        .input-group input {
-            border: none;
-            background: transparent;
+        .btn-register:active { transform: translateY(0); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 24px 0;
+            color: #d1d5db;
+            font-size: 0.8rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
             flex: 1;
-            padding: 12px 0;
-            font-size: 0.95rem;
-            color: #333;
-            outline: none;
-            min-width: 0;
+            height: 1px;
+            background: #e5e7eb;
         }
 
-        .register-btn {
-            background: #ffffff;
-            color: #1a0b2e;
-            border: none;
-            border-radius: 50px;
-            padding: 12px;
-            width: 100%;
-            max-width: 200px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            margin: 10px auto 0;
-            display: block;
+        .login-row {
+            text-align: center;
+            font-size: 0.86rem;
+            color: #6b7280;
         }
 
-        .register-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            background: #f0f0f0;
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        .footer-text a {
-            color: #fff;
+        .login-row a {
+            color: #1e3a5f;
             font-weight: 600;
-            text-decoration: underline;
+            text-decoration: none;
         }
 
-        .alert {
-            border-radius: 15px;
-            margin-bottom: 15px;
+        .login-row a:hover { text-decoration: underline; }
+
+        .alert-custom {
+            border-radius: 10px;
+            padding: 11px 15px;
             font-size: 0.85rem;
-            padding: 10px 15px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            color: #1e40af;
+            margin-bottom: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { background: #f0f2f5; padding: 32px 24px; }
+            .register-box {
+                background: #fff;
+                padding: 32px 28px;
+                border-radius: 20px;
+                box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Blobs -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="blob blob-4"></div>
-    <div class="blob blob-5"></div>
-
-    <!-- Snow Particles Canvas -->
-    <canvas id="snow-canvas"></canvas>
-
-    <div class="register-wrapper">
-        <h1 class="welcome-text">Join Our Community</h1>
-
-        <div class="register-card">
-            <h3>Teacher Registration</h3>
-            <p>Create your account to access the system. Your account will require Admin approval.</p>
-
-            <% if(request.getParameter("error") != null) { %>
-                <div class="alert alert-danger bg-danger text-white border-0"><%= request.getParameter("error") %></div>
-            <% } %>
-
-            <form action="registerTeacher" method="post">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="name" id="name" placeholder="Full Name" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" id="email" placeholder="Email Address" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-phone"></i>
-                    <input type="text" name="phone" id="phone" placeholder="Phone Number" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-building"></i>
-                    <input type="text" name="department" id="department" placeholder="Department (e.g. Computer Science)" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" name="password" id="password" placeholder="Password" required>
-                    <i class="fas fa-eye" id="togglePassword" style="cursor: pointer; margin-left: 10px; color: #777;"></i>
-                </div>
-
-                <button type="submit" class="register-btn">Register</button>
-            </form>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-icon" style="background: transparent; border: none;"><img src="img/main_logo.jpg" alt="Logo" style="height: 40px; width: 40px; object-fit: contain; border-radius: 10px;"></div>
+            <div>
+                <div class="brand-name">CAS Portal</div>
+                <div class="brand-tagline">College Attendance System</div>
+            </div>
         </div>
 
-        <p class="footer-text">
-            Already registered? <a href="login.jsp">Log in here.</a>
-        </p>
+        <div class="panel-center">
+            <div class="quote-block">
+                <p class="quote-text">"A good teacher can inspire hope, ignite the imagination, and instill a love of learning."</p>
+                <p class="quote-author">— Brad Henry</p>
+            </div>
+            <div class="role-badge">
+                <i class="bi bi-person-workspace"></i>
+                <span>Faculty Registration</span>
+            </div>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-info">
+                        <h4>Fill Your Details</h4>
+                        <p>Enter your name, email, department and set a password.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-info">
+                        <h4>Submit Application</h4>
+                        <p>Your registration request will be sent to the admin.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-info">
+                        <h4>Admin Approval</h4>
+                        <p>Once approved, you can log in and start using the system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <p class="footer-info">
+                © 2026 College Attendance System<br>
+                Secure · Reliable · Transparent<br>
+                All access is logged and monitored.
+            </p>
+        </div>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // Snow Particles Logic
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        const particleCount = 150;
-        const mouse = { x: -100, y: -100, radius: 100 };
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <div class="register-box">
 
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            <h1 class="register-heading">Create Account</h1>
+            <p class="register-subtext">Register as a faculty member to access the attendance system.</p>
+
+            <div class="info-badge">
+                <i class="bi bi-info-circle-fill"></i>
+                Your account will require administrator approval before first login.
+            </div>
+
+            <% if(request.getParameter("error") != null) { %>
+                <div class="alert-custom alert-error">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <%= request.getParameter("error") %>
+                </div>
+            <% } %>
+            <% if(request.getParameter("msg") != null) { %>
+                <div class="alert-custom alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <%= request.getParameter("msg") %>
+                </div>
+            <% } %>
+
+            <form action="registerTeacher" method="post" id="registerForm">
+
+                <div>
+                    <label class="form-label-custom" for="name">Full Name</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" name="name" id="name"
+                               class="form-input" placeholder="e.g. Dr. John Doe" required autocomplete="name">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label-custom" for="email">Email Address</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-envelope input-icon"></i>
+                        <input type="email" name="email" id="email"
+                               class="form-input" placeholder="yourname@college.edu" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="form-label-custom" for="phone">Phone Number</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-telephone input-icon"></i>
+                            <input type="tel" name="phone" id="phone"
+                                   class="form-input" placeholder="e.g. 9876543210" required autocomplete="tel">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-custom" for="department">Department</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-building input-icon"></i>
+                            <input type="text" name="department" id="department"
+                                   class="form-input" placeholder="e.g. BCA" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label-custom" for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input type="password" name="password" id="password"
+                               class="form-input" placeholder="Create a strong password" required autocomplete="new-password" style="padding-right: 44px;" minlength="6">
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password">
+                            <i class="bi bi-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label-custom" for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-lock-fill input-icon"></i>
+                        <input type="password" name="confirmPassword" id="confirmPassword"
+                               class="form-input" placeholder="Re-enter your password" required autocomplete="new-password" style="padding-right: 44px;" minlength="6">
+                        <button type="button" class="password-toggle" id="toggleConfirmPassword" aria-label="Toggle confirm password">
+                            <i class="bi bi-eye" id="eyeIcon2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>Request Access</span>
+                </button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="login-row">
+                Already have an account? <a href="login.jsp">Sign in here</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Password toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                pwd.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
         });
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const pwd = document.getElementById('confirmPassword');
+            const icon = document.getElementById('eyeIcon2');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                pwd.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        });
 
-        class Particle {
-            constructor() {
-                this.reset();
+        // Form validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const pwd = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (pwd !== confirm) {
+                e.preventDefault();
+                alert('Passwords do not match. Please try again.');
+                document.getElementById('confirmPassword').focus();
+                return false;
             }
 
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 + 0.5;
-                this.baseX = this.x;
-                this.baseY = this.y;
-                this.density = (Math.random() * 30) + 1;
+            if (pwd.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long.');
+                document.getElementById('password').focus();
+                return false;
             }
-
-            update() {
-                // Horizontal movement
-                this.x += this.speedX;
-                // Vertical movement (falling)
-                this.y += this.speedY;
-
-                if (this.y > canvas.height) {
-                    this.y = -10;
-                    this.x = Math.random() * canvas.width;
-                }
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-
-                // Mouse interaction (repulsion)
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = mouse.radius;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density;
-                let directionY = forceDirectionY * force * this.density;
-
-                if (distance < mouse.radius) {
-                    this.x -= directionX;
-                    this.y -= directionY;
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-        }
-
-        function init() {
-            resizeCanvas();
-            particles = [];
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        init();
-        animate();
-
-        // Password Toggle
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-        togglePassword.addEventListener('click', function (e) {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
         });
     </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
 </body>
 </html>
 

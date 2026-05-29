@@ -28,9 +28,14 @@
         <div class="container-fluid p-0">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold mb-0">Manage Students</h3>
-                <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="prepareAddStudent()">
-                    <i class="bi bi-person-plus"></i> Add Student
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#promoteModal">
+                        <i class="bi bi-arrow-up-circle"></i> Auto Promote
+                    </button>
+                    <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="prepareAddStudent()">
+                        <i class="bi bi-person-plus"></i> Add Student
+                    </button>
+                </div>
             </div>
 
             <% if(request.getParameter("msg") != null) { %>
@@ -99,8 +104,10 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Password (DOB)</th>
                                 <th>Dept</th>
                                 <th>Year/Sec</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -108,8 +115,9 @@
                             <% if(students != null && !students.isEmpty()) { 
                                 for(Student s : students) { 
                                     boolean banned = s.isBanned();
+                                    boolean passedOut = "PassedOut".equals(s.getStatus());
                             %>
-                            <tr class="<%= banned ? "table-danger opacity-75" : "" %>">
+                            <tr class="<%= banned ? "table-danger opacity-75" : "" %> <%= passedOut ? "opacity-50" : "" %>">
                                 <td class="fw-bold"><%= s.getRollNo() %></td>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
@@ -119,8 +127,16 @@
                                 </td>
                                 <td><%= s.getEmail() %></td>
                                 <td><%= s.getPhone() != null ? s.getPhone() : "N/A" %></td>
+                                <td><span class="badge bg-secondary"><%= s.getDob() != null ? s.getDob() : "N/A" %></span></td>
                                 <td><span class="badge bg-light text-dark border"><%= s.getDepartment() %></span></td>
                                 <td>Year <%= s.getYear() %> - Sec <%= s.getSection() %></td>
+                                <td>
+                                    <% if("PassedOut".equals(s.getStatus())) { %>
+                                        <span class="badge bg-secondary">Passed Out</span>
+                                    <% } else { %>
+                                        <span class="badge bg-success">Active</span>
+                                    <% } %>
+                                </td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-outline-primary" 
@@ -211,8 +227,8 @@
                             </div>
                             <div class="col-12" id="dobField">
                                 <label class="form-label small fw-bold">Date of Birth (Password)</label>
-                                <input type="date" name="dob" id="studentDob" class="form-control">
-                                <div class="form-text">DOB will be used as the default password (DDMMYYYY).</div>
+                                <input type="text" name="dob" id="studentDob" class="form-control" placeholder="e.g. 32012006">
+                                <div class="form-text">DOB will be used as the default password. Format should match what students will type.</div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label small fw-bold">Address</label>
@@ -221,6 +237,50 @@
                         </div>
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary-custom w-100 py-2">Save Student</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promote Modal -->
+    <div class="modal fade" id="promoteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Auto Promote Students</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form action="manageStudents" method="post">
+                        <input type="hidden" name="action" value="promote">
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Department (Optional)</label>
+                            <select name="promote_department" class="form-select">
+                                <option value="">All Departments</option>
+                                <% if(departments!=null){ for(ConfigData c:departments){ %>
+                                    <option value="<%= c.getName() %>"><%= c.getName() %></option>
+                                <% }} %>
+                            </select>
+                            <div class="form-text">Leave as "All Departments" to promote across all departments.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Current Year (Optional)</label>
+                            <select name="promote_year" class="form-select">
+                                <option value="">All Years</option>
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                            <div class="form-text">Select a specific year to promote, or "All Years" to promote 1->2, 2->3, 3->4, and mark 4 as Passed Out.</div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-warning w-100 py-2" onclick="return confirm('Are you sure you want to promote these students? This action cannot be easily undone.')">Execute Promotion</button>
                         </div>
                     </form>
                 </div>
@@ -251,12 +311,26 @@
             document.getElementById('studentSec').value = student.section;
             document.getElementById('studentAddress').value = student.address || '';
             
-            document.getElementById('dobField').style.display = 'none';
-            document.getElementById('studentDob').required = false;
+            document.getElementById('dobField').style.display = 'block';
+            document.getElementById('studentDob').required = true;
+            document.getElementById('studentDob').value = student.dob || '';
             
             var modal = new bootstrap.Modal(document.getElementById('studentModal'));
             modal.show();
         }
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
 </body>
 </html>
+

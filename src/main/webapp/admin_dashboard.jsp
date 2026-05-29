@@ -4,6 +4,7 @@
 <%@ page import="java.sql.PreparedStatement" %>
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="com.college.attendance.util.DBConnection" %>
+<%@ page import="com.college.attendance.listener.ActiveSessionListener" %>
 <%
     Admin admin = (Admin) session.getAttribute("user");
     if (admin == null || (!"Admin".equals(session.getAttribute("role")) && !"SuperAdmin".equals(session.getAttribute("role")))) {
@@ -177,8 +178,8 @@
                                 <span class="badge bg-success rounded-pill">Active</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                Last Backup
-                                <span class="text-muted small">Never</span>
+                                Active Users
+                                <span id="activeUsersBadge" class="badge bg-primary rounded-pill"><%= com.college.attendance.listener.ActiveSessionListener.getActiveSessions() %></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Pending Approvals (Teachers)
@@ -193,5 +194,35 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
+<script>
+    setInterval(function() {
+        fetch('active_users_count.jsp')
+            .then(response => response.text())
+            .then(text => {
+                const count = text.trim();
+                if(count) {
+                    const badge = document.getElementById('activeUsersBadge');
+                    if(badge) badge.innerText = count;
+                }
+            })
+            .catch(e => console.error('Error fetching active users', e));
+    }, 5000); // Poll every 5 seconds
+</script>
 </body>
 </html>
+
+
+
+

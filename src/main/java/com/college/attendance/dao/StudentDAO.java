@@ -13,7 +13,7 @@ import java.util.List;
 public class StudentDAO {
 
     public boolean addStudent(Student student, String dob, String address) {
-        String sql = "INSERT INTO student (roll_no, name, email, phone, password, address, department, year, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO student (roll_no, name, email, phone, dob, password, address, department, year, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -21,14 +21,15 @@ public class StudentDAO {
             stmt.setString(2, student.getName());
             stmt.setString(3, student.getEmail());
             stmt.setString(4, student.getPhone());
+            stmt.setString(5, dob);
             
             // Hash the DOB as the default password
             String hashedPassword = BCrypt.hashpw(dob, BCrypt.gensalt(12));
-            stmt.setString(5, hashedPassword);
-            stmt.setString(6, address);
-            stmt.setString(7, student.getDepartment());
-            stmt.setInt(8, student.getYear());
-            stmt.setString(9, student.getSection());
+            stmt.setString(6, hashedPassword);
+            stmt.setString(7, address);
+            stmt.setString(8, student.getDepartment());
+            stmt.setInt(9, student.getYear());
+            stmt.setString(10, student.getSection());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -38,7 +39,7 @@ public class StudentDAO {
     }
 
     public boolean updateStudent(Student student, String address) {
-        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, address=?, department=?, year=?, section=? WHERE id=?";
+        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, dob=?, address=?, department=?, year=?, section=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -46,11 +47,12 @@ public class StudentDAO {
             stmt.setString(2, student.getName());
             stmt.setString(3, student.getEmail());
             stmt.setString(4, student.getPhone());
-            stmt.setString(5, address);
-            stmt.setString(6, student.getDepartment());
-            stmt.setInt(7, student.getYear());
-            stmt.setString(8, student.getSection());
-            stmt.setInt(9, student.getId());
+            stmt.setString(5, student.getDob());
+            stmt.setString(6, address);
+            stmt.setString(7, student.getDepartment());
+            stmt.setInt(8, student.getYear());
+            stmt.setString(9, student.getSection());
+            stmt.setInt(10, student.getId());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -72,7 +74,7 @@ public class StudentDAO {
     }
 
     public boolean addStudentsBulk(List<Student> students, List<String> dobs) {
-        String sql = "INSERT IGNORE INTO student (roll_no, name, email, phone, password, department, year, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT IGNORE INTO student (roll_no, name, email, phone, dob, password, department, year, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -86,15 +88,69 @@ public class StudentDAO {
                 stmt.setString(2, s.getName());
                 stmt.setString(3, s.getEmail());
                 stmt.setString(4, s.getPhone());
-                stmt.setString(5, BCrypt.hashpw(dob, BCrypt.gensalt(12)));
-                stmt.setString(6, s.getDepartment());
-                stmt.setInt(7, s.getYear());
-                stmt.setString(8, s.getSection());
+                stmt.setString(5, dob);
+                stmt.setString(6, BCrypt.hashpw(dob, BCrypt.gensalt(12)));
+                stmt.setString(7, s.getDepartment());
+                stmt.setInt(8, s.getYear());
+                stmt.setString(9, s.getSection());
                 
                 stmt.addBatch();
             }
             
             stmt.executeBatch();
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean promoteStudents(String department, int year) {
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            
+            String baseCondition = " WHERE status = 'Active'";
+            if (department != null && !department.isEmpty()) {
+                baseCondition += " AND department = ?";
+            }
+            
+            // Step 1: Promote Year 4 (or the specified year if it's 4) to PassedOut
+            if (year == 0 || year == 4) {
+                String sql4 = "UPDATE student SET status = 'PassedOut' " + baseCondition + " AND year = 4";
+                try (PreparedStatement stmt = conn.prepareStatement(sql4)) {
+                    if (department != null && !department.isEmpty()) stmt.setString(1, department);
+                    stmt.executeUpdate();
+                }
+            }
+            
+            // Step 2: Promote Year 3 to 4
+            if (year == 0 || year == 3) {
+                String sql3 = "UPDATE student SET year = 4 " + baseCondition + " AND year = 3";
+                try (PreparedStatement stmt = conn.prepareStatement(sql3)) {
+                    if (department != null && !department.isEmpty()) stmt.setString(1, department);
+                    stmt.executeUpdate();
+                }
+            }
+            
+            // Step 3: Promote Year 2 to 3
+            if (year == 0 || year == 2) {
+                String sql2 = "UPDATE student SET year = 3 " + baseCondition + " AND year = 2";
+                try (PreparedStatement stmt = conn.prepareStatement(sql2)) {
+                    if (department != null && !department.isEmpty()) stmt.setString(1, department);
+                    stmt.executeUpdate();
+                }
+            }
+            
+            // Step 4: Promote Year 1 to 2
+            if (year == 0 || year == 1) {
+                String sql1 = "UPDATE student SET year = 2 " + baseCondition + " AND year = 1";
+                try (PreparedStatement stmt = conn.prepareStatement(sql1)) {
+                    if (department != null && !department.isEmpty()) stmt.setString(1, department);
+                    stmt.executeUpdate();
+                }
+            }
+            
             conn.commit();
             return true;
         } catch (Exception e) {
@@ -131,10 +187,11 @@ public class StudentDAO {
                 s.setName(rs.getString("name"));
                 s.setEmail(rs.getString("email"));
                 s.setPhone(rs.getString("phone"));
+                s.setDob(rs.getString("dob"));
+                s.setStatus(rs.getString("status"));
                 s.setDepartment(rs.getString("department"));
                 s.setYear(rs.getInt("year"));
                 s.setSection(rs.getString("section"));
-                s.setPhone(rs.getString("phone")); // Ensure phone is set
                 try { s.setEmail(rs.getString("email")); } catch(Exception ex) {} // Safety
                 s.setBanned(rs.getBoolean("is_banned"));
                 students.add(s);
@@ -164,6 +221,8 @@ public class StudentDAO {
                     s.setName(rs.getString("name"));
                     s.setEmail(rs.getString("email"));
                     s.setPhone(rs.getString("phone"));
+                    s.setDob(rs.getString("dob"));
+                s.setStatus(rs.getString("status"));
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
                     s.setSection(rs.getString("section"));
@@ -209,6 +268,8 @@ public class StudentDAO {
                     s.setName(rs.getString("name"));
                     s.setEmail(rs.getString("email"));
                     s.setPhone(rs.getString("phone"));
+                    s.setDob(rs.getString("dob"));
+                s.setStatus(rs.getString("status"));
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
                     s.setSection(rs.getString("section"));
@@ -221,3 +282,4 @@ public class StudentDAO {
         return students;
     }
 }
+

@@ -20,7 +20,17 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String storedHash = rs.getString("password");
-                if (BCrypt.checkpw(password, storedHash)) {
+                boolean authenticated = false;
+                try {
+                    if (storedHash != null && storedHash.startsWith("$2a$")) {
+                        authenticated = BCrypt.checkpw(password, storedHash);
+                    } else if (storedHash != null) {
+                        authenticated = storedHash.equals(password);
+                    }
+                } catch (IllegalArgumentException e) {
+                    authenticated = storedHash.equals(password);
+                }
+                if (authenticated) {
                     Admin admin = new Admin();
                     admin.setId(rs.getInt("id"));
                     admin.setName(rs.getString("name"));
@@ -43,7 +53,17 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String storedHash = rs.getString("password");
-                if (BCrypt.checkpw(password, storedHash)) {
+                boolean authenticated = false;
+                try {
+                    if (storedHash != null && storedHash.startsWith("$2a$")) {
+                        authenticated = BCrypt.checkpw(password, storedHash);
+                    } else if (storedHash != null) {
+                        authenticated = storedHash.equals(password);
+                    }
+                } catch (IllegalArgumentException e) {
+                    authenticated = storedHash.equals(password);
+                }
+                if (authenticated) {
                     Teacher teacher = new Teacher();
                     teacher.setId(rs.getInt("id"));
                     teacher.setName(rs.getString("name"));
@@ -69,7 +89,17 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String storedHash = rs.getString("password");
-                if (BCrypt.checkpw(password, storedHash)) {
+                boolean authenticated = false;
+                try {
+                    if (storedHash != null && storedHash.startsWith("$2a$")) {
+                        authenticated = BCrypt.checkpw(password, storedHash);
+                    } else if (storedHash != null) {
+                        authenticated = storedHash.equals(password);
+                    }
+                } catch (IllegalArgumentException e) {
+                    authenticated = storedHash.equals(password);
+                }
+                if (authenticated) {
                     Student student = new Student();
                     student.setId(rs.getInt("id"));
                     student.setRollNo(rs.getString("roll_no"));

@@ -12,6 +12,8 @@ public class Student {
     private int year;
     private String section;
     private boolean isBanned;
+    private String dob;
+    private String status;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -46,4 +48,10 @@ public class Student {
 
     public boolean isBanned() { return isBanned; }
     public void setBanned(boolean banned) { isBanned = banned; }
+
+    public String getDob() { return dob; }
+    public void setDob(String dob) { this.dob = dob; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

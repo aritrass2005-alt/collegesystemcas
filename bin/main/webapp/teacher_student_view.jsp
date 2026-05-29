@@ -299,5 +299,18 @@
             if(sectionFilter) sectionFilter.addEventListener("change", filterStudents);
         });
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
 </body>
 </html>
+

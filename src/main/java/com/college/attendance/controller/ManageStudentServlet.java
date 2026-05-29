@@ -87,6 +87,21 @@ public class ManageStudentServlet extends HttpServlet {
         }
 
         String action = ValidationUtil.clean(request.getParameter("action"));
+        
+        if ("promote".equals(action)) {
+            String pDept = ValidationUtil.clean(request.getParameter("promote_department"));
+            String pYearStr = ValidationUtil.clean(request.getParameter("promote_year"));
+            int pYear = ValidationUtil.parseIntSafe(pYearStr, 0);
+            
+            boolean success = studentDAO.promoteStudents(pDept, pYear);
+            if (success) {
+                response.sendRedirect("manageStudents?msg=Students+promoted+successfully");
+            } else {
+                response.sendRedirect("manageStudents?error=Failed+to+promote+students");
+            }
+            return;
+        }
+
         if (action == null || (!action.equals("add") && !action.equals("update"))) {
             response.sendRedirect("manageStudents?error=Invalid+action");
             return;
@@ -128,13 +143,16 @@ public class ManageStudentServlet extends HttpServlet {
         s.setSection(section);
 
         boolean success = false;
+        
+        String dob = ValidationUtil.clean(request.getParameter("dob"));
+        if (dob != null) dob = dob.replace("-", "");
+        if (dob != null && !dob.isEmpty() && !ValidationUtil.isValidDob(dob)) {
+            response.sendRedirect("manageStudents?error=Invalid+date+of+birth+format");
+            return;
+        }
+        s.setDob(dob);
+
         if ("add".equals(action)) {
-            String dob = ValidationUtil.clean(request.getParameter("dob"));
-            if (dob != null) dob = dob.replace("-", "");
-            if (!ValidationUtil.isValidDob(dob)) {
-                response.sendRedirect("manageStudents?error=Invalid+date+of+birth+format");
-                return;
-            }
             success = studentDAO.addStudent(s, dob, address);
         } else {
             String idStr = ValidationUtil.clean(request.getParameter("id"));

@@ -98,6 +98,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Department</th>
+                                <th>Auto Password</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -116,6 +117,7 @@
                                 </td>
                                 <td><%= t.getEmail() %></td>
                                 <td><span class="badge bg-light text-dark border"><%= t.getDepartment() %></span></td>
+                                <td><span class="badge bg-secondary">teacher123</span></td>
                                 <td>
                                     <% if(t.isApproved()) { %>
                                         <span class="badge bg-success rounded-pill">Approved</span>
@@ -223,5 +225,18 @@
         }
 
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
 </body>
 </html>
+

@@ -446,6 +446,18 @@ setTimeout(function() {
     document.querySelectorAll('.alert-cas').forEach(function(el){ el.style.opacity='0'; setTimeout(function(){el.remove();},400); });
 }, 5000);
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll(".alert, .alert-custom");
+            alerts.forEach(function(alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 3000);
+    });
+</script>
 </body>
 </html>
 <%!
@@ -454,3 +466,4 @@ setTimeout(function() {
         return s.replace("\\","\\\\").replace("'","\\'").replace("\"","\\\"");
     }
 %>
+
