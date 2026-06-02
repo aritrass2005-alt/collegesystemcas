@@ -61,6 +61,11 @@
                     <span>Class Routine</span>
                 </a>
             </li>
+            <li>
+                <a href="chat.jsp" class="<%= activePage.equals("chat.jsp") ? "active" : "" %>">
+                    <i class="bi bi-chat-dots"></i> <span>Department Chat</span>
+                </a>
+            </li>
 
         </ul>
     </div>

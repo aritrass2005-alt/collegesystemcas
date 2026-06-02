@@ -93,9 +93,9 @@ public class SendNotificationServlet extends HttpServlet {
                 }
             } else {
                 // Group notification
-                String dept = request.getParameter("department");
+                String dept = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
                 int year = Integer.parseInt(request.getParameter("year"));
-                String section = request.getParameter("section");
+                String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
                 if (section == null || section.isEmpty() || "All".equalsIgnoreCase(section)) {
                     section = null;
                 }

@@ -22,7 +22,7 @@ public class TeacherRegisterServlet extends HttpServlet {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
-        String department = request.getParameter("department");
+        String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
         String password = request.getParameter("password");
         
         Teacher t = new Teacher();

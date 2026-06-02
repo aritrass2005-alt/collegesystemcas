@@ -113,6 +113,11 @@
                 </a>
             </li>
             <li>
+                <a href="chat.jsp" class="<%= activePage.equals("chat.jsp") ? "active" : "" %>">
+                    <i class="bi bi-chat-dots"></i> <span>Department Chat</span>
+                </a>
+            </li>
+            <li>
                 <a href="systemControl" class="<%= activePage.contains("systemControl") || activePage.contains("system_control") ? "active" : "" %>">
                     <i class="bi bi-sliders"></i> <span>System Control</span>
                 </a>

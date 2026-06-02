@@ -50,9 +50,9 @@ public class ManageStudentServlet extends HttpServlet {
             return;
         }
 
-        String dept      = ValidationUtil.clean(request.getParameter("department"));
+        String dept      = ValidationUtil.cleanUpper(request.getParameter("department"));
         String yearStr   = ValidationUtil.clean(request.getParameter("year"));
-        String section   = ValidationUtil.clean(request.getParameter("section"));
+        String section   = ValidationUtil.cleanUpper(request.getParameter("section"));
         String subjectId = ValidationUtil.clean(request.getParameter("subject_id"));
 
         int year = 0;
@@ -89,7 +89,7 @@ public class ManageStudentServlet extends HttpServlet {
         String action = ValidationUtil.clean(request.getParameter("action"));
         
         if ("promote".equals(action)) {
-            String pDept = ValidationUtil.clean(request.getParameter("promote_department"));
+            String pDept = ValidationUtil.cleanUpper(request.getParameter("promote_department"));
             String pYearStr = ValidationUtil.clean(request.getParameter("promote_year"));
             int pYear = ValidationUtil.parseIntSafe(pYearStr, 0);
             
@@ -112,9 +112,9 @@ public class ManageStudentServlet extends HttpServlet {
         String name    = ValidationUtil.clean(request.getParameter("name"));
         String email   = ValidationUtil.clean(request.getParameter("email"));
         String phone   = ValidationUtil.clean(request.getParameter("phone"));
-        String dept    = ValidationUtil.clean(request.getParameter("department"));
+        String dept    = ValidationUtil.cleanUpper(request.getParameter("department"));
         String yearStr = ValidationUtil.clean(request.getParameter("year"));
-        String section = ValidationUtil.clean(request.getParameter("section"));
+        String section = ValidationUtil.cleanUpper(request.getParameter("section"));
         String address = ValidationUtil.sanitizeText(request.getParameter("address"));
 
         StringBuilder errors = new StringBuilder();

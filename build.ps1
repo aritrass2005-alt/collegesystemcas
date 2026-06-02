@@ -20,9 +20,17 @@ if (-not (Test-Path -Path $servletApiJar)) {
     Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar" -OutFile $servletApiJar
 }
 
+# Download WebSocket API
+$websocketApiJar = "$buildLibDir\javax.websocket-api-1.1.jar"
+if (-not (Test-Path -Path $websocketApiJar)) {
+    Write-Host "Downloading WebSocket API for compilation..."
+    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/javax/websocket/javax.websocket-api/1.1/javax.websocket-api-1.1.jar" -OutFile $websocketApiJar
+}
+
 # Build Classpath
 $jars = Get-ChildItem -Path $libDir -Filter *.jar | Select-Object -ExpandProperty FullName
 $jars += $servletApiJar
+$jars += $websocketApiJar
 $classpath = $jars -join ";"
 
 # Find all Java files

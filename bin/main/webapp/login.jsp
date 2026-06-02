@@ -538,7 +538,7 @@
         }
 
         // Init on load
-        updateUI('Student');
+        updateUI(document.getElementById('role').value);
 
         document.getElementById('role').addEventListener('change', function() {
             updateUI(this.value);

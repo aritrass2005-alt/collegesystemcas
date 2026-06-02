@@ -53,9 +53,9 @@ public class ManageCoordinatorServlet extends HttpServlet {
         String action = request.getParameter("action");
         if ("assign".equals(action)) {
             int teacherId = Integer.parseInt(request.getParameter("teacher_id"));
-            String department = request.getParameter("department");
+            String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
             int year = Integer.parseInt(request.getParameter("year"));
-            String section = request.getParameter("section");
+            String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
             
             boolean success = coordinatorDAO.addCoordinatorRole(teacherId, department, year, section);
             if (success) {
@@ -74,9 +74,9 @@ public class ManageCoordinatorServlet extends HttpServlet {
         } else if ("update".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             int teacherId = Integer.parseInt(request.getParameter("teacher_id"));
-            String department = request.getParameter("department");
+            String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
             int year = Integer.parseInt(request.getParameter("year"));
-            String section = request.getParameter("section");
+            String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
             
             boolean success = coordinatorDAO.updateCoordinatorRole(id, teacherId, department, year, section);
             if (success) {

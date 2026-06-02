@@ -126,11 +126,11 @@ public class ManageSubjectServlet extends HttpServlet {
     // ── Helpers ────────────────────────────────────────────────────────────────
     private Subject buildSubjectFromRequest(HttpServletRequest req) {
         Subject s = new Subject();
-        s.setSubjectCode(req.getParameter("subjectCode"));
-        s.setName(req.getParameter("name"));
-        s.setDepartment(req.getParameter("department"));
+        s.setSubjectCode(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("subjectCode")));
+        s.setName(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("name")));
+        s.setDepartment(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("department")));
         try { s.setYear(Integer.parseInt(req.getParameter("year"))); } catch (Exception ignored) {}
-        s.setSection(req.getParameter("section"));
+        s.setSection(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("section")));
         try { s.setTeacherId(Integer.parseInt(req.getParameter("teacherId"))); } catch (Exception ignored) {}
         try { s.setAltTeacherId(Integer.parseInt(req.getParameter("altTeacherId"))); } catch (Exception ignored) {}
         return s;

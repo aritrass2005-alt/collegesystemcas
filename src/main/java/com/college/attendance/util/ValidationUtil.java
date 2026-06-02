@@ -45,6 +45,12 @@ public class ValidationUtil {
         return value.replaceAll("<[^>]*>", "").trim();
     }
 
+    /** Returns trimmed and uppercased value or null if blank */
+    public static String cleanUpper(String value) {
+        String cleaned = clean(value);
+        return cleaned == null ? null : cleaned.toUpperCase();
+    }
+
     // ── Field validators ────────────────────────────────────────────────────
 
     public static boolean isValidEmail(String email) {

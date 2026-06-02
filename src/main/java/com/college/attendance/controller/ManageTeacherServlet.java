@@ -61,9 +61,9 @@ public class ManageTeacherServlet extends HttpServlet {
             return;
         }
 
-        String dept    = ValidationUtil.clean(request.getParameter("department"));
+        String dept    = ValidationUtil.cleanUpper(request.getParameter("department"));
         String yearStr = ValidationUtil.clean(request.getParameter("year"));
-        String section = ValidationUtil.clean(request.getParameter("section"));
+        String section = ValidationUtil.cleanUpper(request.getParameter("section"));
         String subjectId = ValidationUtil.clean(request.getParameter("subject_id"));
 
         int year = 0;
@@ -107,7 +107,7 @@ public class ManageTeacherServlet extends HttpServlet {
         String name  = ValidationUtil.clean(request.getParameter("name"));
         String email = ValidationUtil.clean(request.getParameter("email"));
         String phone = ValidationUtil.clean(request.getParameter("phone"));
-        String dept  = ValidationUtil.clean(request.getParameter("department"));
+        String dept  = ValidationUtil.cleanUpper(request.getParameter("department"));
 
         StringBuilder errors = new StringBuilder();
         if (!ValidationUtil.isValidName(name))   errors.append("Invalid name. ");

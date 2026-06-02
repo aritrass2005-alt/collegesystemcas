@@ -165,6 +165,17 @@
                                     </div>
                                 </a>
                             </div>
+                            <div class="col-md-6">
+                                <a href="chat.jsp" class="text-decoration-none">
+                                    <div class="p-3 border rounded d-flex align-items-center gap-3 bg-light text-dark hover-shadow">
+                                        <i class="bi bi-chat-dots fs-4 text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">Department Chat</h6>
+                                            <small class="text-muted">Communicate securely with faculty</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

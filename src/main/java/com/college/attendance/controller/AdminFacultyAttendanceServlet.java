@@ -29,7 +29,7 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
         }
 
         String dateParam = request.getParameter("date");
-        String deptParam = request.getParameter("department");
+        String deptParam = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
 
         Date targetDate = null;
         if (dateParam != null && !dateParam.isEmpty()) {
@@ -93,7 +93,7 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
             }
             
             String dateParam = request.getParameter("currentDate");
-            String deptParam = request.getParameter("currentDept");
+            String deptParam = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("currentDept"));
             
             String redirectUrl = "adminFacultyAttendance?";
             if (dateParam != null && !dateParam.isEmpty()) redirectUrl += "date=" + dateParam + "&";

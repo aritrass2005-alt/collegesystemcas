@@ -177,4 +177,36 @@ public class TeacherDAO {
             return false;
         }
     }
+
+    public List<Teacher> getTeachersForDepartmentChat(String dept) {
+        List<Teacher> teachers = new ArrayList<>();
+        String sql = "SELECT DISTINCT t.* FROM teacher t " +
+                     "LEFT JOIN subject s ON t.id = s.teacher_id " +
+                     "LEFT JOIN coordinator c ON t.id = c.teacher_id " +
+                     "WHERE t.department = ? OR s.department = ? OR c.department = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dept);
+            stmt.setString(2, dept);
+            stmt.setString(3, dept);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Teacher t = new Teacher();
+                    t.setId(rs.getInt("id"));
+                    t.setName(rs.getString("name"));
+                    t.setEmail(rs.getString("email"));
+                    t.setPhone(rs.getString("phone"));
+                    t.setDepartment(rs.getString("department"));
+                    t.setApproved(rs.getBoolean("is_approved"));
+                    t.setBanned(rs.getBoolean("is_banned"));
+                    teachers.add(t);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return teachers;
+    }
 }

@@ -45,7 +45,7 @@ public class ManageConfigServlet extends HttpServlet {
         }
 
         String type = request.getParameter("type");
-        String value = request.getParameter("value");
+        String value = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("value"));
 
         if (configDAO.addConfig(type, value)) {
             response.sendRedirect("manageConfig?msg=Added successfully");

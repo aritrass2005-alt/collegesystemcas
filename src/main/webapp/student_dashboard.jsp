@@ -381,7 +381,7 @@
 </div>
 
 <!-- Calendar Modal -->
-<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content" style="border-radius: 24px; overflow: hidden; border: none;">
             <div class="modal-header p-4" style="background: linear-gradient(135deg, #1e1e2d 0%, #2d2d44 100%);">
@@ -414,7 +414,7 @@
 </div>
 
 <!-- Calendar Event Details & Appeal Modal -->
-<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true" data-bs-focus="false" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow-lg">
             <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e3a5f, #0f2240);">
