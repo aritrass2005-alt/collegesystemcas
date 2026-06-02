@@ -140,6 +140,34 @@ public class AdminTimetableServlet extends HttpServlet {
                 response.sendRedirect("manageTimetable?" + redirectBase + "&error=Failed+to+clear");
             }
 
+        } else if ("edit_slot".equals(action)) {
+            try {
+                int    id         = Integer.parseInt(request.getParameter("id"));
+                int    subjectId  = Integer.parseInt(request.getParameter("subject_id"));
+                String dayOfWeek  = request.getParameter("day_of_week");
+                String startStr   = request.getParameter("start_time");
+                String endStr     = request.getParameter("end_time");
+                String roomNo     = request.getParameter("room_no");
+
+                if (startStr.length() == 5) startStr += ":00";
+                if (endStr.length()   == 5) endStr   += ":00";
+
+                Timetable t = new Timetable();
+                t.setId(id);
+                t.setSubjectId(subjectId);
+                t.setDayOfWeek(dayOfWeek);
+                t.setStartTime(Time.valueOf(startStr));
+                t.setEndTime(Time.valueOf(endStr));
+                t.setRoomNo(roomNo);
+
+                boolean success = timetableDAO.updateTimetable(t);
+                response.sendRedirect("manageTimetable?" + redirectBase +
+                        (success ? "&msg=Slot+updated+successfully" : "&error=Failed+to+update+slot"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("manageTimetable?" + redirectBase + "&error=Invalid+input");
+            }
+
         } else {
             response.sendRedirect("manageTimetable");
         }

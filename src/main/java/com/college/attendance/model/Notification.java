@@ -7,6 +7,7 @@ public class Notification {
     private String senderName;
     private String senderRole;
     private int receiverId;
+    private String receiverType;
     private String title;
     private String message;
     private boolean isRead;
@@ -25,6 +26,9 @@ public class Notification {
 
     public int getReceiverId() { return receiverId; }
     public void setReceiverId(int receiverId) { this.receiverId = receiverId; }
+
+    public String getReceiverType() { return receiverType; }
+    public void setReceiverType(String receiverType) { this.receiverType = receiverType; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

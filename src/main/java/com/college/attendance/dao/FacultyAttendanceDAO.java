@@ -178,6 +178,17 @@ public class FacultyAttendanceDAO {
         return list;
     }
 
+    public boolean verifyAllPendingLeaves() {
+        String sql = "UPDATE faculty_attendance SET verified_by_admin = 1 WHERE verified_by_admin = 0";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            return stmt.executeUpdate() >= 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean addAttendanceByAdmin(int teacherId, Date date, String status, String notes) {
         String sql = "INSERT INTO faculty_attendance (teacher_id, date, status, admin_notes, verified_by_admin) VALUES (?, ?, ?, ?, 1)";
         try (Connection conn = DBConnection.getConnection();

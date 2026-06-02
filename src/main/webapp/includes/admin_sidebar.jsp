@@ -38,8 +38,24 @@
                 </a>
             </li>
             <li>
-                <a href="manageTeachers" class="<%= activePage.contains("teacher") ? "active" : "" %>">
+                <a href="manageTeachers" class="<%= activePage.contains("teacher") && request.getParameter("filter") == null ? "active" : "" %>">
                     <i class="bi bi-person-video3"></i> <span>Teachers</span>
+                </a>
+            </li>
+            <li>
+                <a href="manageTeachers?filter=pending" class="<%= activePage.contains("teacher") && "pending".equals(request.getParameter("filter")) ? "active" : "" %>" style="position:relative;">
+                    <i class="bi bi-person-check"></i> <span>Faculty Approvals</span>
+                    <%
+                        int _pendingTeachers = 0;
+                        try (java.sql.Connection _c = com.college.attendance.util.DBConnection.getConnection();
+                             java.sql.PreparedStatement _ps = _c.prepareStatement("SELECT COUNT(*) FROM teacher WHERE is_approved = 0");
+                             java.sql.ResultSet _rs = _ps.executeQuery()) {
+                             if(_rs.next()) _pendingTeachers = _rs.getInt(1);
+                        } catch(Exception e){}
+                        if (_pendingTeachers > 0) {
+                    %>
+                    <span class="badge bg-danger ms-auto" style="font-size:0.7rem;padding:2px 7px;border-radius:20px;"><%= _pendingTeachers %></span>
+                    <% } %>
                 </a>
             </li>
             <li>
@@ -68,12 +84,12 @@
                 </a>
             </li>
             <li>
-                <a href="admin_notifications.jsp" class="<%= activePage.contains("notification") ? "active" : "" %>">
+                <a href="admin_notifications.jsp" class="<%= activePage.equals("admin_notifications.jsp") ? "active" : "" %>">
                     <i class="bi bi-megaphone"></i> <span>Announcements</span>
                 </a>
             </li>
             <li>
-                <a href="adminAttendance" class="<%= activePage.contains("attendance") && !activePage.contains("appeal") ? "active" : "" %>">
+                <a href="adminAttendance" class="<%= (activePage.contains("adminAttendance") || activePage.contains("admin_attendance.jsp")) ? "active" : "" %>">
                     <i class="bi bi-calendar-check"></i> <span>Edit Attendance</span>
                 </a>
             </li>
@@ -94,6 +110,11 @@
             <li>
                 <a href="bulkUpload" class="<%= activePage.contains("upload") ? "active" : "" %>">
                     <i class="bi bi-cloud-arrow-up"></i> <span>Bulk Upload</span>
+                </a>
+            </li>
+            <li>
+                <a href="systemControl" class="<%= activePage.contains("systemControl") || activePage.contains("system_control") ? "active" : "" %>">
+                    <i class="bi bi-sliders"></i> <span>System Control</span>
                 </a>
             </li>
             <% if ("SuperAdmin".equals(roleName)) { %>

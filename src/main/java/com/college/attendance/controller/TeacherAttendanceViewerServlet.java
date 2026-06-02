@@ -107,7 +107,7 @@ public class TeacherAttendanceViewerServlet extends HttpServlet {
                 if (attendanceDAO.requestAppeal(attendanceId)) {
                     Attendance a = attendanceDAO.getAttendanceById(attendanceId);
                     String msg = teacher.getName() + " has requested an appeal to edit attendance for " + a.getStudentName() + " (" + a.getStudentRollNo() + ") on " + dateStr;
-                    notificationDAO.sendNotification(teacher.getName(), "Faculty", 1, "Attendance Appeal Request", msg, null); // 1 = Admin ID
+                    notificationDAO.sendNotification(teacher.getName(), "Faculty", 1, "Admin", "Attendance Appeal Request", msg, null); // 1 = Admin ID
                     response.sendRedirect("teacherAttendanceView?subject_id=" + subjectId + "&date=" + dateStr + "&msg=Appeal submitted successfully. Awaiting Admin approval.");
                 } else {
                     response.sendRedirect("teacherAttendanceView?subject_id=" + subjectId + "&date=" + dateStr + "&error=Failed to submit appeal.");

@@ -8,6 +8,8 @@ import com.college.attendance.dao.CoordinatorDAO;
 import com.college.attendance.util.ValidationUtil;
 
 import com.college.attendance.dao.ActivityLogDAO;
+import com.college.attendance.util.SystemConfigManager;
+import com.college.attendance.listener.ActiveSessionListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -124,6 +126,13 @@ public class LoginServlet extends HttpServlet {
             if (student != null) {
                 if (student.isBanned()) {
                     request.setAttribute("error", "Your account has been banned by the Administrator.");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
+                }
+                // Session capacity check — students are blocked when cap is reached
+                int maxSessions = SystemConfigManager.getInstance().getMaxActiveSessions();
+                if (maxSessions > 0 && ActiveSessionListener.getActiveSessions() >= maxSessions) {
+                    request.setAttribute("error", "The system is currently at full capacity. Please try again later.");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                     return;
                 }

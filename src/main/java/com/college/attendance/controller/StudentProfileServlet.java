@@ -58,7 +58,7 @@ public class StudentProfileServlet extends HttpServlet {
         Part photoPart = request.getPart("profile_photo");
         if (photoPart != null && photoPart.getSize() > 0) {
             String fileName = "student_" + student.getId() + "_" + System.currentTimeMillis() + getExtension(photoPart.getSubmittedFileName());
-            String uploadDir = getServletContext().getRealPath("/") + "img" + File.separator + "profiles";
+            String uploadDir = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "profiles";
             new File(uploadDir).mkdirs();
             photoPart.write(uploadDir + File.separator + fileName);
             photoPath = "img/profiles/" + fileName;

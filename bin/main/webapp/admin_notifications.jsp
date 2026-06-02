@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="css/theme.css?v=2" rel="stylesheet">
 </head>
-<body>
+<body class="dashboard-body">
     
     <jsp:include page="includes/admin_sidebar.jsp" />
 

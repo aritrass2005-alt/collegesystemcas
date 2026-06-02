@@ -23,6 +23,12 @@
     String photoUrl = currentTeacher != null && currentTeacher.getProfilePhoto() != null && !currentTeacher.getProfilePhoto().isEmpty() && !"null".equals(currentTeacher.getProfilePhoto())
         ? currentTeacher.getProfilePhoto()
         : "https://ui-avatars.com/api/?name=" + java.net.URLEncoder.encode(teacherName, "UTF-8") + "&background=1e3a5f&color=fff&bold=true";
+        
+    int unreadNotifs = 0;
+    if (currentTeacher != null) {
+        com.college.attendance.dao.NotificationDAO nDao = new com.college.attendance.dao.NotificationDAO();
+        unreadNotifs = nDao.getUnreadCount(currentTeacher.getId(), "Teacher");
+    }
 %>
 <header class="top-header">
     <div class="header-left d-flex align-items-center gap-3">
@@ -35,16 +41,17 @@
             <i class="bi bi-clock ms-3"></i> <span id="currentTime" class="ms-1"></span>
         </div>
     </div>
-    <div class="header-right">
-        <!-- Coordinator switch button -->
-        <% if (session.getAttribute("isCoordinator") != null && (Boolean) session.getAttribute("isCoordinator")) { %>
-        <a href="coordinatorDashboard" class="switch-view-btn me-3">
-            <i class="bi bi-speedometer2"></i>
-            <span class="d-none d-md-inline">Coordinator View</span>
+    <div class="header-right d-flex align-items-center gap-3">
+        <!-- Notifications -->
+        <a href="teacher_view_notifications.jsp?view=teacher" class="position-relative text-dark" style="text-decoration: none;">
+            <i class="bi bi-bell fs-5 text-muted"></i>
+            <% if (unreadNotifs > 0) { %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                <%= unreadNotifs %>
+            </span>
+            <% } %>
         </a>
-        <% } %>
 
-        <!-- Check-in Status -->
         <% if (currentTeacher != null) { %>
         <div class="d-none d-lg-flex align-items-center me-3 bg-white border rounded shadow-sm px-3" style="height: 42px;">
             <div class="d-flex flex-column justify-content-center border-end pe-3 me-3" style="min-width: 90px;">
@@ -71,10 +78,20 @@
         </div>
         <% } %>
 
+        <!-- Coordinator switch button -->
+        <% 
+            Boolean isCoordinatorHeader = (Boolean) session.getAttribute("isCoordinator");
+            if (isCoordinatorHeader != null && isCoordinatorHeader) { 
+        %>
+        <a href="coordinatorDashboard" class="btn btn-outline-primary btn-sm rounded-pill d-none d-md-flex align-items-center gap-2 fw-semibold shadow-sm px-3" style="height: 38px;">
+            <i class="bi bi-shield-lock-fill"></i> Coordinator View
+        </a>
+        <% } %>
+
         <!-- Profile -->
         <div style="position:relative;">
             <div class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">
-                <img src="<%= photoUrl %>" alt="Profile Photo">
+                <img src="<%= photoUrl %>" alt="Profile Photo" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= java.net.URLEncoder.encode(teacherName, "UTF-8") %>&background=1e3a5f&color=fff&bold=true';">
                 <div class="d-none d-md-block" style="pointer-events:none;">
                     <div class="profile-name"><%= teacherName %></div>
                     <div class="profile-role"><%= teacherDept %></div>

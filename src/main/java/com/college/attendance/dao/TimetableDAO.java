@@ -52,6 +52,24 @@ public class TimetableDAO {
         return false;
     }
 
+    // ── Update ─────────────────────────────────────────────────────────────────
+    public boolean updateTimetable(Timetable timetable) {
+        String query = "UPDATE timetable SET subject_id = ?, day_of_week = ?, start_time = ?, end_time = ?, room_no = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, timetable.getSubjectId());
+            ps.setString(2, timetable.getDayOfWeek());
+            ps.setTime(3, timetable.getStartTime());
+            ps.setTime(4, timetable.getEndTime());
+            ps.setString(5, timetable.getRoomNo());
+            ps.setInt(6, timetable.getId());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // ── Delete ─────────────────────────────────────────────────────────────────
     public boolean deleteTimetable(int id) {
         String query = "DELETE FROM timetable WHERE id = ?";

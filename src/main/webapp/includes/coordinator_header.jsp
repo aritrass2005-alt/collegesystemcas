@@ -7,6 +7,12 @@
     String headerPhotoUrl = coordTeacherHeader != null && coordTeacherHeader.getProfilePhoto() != null && !coordTeacherHeader.getProfilePhoto().isEmpty() && !"null".equals(coordTeacherHeader.getProfilePhoto())
         ? coordTeacherHeader.getProfilePhoto()
         : "https://ui-avatars.com/api/?name=" + java.net.URLEncoder.encode(coordName, "UTF-8") + "&background=1e3a5f&color=fff&bold=true";
+        
+    int unreadNotifs = 0;
+    if (coordTeacherHeader != null) {
+        com.college.attendance.dao.NotificationDAO nDao = new com.college.attendance.dao.NotificationDAO();
+        unreadNotifs = nDao.getUnreadCount(coordTeacherHeader.getId(), "Teacher");
+    }
 %>
 <header class="top-header">
     <div class="header-left d-flex align-items-center gap-3">
@@ -19,11 +25,20 @@
             <i class="bi bi-clock ms-3"></i> <span id="coordTime" class="ms-1"></span>
         </div>
     </div>
-    <div class="header-right">
+    <div class="header-right d-flex align-items-center gap-3">
+        <!-- Notifications -->
+        <a href="teacher_view_notifications.jsp?view=coordinator" class="position-relative text-dark" style="text-decoration: none;">
+            <i class="bi bi-bell fs-5 text-muted"></i>
+            <% if (unreadNotifs > 0) { %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                <%= unreadNotifs %>
+            </span>
+            <% } %>
+        </a>
         <!-- Profile -->
         <div style="position:relative;">
             <div class="profile-btn" id="coordProfileBtn" onclick="toggleCoordMenu()">
-                <img src="<%= headerPhotoUrl %>" alt="Profile Photo">
+                <img src="<%= headerPhotoUrl %>" alt="Profile Photo" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= java.net.URLEncoder.encode(coordName, "UTF-8") %>&background=1e3a5f&color=fff&bold=true';">
                 <div class="d-none d-md-block" style="pointer-events:none;">
                     <div class="profile-name"><%= coordName %></div>
                     <div class="profile-role">Coordinator</div>

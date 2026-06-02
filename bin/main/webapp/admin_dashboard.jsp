@@ -78,7 +78,7 @@
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href="admin_config.jsp" style="text-decoration:none; color:inherit; display:block;">
+                    <a href="manageConfig" style="text-decoration:none; color:inherit; display:block;">
                         <div class="metric-card">
                             <div class="metric-info">
                                 <p>Departments</p>
@@ -144,7 +144,7 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a href="admin_config.jsp" class="text-decoration-none">
+                                <a href="manageConfig" class="text-decoration-none">
                                     <div class="p-3 border rounded d-flex align-items-center gap-3 bg-light text-dark hover-shadow">
                                         <i class="bi bi-gear fs-4 text-info"></i>
                                         <div>

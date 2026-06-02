@@ -9,17 +9,18 @@ import java.util.List;
 
 public class NotificationDAO {
 
-    public boolean sendNotification(String senderName, String senderRole, int receiverId, String title, String message, String attachmentPath) {
-        String query = "INSERT INTO notification (sender_name, sender_role, receiver_id, title, message, attachment_path) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean sendNotification(String senderName, String senderRole, int receiverId, String receiverType, String title, String message, String attachmentPath) {
+        String query = "INSERT INTO notification (sender_name, sender_role, receiver_id, receiver_type, title, message, attachment_path) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
              
             ps.setString(1, senderName);
             ps.setString(2, senderRole);
             ps.setInt(3, receiverId);
-            ps.setString(4, title);
-            ps.setString(5, message);
-            ps.setString(6, attachmentPath);
+            ps.setString(4, receiverType);
+            ps.setString(5, title);
+            ps.setString(6, message);
+            ps.setString(7, attachmentPath);
             
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -28,13 +29,14 @@ public class NotificationDAO {
         return false;
     }
 
-    public List<Notification> getNotificationsForStudent(int studentId) {
+    public List<Notification> getNotificationsForUser(int receiverId, String receiverType) {
         List<Notification> list = new ArrayList<>();
-        String query = "SELECT * FROM notification WHERE receiver_id = ? ORDER BY created_at DESC";
+        String query = "SELECT * FROM notification WHERE receiver_id = ? AND receiver_type = ? ORDER BY created_at DESC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
              
-            ps.setInt(1, studentId);
+            ps.setInt(1, receiverId);
+            ps.setString(2, receiverType);
             ResultSet rs = ps.executeQuery();
             
             while (rs.next()) {
@@ -56,13 +58,14 @@ public class NotificationDAO {
         return list;
     }
 
-    public boolean markAsRead(int notificationId, int studentId) {
-        String query = "UPDATE notification SET is_read = TRUE WHERE id = ? AND receiver_id = ?";
+    public boolean markAsRead(int notificationId, int receiverId, String receiverType) {
+        String query = "UPDATE notification SET is_read = TRUE WHERE id = ? AND receiver_id = ? AND receiver_type = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
              
             ps.setInt(1, notificationId);
-            ps.setInt(2, studentId);
+            ps.setInt(2, receiverId);
+            ps.setString(3, receiverType);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,12 +73,13 @@ public class NotificationDAO {
         return false;
     }
 
-    public int getUnreadCount(int studentId) {
-        String query = "SELECT COUNT(*) FROM notification WHERE receiver_id = ? AND is_read = FALSE";
+    public int getUnreadCount(int receiverId, String receiverType) {
+        String query = "SELECT COUNT(*) FROM notification WHERE receiver_id = ? AND receiver_type = ? AND is_read = FALSE";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
              
-            ps.setInt(1, studentId);
+            ps.setInt(1, receiverId);
+            ps.setString(2, receiverType);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -84,5 +88,19 @@ public class NotificationDAO {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public boolean deleteAllNotificationsForUser(int receiverId, String receiverType) {
+        String query = "DELETE FROM notification WHERE receiver_id = ? AND receiver_type = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+             
+            ps.setInt(1, receiverId);
+            ps.setString(2, receiverType);
+            return ps.executeUpdate() >= 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

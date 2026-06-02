@@ -137,10 +137,11 @@ public class TeacherDAO {
     }
 
     public boolean approveTeacher(int teacherId) {
-        String sql = "UPDATE teacher SET is_approved = TRUE WHERE id = ?";
+        String sql = "UPDATE teacher SET is_approved = ? WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, teacherId);
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, teacherId);
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

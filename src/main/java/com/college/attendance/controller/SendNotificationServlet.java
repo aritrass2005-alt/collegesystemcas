@@ -77,7 +77,7 @@ public class SendNotificationServlet extends HttpServlet {
             Part filePart = request.getPart("attachment");
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName().replaceAll("[^a-zA-Z0-9.-]", "_");
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "notices";
+                String uploadPath = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "uploads" + File.separator + "notices";
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
                 filePart.write(uploadPath + File.separator + fileName);
@@ -88,7 +88,7 @@ public class SendNotificationServlet extends HttpServlet {
 
             if ("SPECIFIC".equals(targetType)) {
                 int studentId = Integer.parseInt(request.getParameter("studentId"));
-                if (notificationDAO.sendNotification(senderName, senderRole, studentId, title, message, attachmentPath)) {
+                if (notificationDAO.sendNotification(senderName, senderRole, studentId, "Student", title, message, attachmentPath)) {
                     successCount++;
                 }
             } else {
@@ -108,7 +108,7 @@ public class SendNotificationServlet extends HttpServlet {
                             continue; // Skip non-defaulters based on custom threshold
                         }
                     }
-                    if (notificationDAO.sendNotification(senderName, senderRole, s.getId(), title, message, attachmentPath)) {
+                    if (notificationDAO.sendNotification(senderName, senderRole, s.getId(), "Student", title, message, attachmentPath)) {
                         successCount++;
                     }
                 }

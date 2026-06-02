@@ -41,8 +41,11 @@ public class ManageTeacherServlet extends HttpServlet {
                 response.sendRedirect("manageTeachers?error=Invalid+teacher+ID");
                 return;
             }
-            teacherDAO.approveTeacher(Integer.parseInt(idStr));
-            response.sendRedirect("manageTeachers?msg=Teacher+approved");
+            if (teacherDAO.approveTeacher(Integer.parseInt(idStr))) {
+                response.sendRedirect("manageTeachers?msg=Teacher+approved");
+            } else {
+                response.sendRedirect("manageTeachers?error=Failed+to+approve+teacher");
+            }
             return;
         } else if ("delete".equals(action)) {
             String idStr = ValidationUtil.clean(request.getParameter("id"));
@@ -69,6 +72,12 @@ public class ManageTeacherServlet extends HttpServlet {
         }
 
         List<Teacher> teachers = teacherDAO.getTeachersByFilter(dept, year, section, subjectId);
+        
+        String filter = ValidationUtil.clean(request.getParameter("filter"));
+        if ("pending".equals(filter)) {
+            teachers.removeIf(Teacher::isApproved);
+        }
+        
         request.setAttribute("teachers",    teachers);
         request.setAttribute("departments", configDAO.getAll("department"));
         request.setAttribute("years",       configDAO.getAll("academic_year"));

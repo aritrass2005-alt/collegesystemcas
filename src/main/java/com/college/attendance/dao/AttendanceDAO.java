@@ -148,10 +148,37 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            return stmt.executeUpdate() > 0;
+            boolean updated = stmt.executeUpdate() > 0;
+            if (updated) markReviewDone(id);
+            return updated;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void markReviewDone(int attendanceId) {
+        String fetchSql = "SELECT student_id, subject_id, date_time FROM attendance WHERE id = ?";
+        String updateSql = "UPDATE attendance_review SET status = 'Done' WHERE student_id = ? AND DATE(review_date) = DATE(?) AND (subject_id = ? OR subject_id IS NULL OR subject_id = 0) AND status = 'Approved'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement fetchStmt = conn.prepareStatement(fetchSql)) {
+            fetchStmt.setInt(1, attendanceId);
+            try (ResultSet rs = fetchStmt.executeQuery()) {
+                if (rs.next()) {
+                    int studentId = rs.getInt("student_id");
+                    int subjectId = rs.getInt("subject_id");
+                    java.sql.Timestamp dateTime = rs.getTimestamp("date_time");
+                    
+                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                        updateStmt.setInt(1, studentId);
+                        updateStmt.setTimestamp(2, dateTime);
+                        updateStmt.setInt(3, subjectId);
+                        updateStmt.executeUpdate();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -236,7 +263,9 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            return stmt.executeUpdate() > 0;
+            boolean updated = stmt.executeUpdate() > 0;
+            if (updated) markReviewDone(id);
+            return updated;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -249,7 +278,9 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            return stmt.executeUpdate() > 0;
+            boolean updated = stmt.executeUpdate() > 0;
+            if (updated) markReviewDone(id);
+            return updated;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -575,5 +606,22 @@ public class AttendanceDAO {
             e.printStackTrace();
         }
         return 100.0; // Default if no classes
+    }
+
+    public List<String> getAbsentDatesForStudent(int studentId) {
+        List<String> dates = new ArrayList<>();
+        String sql = "SELECT DISTINCT DATE(date_time) as absent_date FROM attendance WHERE student_id = ? AND status = 'Absent' ORDER BY absent_date DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    dates.add(rs.getString("absent_date"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dates;
     }
 }

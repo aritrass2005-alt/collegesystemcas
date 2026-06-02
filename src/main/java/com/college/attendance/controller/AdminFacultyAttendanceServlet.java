@@ -70,15 +70,26 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
             
             com.college.attendance.model.Admin admin = (com.college.attendance.model.Admin) session.getAttribute("user");
             
+            String activeTab = "records";
             if ("add".equals(action)) {
                 int teacherId = Integer.parseInt(request.getParameter("teacherId"));
                 Date targetDate = Date.valueOf(request.getParameter("targetDate"));
                 dao.addAttendanceByAdmin(teacherId, targetDate, status, notes);
                 com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Added faculty attendance for Teacher ID " + teacherId + " on " + targetDate + " as " + status);
+                activeTab = "absent";
+            } else if ("verifyAll".equals(action)) {
+                dao.verifyAllPendingLeaves();
+                com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified all pending faculty leaves");
+                activeTab = "pending";
             } else {
                 int id = Integer.parseInt(request.getParameter("id"));
                 dao.updateAttendanceByAdmin(id, status, notes);
                 com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified/Updated faculty attendance ID " + id + " to " + status);
+                if ("verify".equals(action)) {
+                    activeTab = "pending";
+                } else {
+                    activeTab = "records";
+                }
             }
             
             String dateParam = request.getParameter("currentDate");
@@ -86,12 +97,12 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
             
             String redirectUrl = "adminFacultyAttendance?";
             if (dateParam != null && !dateParam.isEmpty()) redirectUrl += "date=" + dateParam + "&";
-            if (deptParam != null && !deptParam.isEmpty()) redirectUrl += "department=" + deptParam;
+            if (deptParam != null && !deptParam.isEmpty()) redirectUrl += "department=" + deptParam + "&";
             
-            response.sendRedirect(redirectUrl + "&msg=Updated Successfully");
+            response.sendRedirect(redirectUrl + "tab=" + activeTab + "&msg=Updated Successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("adminFacultyAttendance?error=Update Failed");
+            response.sendRedirect("adminFacultyAttendance?tab=records&error=Update Failed");
         }
     }
 }

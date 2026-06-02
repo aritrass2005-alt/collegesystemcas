@@ -108,7 +108,7 @@ public class StudentLeaveServlet extends HttpServlet {
                 }
                 // Limit: 5 MB already enforced by @MultipartConfig maxFileSize
                 String fileName   = UUID.randomUUID().toString() + "_" + originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "leaves";
+                String uploadPath = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "uploads" + File.separator + "leaves";
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
                 filePart.write(uploadPath + File.separator + fileName);

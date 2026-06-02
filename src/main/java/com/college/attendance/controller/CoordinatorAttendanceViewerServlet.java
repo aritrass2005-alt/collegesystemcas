@@ -146,7 +146,7 @@ public class CoordinatorAttendanceViewerServlet extends HttpServlet {
                 if (attendanceDAO.requestAppeal(attendanceId)) {
                     Attendance a = attendanceDAO.getAttendanceById(attendanceId);
                     String msg = teacher.getName() + " (Coordinator) has requested an appeal to edit attendance for " + a.getStudentName() + " (" + a.getStudentRollNo() + ") on " + dateStr;
-                    notificationDAO.sendNotification(teacher.getName(), "Coordinator", 1, "Attendance Appeal Request", msg, null);
+                    notificationDAO.sendNotification(teacher.getName(), "Coordinator", 1, "Admin", "Attendance Appeal Request", msg, null);
                     response.sendRedirect("coordinatorAttendanceView?subject_id=" + subjectId + "&date=" + dateStr + "&msg=Appeal submitted successfully. Awaiting Admin approval.");
                 } else {
                     response.sendRedirect("coordinatorAttendanceView?subject_id=" + subjectId + "&date=" + dateStr + "&error=Failed to submit appeal.");

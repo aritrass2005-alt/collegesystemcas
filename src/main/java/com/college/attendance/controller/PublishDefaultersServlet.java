@@ -62,12 +62,18 @@ public class PublishDefaultersServlet extends HttpServlet {
                 }
                 message += " Please check your dashboard for full attendance details.";
 
-                if (notificationDAO.sendNotification(teacher.getName(), senderRole, dr.getStudentId(), title, message, null)) {
+                if (notificationDAO.sendNotification(teacher.getName(), senderRole, dr.getStudentId(), "Student", title, message, null)) {
                     successCount++;
                 }
             }
         }
 
-        response.sendRedirect(request.getHeader("Referer") + "&msg=Successfully notified " + successCount + " defaulter students.");
+        String referer = request.getHeader("Referer");
+        if (referer != null) {
+            String separator = referer.contains("?") ? "&" : "?";
+            response.sendRedirect(referer + separator + "msg=Successfully+notified+" + successCount + "+defaulter+students.");
+        } else {
+            response.sendRedirect("teacher_dashboard.jsp");
+        }
     }
 }

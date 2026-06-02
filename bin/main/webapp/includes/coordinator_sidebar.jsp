@@ -64,6 +64,12 @@
             </a>
         </div>
         <div class="sidebar-nav-item">
+            <a href="coordinatorReviews" class="<%= activePage.contains("coordinatorReviews") || activePage.contains("coordinator_reviews.jsp") ? "active" : "" %>">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <span>Review Requests</span>
+            </a>
+        </div>
+        <div class="sidebar-nav-item">
             <a href="coordinator_notifications.jsp" class="<%= activePage.contains("coordinator_notifications.jsp") ? "active" : "" %>">
                 <i class="bi bi-send-fill"></i>
                 <span>Send Notices</span>

@@ -5,6 +5,8 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,18 +14,31 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ActiveSessionListener implements HttpSessionListener, HttpSessionAttributeListener {
     // Stores session IDs of logged in users
     private static final Set<String> loggedInSessions = ConcurrentHashMap.newKeySet();
+    // Maps sessionId -> role for role-based tracking
+    private static final Map<String, String> sessionRoles = new ConcurrentHashMap<>();
 
     @Override
     public void attributeAdded(HttpSessionBindingEvent event) {
         if ("user".equals(event.getName())) {
-            loggedInSessions.add(event.getSession().getId());
+            String sessionId = event.getSession().getId();
+            loggedInSessions.add(sessionId);
+            String role = (String) event.getSession().getAttribute("role");
+            if (role != null) {
+                sessionRoles.put(sessionId, role);
+            }
+        }
+        if ("role".equals(event.getName())) {
+            String sessionId = event.getSession().getId();
+            sessionRoles.put(sessionId, (String) event.getValue());
         }
     }
 
     @Override
     public void attributeRemoved(HttpSessionBindingEvent event) {
         if ("user".equals(event.getName())) {
-            loggedInSessions.remove(event.getSession().getId());
+            String sessionId = event.getSession().getId();
+            loggedInSessions.remove(sessionId);
+            sessionRoles.remove(sessionId);
         }
     }
 
@@ -33,8 +48,13 @@ public class ActiveSessionListener implements HttpSessionListener, HttpSessionAt
             if (event.getValue() != null) {
                 loggedInSessions.add(event.getSession().getId());
             } else {
-                loggedInSessions.remove(event.getSession().getId());
+                String sessionId = event.getSession().getId();
+                loggedInSessions.remove(sessionId);
+                sessionRoles.remove(sessionId);
             }
+        }
+        if ("role".equals(event.getName())) {
+            sessionRoles.put(event.getSession().getId(), (String) event.getValue());
         }
     }
 
@@ -45,10 +65,40 @@ public class ActiveSessionListener implements HttpSessionListener, HttpSessionAt
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        loggedInSessions.remove(se.getSession().getId());
+        String sessionId = se.getSession().getId();
+        loggedInSessions.remove(sessionId);
+        sessionRoles.remove(sessionId);
     }
 
     public static int getActiveSessions() {
         return loggedInSessions.size();
+    }
+
+    public static int getActiveStudentSessions() {
+        int count = 0;
+        for (String role : sessionRoles.values()) {
+            if ("Student".equals(role)) count++;
+        }
+        return count;
+    }
+
+    public static int getActiveTeacherSessions() {
+        int count = 0;
+        for (String role : sessionRoles.values()) {
+            if ("Teacher".equals(role)) count++;
+        }
+        return count;
+    }
+
+    public static int getActiveAdminSessions() {
+        int count = 0;
+        for (String role : sessionRoles.values()) {
+            if ("Admin".equals(role) || "SuperAdmin".equals(role)) count++;
+        }
+        return count;
+    }
+
+    public static Map<String, String> getSessionRoles() {
+        return sessionRoles;
     }
 }

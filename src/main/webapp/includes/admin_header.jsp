@@ -5,6 +5,12 @@
     String adminName = currentAdmin != null ? currentAdmin.getName() : "Admin";
     String adminRole = currentAdmin != null ? currentAdmin.getRole() : "Administrator";
     String adminPhotoUrl = "https://ui-avatars.com/api/?name=" + java.net.URLEncoder.encode(adminName, "UTF-8") + "&background=1e3a5f&color=fff&bold=true";
+    
+    int unreadNotifs = 0;
+    if (currentAdmin != null) {
+        com.college.attendance.dao.NotificationDAO nDao = new com.college.attendance.dao.NotificationDAO();
+        unreadNotifs = nDao.getUnreadCount(currentAdmin.getId(), "Admin");
+    }
 %>
 <header class="top-header">
     <div class="header-left d-flex align-items-center gap-3">
@@ -17,7 +23,16 @@
             <i class="bi bi-clock ms-3"></i> <span id="currentTime" class="ms-1"></span>
         </div>
     </div>
-    <div class="header-right">
+    <div class="header-right d-flex align-items-center gap-3">
+        <!-- Notifications -->
+        <a href="admin_view_notifications.jsp" class="position-relative text-dark" style="text-decoration: none;">
+            <i class="bi bi-bell fs-5 text-muted"></i>
+            <% if (unreadNotifs > 0) { %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                <%= unreadNotifs %>
+            </span>
+            <% } %>
+        </a>
         <!-- Profile -->
         <div style="position:relative;">
             <div class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">
