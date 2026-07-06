@@ -81,36 +81,38 @@ public class UserDAO {
         return null;
     }
 
-    public Student authenticateStudent(String rollNo, String password) {
-        String sql = "SELECT * FROM student WHERE roll_no = ?";
+    public Student authenticateStudent(String identifier, String password) {
+        String sql = "SELECT * FROM student WHERE roll_no = ? OR email = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, rollNo);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String storedHash = rs.getString("password");
-                boolean authenticated = false;
-                try {
-                    if (storedHash != null && storedHash.startsWith("$2a$")) {
-                        authenticated = BCrypt.checkpw(password, storedHash);
-                    } else if (storedHash != null) {
+            stmt.setString(1, identifier);
+            stmt.setString(2, identifier);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedHash = rs.getString("password");
+                    boolean authenticated = false;
+                    try {
+                        if (storedHash != null && storedHash.startsWith("$2a$")) {
+                            authenticated = BCrypt.checkpw(password, storedHash);
+                        } else if (storedHash != null) {
+                            authenticated = storedHash.equals(password);
+                        }
+                    } catch (IllegalArgumentException e) {
                         authenticated = storedHash.equals(password);
                     }
-                } catch (IllegalArgumentException e) {
-                    authenticated = storedHash.equals(password);
-                }
-                if (authenticated) {
-                    Student student = new Student();
-                    student.setId(rs.getInt("id"));
-                    student.setRollNo(rs.getString("roll_no"));
-                    student.setName(rs.getString("name"));
-                    student.setEmail(rs.getString("email"));
-                    student.setDepartment(rs.getString("department"));
-                    student.setYear(rs.getInt("year"));
-                    student.setSection(rs.getString("section"));
-                    student.setProfilePhoto(rs.getString("profile_photo"));
-                    student.setBanned(rs.getBoolean("is_banned"));
-                    return student;
+                    if (authenticated) {
+                        Student student = new Student();
+                        student.setId(rs.getInt("id"));
+                        student.setRollNo(rs.getString("roll_no"));
+                        student.setName(rs.getString("name"));
+                        student.setEmail(rs.getString("email"));
+                        student.setDepartment(rs.getString("department"));
+                        student.setYear(rs.getInt("year"));
+                        student.setSection(rs.getString("section"));
+                        student.setProfilePhoto(rs.getString("profile_photo"));
+                        student.setBanned(rs.getBoolean("is_banned"));
+                        return student;
+                    }
                 }
             }
         } catch (Exception e) {

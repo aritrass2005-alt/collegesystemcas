@@ -8,14 +8,12 @@ import com.college.attendance.dao.CoordinatorDAO;
 import com.college.attendance.util.ValidationUtil;
 
 import com.college.attendance.dao.ActivityLogDAO;
-import com.college.attendance.util.SystemConfigManager;
-import com.college.attendance.listener.ActiveSessionListener;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -117,8 +115,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
         } else if ("Student".equals(role)) {
-            if (!ValidationUtil.isValidRollNo(identifier)) {
-                request.setAttribute("error", "Invalid Roll No format.");
+            if (!ValidationUtil.isValidRollNo(identifier) && !ValidationUtil.isValidEmail(identifier)) {
+                request.setAttribute("error", "Invalid Roll No or Email format.");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
@@ -126,13 +124,6 @@ public class LoginServlet extends HttpServlet {
             if (student != null) {
                 if (student.isBanned()) {
                     request.setAttribute("error", "Your account has been banned by the Administrator.");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
-                    return;
-                }
-                // Session capacity check — students are blocked when cap is reached
-                int maxSessions = SystemConfigManager.getInstance().getMaxActiveSessions();
-                if (maxSessions > 0 && ActiveSessionListener.getActiveSessions() >= maxSessions) {
-                    request.setAttribute("error", "The system is currently at full capacity. Please try again later.");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                     return;
                 }

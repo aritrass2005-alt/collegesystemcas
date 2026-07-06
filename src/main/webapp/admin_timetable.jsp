@@ -197,20 +197,14 @@
             <% if(t.getTeacherName()!=null){ %><div class="slot-teacher"><i class="bi bi-person-fill me-1"></i><%=t.getTeacherName()%></div><% } %>
             <% if(t.getRoomNo()!=null&&!t.getRoomNo().isEmpty()){ %><span class="slot-room"><i class="bi bi-door-open me-1"></i><%=t.getRoomNo()%></span><% } %>
           </div>
-          <div class="d-flex gap-1">
-            <button type="button" class="btn btn-sm btn-outline-primary" style="padding:4px 8px;"
-              onclick="openEditSlot(<%=t.getId()%>, '<%=t.getDayOfWeek()%>', <%=t.getSubjectId()%>, '<%=t.getStartTime()!=null?t.getStartTime().toString().substring(0,5):""%>', '<%=t.getEndTime()!=null?t.getEndTime().toString().substring(0,5):""%>', '<%=t.getRoomNo()!=null?t.getRoomNo().replace("'","\\'"): ""%>')">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <form action="manageTimetable" method="post" onsubmit="return confirm('Delete this slot?');">
-              <input type="hidden" name="action" value="delete_slot">
-              <input type="hidden" name="id" value="<%=t.getId()%>">
-              <input type="hidden" name="dept" value="<%=fd%>">
-              <input type="hidden" name="year" value="<%=fy%>">
-              <input type="hidden" name="section" value="<%=fs%>">
-              <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:4px 8px;"><i class="bi bi-trash3"></i></button>
-            </form>
-          </div>
+          <form action="manageTimetable" method="post" onsubmit="return confirm('Delete this slot?');">
+            <input type="hidden" name="action" value="delete_slot">
+            <input type="hidden" name="id" value="<%=t.getId()%>">
+            <input type="hidden" name="dept" value="<%=fd%>">
+            <input type="hidden" name="year" value="<%=fy%>">
+            <input type="hidden" name="section" value="<%=fs%>">
+            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:4px 8px;"><i class="bi bi-trash3"></i></button>
+          </form>
         </div>
       <% }} %>
       <!-- Add slot button -->
@@ -296,69 +290,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- Edit Slot Modal                                         -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="modal fade" id="editSlotModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form action="manageTimetable" method="post" id="editSlotForm">
-        <input type="hidden" name="action" value="edit_slot">
-        <input type="hidden" name="id" id="editSlotId">
-        <input type="hidden" name="dept" value="<%=fd%>">
-        <input type="hidden" name="year" value="<%=fy%>">
-        <input type="hidden" name="section" value="<%=fs%>">
-
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Class Slot</h5>
-          <button type="button" class="btn-close" style="filter:invert(1)" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label small fw-semibold">Day of Week *</label>
-              <select name="day_of_week" id="editSlotDay" class="form-select" required>
-                <% for(String d:DAYS){ %><option value="<%=d%>"><%=d%></option><% } %>
-              </select>
-            </div>
-            <div class="col-12">
-              <label class="form-label small fw-semibold">Subject *</label>
-              <select name="subject_id" id="editSlotSubject" class="form-select" required onchange="autoFillEditTeacher(this)">
-                <option value="">— Select Subject —</option>
-                <% if(subjects!=null){for(Subject s:subjects){ %>
-                  <option value="<%=s.getId()%>"
-                    data-teacher="<%=s.getTeacherName()!=null?s.getTeacherName():""%>">
-                    <%=s.getName()%> (<%=s.getSubjectCode()%>)
-                  </option>
-                <%}} %>
-              </select>
-              <div class="teacher-autofill" id="editTeacherAutofill">
-                <i class="bi bi-person-badge-fill me-1"></i>Teacher: <strong id="editTeacherAutoName"></strong>
-              </div>
-            </div>
-            <div class="col-6">
-              <label class="form-label small fw-semibold">Start Time *</label>
-              <input type="time" name="start_time" id="editStartTime" class="form-control" required>
-            </div>
-            <div class="col-6">
-              <label class="form-label small fw-semibold">End Time *</label>
-              <input type="time" name="end_time" id="editEndTime" class="form-control" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label small fw-semibold">Room No</label>
-              <input type="text" name="room_no" id="editRoomNo" class="form-control" placeholder="e.g. 204, Lab-3">
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-cas-outline" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn-cas-primary"><i class="bi bi-check-circle-fill"></i> Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 var slotModal = new bootstrap.Modal(document.getElementById('addSlotModal'));
@@ -376,31 +307,6 @@ function autoFillTeacher(sel) {
     var div = document.getElementById('teacherAutofill');
     if (teacher && teacher.length > 0) {
         document.getElementById('teacherAutoName').textContent = teacher;
-        div.style.display = 'block';
-    } else {
-        div.style.display = 'none';
-    }
-}
-
-var editSlotModal = new bootstrap.Modal(document.getElementById('editSlotModal'));
-
-function openEditSlot(id, day, subjectId, startTime, endTime, roomNo) {
-    document.getElementById('editSlotId').value = id;
-    document.getElementById('editSlotDay').value = day;
-    document.getElementById('editSlotSubject').value = subjectId;
-    document.getElementById('editStartTime').value = startTime;
-    document.getElementById('editEndTime').value = endTime;
-    document.getElementById('editRoomNo').value = roomNo;
-    autoFillEditTeacher(document.getElementById('editSlotSubject'));
-    editSlotModal.show();
-}
-
-function autoFillEditTeacher(sel) {
-    var opt = sel.options[sel.selectedIndex];
-    var teacher = opt ? opt.getAttribute('data-teacher') : '';
-    var div = document.getElementById('editTeacherAutofill');
-    if (teacher && teacher.length > 0) {
-        document.getElementById('editTeacherAutoName').textContent = teacher;
         div.style.display = 'block';
     } else {
         div.style.display = 'none';

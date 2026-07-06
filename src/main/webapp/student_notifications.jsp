@@ -12,24 +12,14 @@
     }
 
     NotificationDAO notifDAO = new NotificationDAO();
-    List<Notification> notifications = notifDAO.getNotificationsForUser(currentStudent.getId(), "Student");
+    List<Notification> notifications = notifDAO.getNotificationsForStudent(currentStudent.getId());
     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a");
 
     // Mark as read mechanism if ID passed
     String markRead = request.getParameter("readId");
     if (markRead != null && !markRead.isEmpty()) {
         try {
-            notifDAO.markAsRead(Integer.parseInt(markRead), currentStudent.getId(), "Student");
-            response.sendRedirect("student_notifications.jsp");
-            return;
-        } catch(Exception e){}
-    }
-
-    // Clear all mechanism
-    String clearAll = request.getParameter("clearAll");
-    if ("true".equals(clearAll)) {
-        try {
-            notifDAO.deleteAllNotificationsForUser(currentStudent.getId(), "Student");
+            notifDAO.markAsRead(Integer.parseInt(markRead), currentStudent.getId());
             response.sendRedirect("student_notifications.jsp");
             return;
         } catch(Exception e){}
@@ -43,7 +33,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="css/theme.css?v=2" rel="stylesheet">
 </head>
-<body class="dashboard-body">
+<body>
     
     <jsp:include page="includes/student_sidebar.jsp" />
 
@@ -51,14 +41,7 @@
         <jsp:include page="includes/student_header.jsp" />
 
         <div class="container-fluid p-0">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold mb-0">Notifications</h3>
-                <% if (notifications != null && !notifications.isEmpty()) { %>
-                    <a href="student_notifications.jsp?clearAll=true" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to clear all notifications?');">
-                        <i class="bi bi-trash3"></i> Clear All
-                    </a>
-                <% } %>
-            </div>
+            <h3 class="fw-bold mb-4">Notifications</h3>
 
             <div class="row g-4">
                 <div class="col-lg-8 mx-auto">

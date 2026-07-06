@@ -1,72 +1,68 @@
 package com.college.attendance.controller;
 
 import com.college.attendance.dao.ChatDAO;
-import com.college.attendance.dao.TeacherDAO;
-import com.college.attendance.model.Admin;
-import com.college.attendance.model.ChatGroup;
-import com.college.attendance.model.ChatParticipant;
-import com.college.attendance.model.Teacher;
-import com.college.attendance.util.ValidationUtil;
+import com.college.attendance.model.*;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.PrintWriter;
 import java.util.List;
-import java.util.Map;
 
-@WebServlet("/chatApi")
+@WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
-    private ChatDAO chatDAO = new ChatDAO();
-    private TeacherDAO teacherDAO = new TeacherDAO();
-    private Gson gson = new Gson();
+
+    private ChatDAO chatDAO;
+    private Gson gson;
+
+    @Override
+    public void init() {
+        chatDAO = new ChatDAO();
+        gson = new Gson();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            response.setStatus(401);
+            response.sendRedirect("login.jsp");
             return;
         }
 
-        String action = ValidationUtil.clean(request.getParameter("action"));
-        response.setContentType("application/json");
+        String role = (String) session.getAttribute("role");
+        if (!"Admin".equals(role) && !"SuperAdmin".equals(role) && !"Teacher".equals(role)) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
-        try {
-            if ("getGroups".equals(action)) {
-                String role = getChatRole(session);
-                int userId = getUserId(session);
-                List<ChatGroup> groups = chatDAO.getUserGroups(role, userId);
-                response.getWriter().write(gson.toJson(groups));
-            } else if ("getParticipants".equals(action)) {
-                int groupId = Integer.parseInt(ValidationUtil.clean(request.getParameter("groupId")));
-                List<ChatParticipant> participants = chatDAO.getParticipants(groupId);
-                response.getWriter().write(gson.toJson(participants));
-            } else if ("getMessages".equals(action)) {
-                int groupId = Integer.parseInt(ValidationUtil.clean(request.getParameter("groupId")));
-                response.getWriter().write(gson.toJson(chatDAO.getMessages(groupId, 50)));
-            } else if ("getPublicKey".equals(action)) {
-                String uType = ValidationUtil.clean(request.getParameter("userType"));
-                int uId = Integer.parseInt(ValidationUtil.clean(request.getParameter("userId")));
-                Map<String, String> res = new HashMap<>();
-                res.put("publicKey", chatDAO.getPublicKey(uType, uId));
-                response.getWriter().write(gson.toJson(res));
-            } else if ("getGroupKey".equals(action)) {
-                int groupId = Integer.parseInt(ValidationUtil.clean(request.getParameter("groupId")));
-                String uType = getChatRole(session);
-                int uId = getUserId(session);
-                Map<String, String> res = new HashMap<>();
-                res.put("encryptedGroupKey", chatDAO.getGroupKey(groupId, uType, uId));
-                response.getWriter().write(gson.toJson(res));
+        String action = request.getParameter("action");
+
+        if ("messages".equals(action)) {
+            handleGetMessages(request, response, session);
+        } else if ("conversations".equals(action)) {
+            handleGetConversations(request, response, session);
+        } else {
+            // Forward to chat page
+            int userId = getUserId(session);
+            
+            if ("Teacher".equals(role)) {
+                chatDAO.autoJoinAllDepartmentGroups(userId);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setStatus(500);
+            
+            List<ChatConversation> conversations = chatDAO.getConversationsForUser(role, userId);
+            request.setAttribute("conversations", conversations);
+            request.setAttribute("departments", chatDAO.getAllDepartments());
+            request.setAttribute("currentRole", role);
+            request.setAttribute("currentUserId", userId);
+            request.setAttribute("currentUserName", getUserName(session));
+            request.getRequestDispatcher("staff_chat.jsp").forward(request, response);
         }
     }
 
@@ -74,133 +70,152 @@ public class ChatServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            response.setStatus(401);
+            sendJsonError(response, "Not authenticated");
             return;
         }
 
-        String action = ValidationUtil.clean(request.getParameter("action"));
-        response.setContentType("application/json");
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-
-        try {
-            if ("createGroup".equals(action)) {
-                if (!"Admin".equals(session.getAttribute("role")) && !"SuperAdmin".equals(session.getAttribute("role"))) {
-                    response.setStatus(403);
-                    return;
-                }
-                String dept = ValidationUtil.cleanUpper(request.getParameter("department"));
-                int adminId = getUserId(session);
-
-                ChatGroup existing = chatDAO.getGroupForDepartment(dept);
-                if (existing != null) {
-                    Map<String, Object> res = new HashMap<>();
-                    res.put("success", false);
-                    res.put("message", "Group already exists for " + dept);
-                    response.getWriter().write(gson.toJson(res));
-                    return;
-                }
-
-                ChatGroup newGroup = chatDAO.createGroup(dept, adminId);
-                if (newGroup != null) {
-                    // Add admin
-                    chatDAO.addParticipant(newGroup.getId(), "Admin", adminId);
-                    
-                    // Find all teachers and coordinators related to this dept
-                    List<Teacher> deptTeachers = teacherDAO.getTeachersForDepartmentChat(dept);
-                    for (Teacher t : deptTeachers) {
-                        if (teacherDAO.isCoordinator(t.getId())) {
-                            chatDAO.addParticipant(newGroup.getId(), "Coordinator", t.getId());
-                        } else {
-                            chatDAO.addParticipant(newGroup.getId(), "Teacher", t.getId());
-                        }
-                    }
-
-                    Map<String, Object> res = new HashMap<>();
-                    res.put("success", true);
-                    res.put("group", newGroup);
-                    response.getWriter().write(gson.toJson(res));
-                } else {
-                    response.setStatus(500);
-                }
-            } else if ("storePublicKey".equals(action)) {
-                String pubKey = request.getParameter("publicKey");
-                String role = getChatRole(session);
-                int userId = getUserId(session);
-                boolean success = chatDAO.storePublicKey(role, userId, pubKey);
-                Map<String, Boolean> res = new HashMap<>();
-                res.put("success", success);
-                response.getWriter().write(gson.toJson(res));
-            } else if ("storeGroupKey".equals(action)) {
-                int groupId = Integer.parseInt(request.getParameter("groupId"));
-                String uType = request.getParameter("userType");
-                int uId = Integer.parseInt(request.getParameter("userId"));
-                String encKey = request.getParameter("encryptedKey");
-                boolean success = chatDAO.storeGroupKey(groupId, uType, uId, encKey);
-                Map<String, Boolean> res = new HashMap<>();
-                res.put("success", success);
-                response.getWriter().write(gson.toJson(res));
-            } else if ("deleteGroup".equals(action)) {
-                if (!"Admin".equals(session.getAttribute("role")) && !"SuperAdmin".equals(session.getAttribute("role"))) {
-                    response.setStatus(403);
-                    return;
-                }
-                int groupId = Integer.parseInt(request.getParameter("groupId"));
-                boolean success = chatDAO.deleteGroup(groupId);
-                Map<String, Boolean> res = new HashMap<>();
-                res.put("success", success);
-                response.getWriter().write(gson.toJson(res));
-            } else if ("deleteMessage".equals(action)) {
-                int messageId = Integer.parseInt(request.getParameter("messageId"));
-                String userType = getChatRole(session);
-                int userId = getUserId(session);
-                boolean isAdmin = "Admin".equals(session.getAttribute("role")) || "SuperAdmin".equals(session.getAttribute("role"));
-                boolean success = chatDAO.deleteMessage(messageId, userType, userId, isAdmin);
-                Map<String, Boolean> res = new HashMap<>();
-                res.put("success", success);
-                response.getWriter().write(gson.toJson(res));
-            } else if ("clearMyKeys".equals(action)) {
-                // User is re-registering their device keys (RSA key was regenerated)
-                // 1. Upload the new public key
-                String pubKey = request.getParameter("publicKey");
-                String role = getChatRole(session);
-                int userId = getUserId(session);
-                if (pubKey != null && !pubKey.isEmpty()) {
-                    chatDAO.storePublicKey(role, userId, pubKey);
-                }
-                // 2. Clear all stale group_keys entries so hasKey returns false
-                //    and admins/other members can auto-re-share
-                boolean cleared = chatDAO.clearAllUserGroupKeys(role, userId);
-                Map<String, Object> res = new HashMap<>();
-                res.put("success", cleared);
-                res.put("message", cleared ? "Keys cleared. Re-share will happen automatically when an admin opens the group." : "Failed to clear keys.");
-                response.getWriter().write(gson.toJson(res));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, Object> errorRes = new HashMap<>();
-            errorRes.put("success", false);
-            errorRes.put("message", "Server error: " + e.getMessage());
-            response.setStatus(500);
-            response.getWriter().write(gson.toJson(errorRes));
+        String role = (String) session.getAttribute("role");
+        if (!"Admin".equals(role) && !"SuperAdmin".equals(role) && !"Teacher".equals(role)) {
+            sendJsonError(response, "Not authorized");
+            return;
         }
+
+        String action = request.getParameter("action");
+
+        if ("createDepartment".equals(action)) {
+            handleCreateDepartment(request, response, session);
+        } else if ("addMember".equals(action)) {
+            handleAddMember(request, response, session);
+        } else if ("deleteGroup".equals(action)) {
+            handleDeleteGroup(request, response, session);
+        } else {
+            sendJsonError(response, "Unknown action");
+        }
+    }
+
+    private void handleGetMessages(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        int limit = 50;
+        int offset = 0;
+        try { limit = Integer.parseInt(request.getParameter("limit")); } catch (Exception e) {}
+        try { offset = Integer.parseInt(request.getParameter("offset")); } catch (Exception e) {}
+
+        if (!chatDAO.isParticipant(convId, role, userId)) {
+            sendJsonError(response, "Not authorized");
+            return;
+        }
+
+        List<ChatMessage> messages = chatDAO.getMessages(convId, limit, offset, role, userId);
+        sendJson(response, gson.toJson(messages));
+    }
+
+    private void handleGetConversations(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        
+        if ("Teacher".equals(role)) {
+            chatDAO.autoJoinAllDepartmentGroups(userId);
+        }
+        
+        List<ChatConversation> conversations = chatDAO.getConversationsForUser(role, userId);
+        sendJson(response, gson.toJson(conversations));
+    }
+
+    private void handleCreateDepartment(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String myRole = (String) session.getAttribute("role");
+        if (!myRole.equals("Admin") && !myRole.equals("SuperAdmin")) {
+            sendJsonError(response, "Only admins can create department groups");
+            return;
+        }
+
+        int myId = getUserId(session);
+        String department = request.getParameter("department");
+        String groupName = department + " Department";
+
+        if (department == null || department.trim().isEmpty()) {
+            sendJsonError(response, "Department is required");
+            return;
+        }
+
+        // Prevent duplicates — check if a group already exists for this department
+        int existingId = chatDAO.getDepartmentConversationId(department);
+        if (existingId > 0) {
+            JsonObject result = new JsonObject();
+            result.addProperty("success", false);
+            result.addProperty("error", "A chat group for '" + department + "' already exists.");
+            result.addProperty("conversationId", existingId);
+            sendJson(response, result.toString());
+            return;
+        }
+
+        int convId = chatDAO.createDepartmentGroup(groupName, department, myRole, myId);
+
+        JsonObject result = new JsonObject();
+        result.addProperty("success", convId > 0);
+        result.addProperty("conversationId", convId);
+        sendJson(response, result.toString());
+    }
+
+    private void handleAddMember(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String myRole = (String) session.getAttribute("role");
+        if (!myRole.equals("Admin") && !myRole.equals("SuperAdmin")) {
+            sendJsonError(response, "Only admins can add members manually");
+            return;
+        }
+
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        String memberRole = request.getParameter("memberRole");
+        int memberId = Integer.parseInt(request.getParameter("memberId"));
+
+        boolean success = chatDAO.addParticipant(convId, memberRole, memberId);
+        JsonObject result = new JsonObject();
+        result.addProperty("success", success);
+        sendJson(response, result.toString());
+    }
+
+    private void handleDeleteGroup(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String myRole = (String) session.getAttribute("role");
+        if (!myRole.equals("Admin") && !myRole.equals("SuperAdmin")) {
+            sendJsonError(response, "Only admins can delete groups");
+            return;
+        }
+
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        boolean success = chatDAO.deleteConversation(convId);
+        JsonObject result = new JsonObject();
+        result.addProperty("success", success);
+        sendJson(response, result.toString());
     }
 
     private int getUserId(HttpSession session) {
         Object user = session.getAttribute("user");
         if (user instanceof Admin) return ((Admin) user).getId();
         if (user instanceof Teacher) return ((Teacher) user).getId();
-        // Students shouldn't access this
         return -1;
     }
 
-    private String getChatRole(HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Boolean isCoord = (Boolean) session.getAttribute("isCoordinator");
-        if ("Teacher".equals(role) && isCoord != null && isCoord) {
-            return "Coordinator";
-        }
-        return role;
+    private String getUserName(HttpSession session) {
+        Object user = session.getAttribute("user");
+        if (user instanceof Admin) return ((Admin) user).getName();
+        if (user instanceof Teacher) return ((Teacher) user).getName();
+        return "Unknown";
+    }
+
+    private void sendJson(HttpServletResponse response, String json) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        out.print(json);
+        out.flush();
+    }
+
+    private void sendJsonError(HttpServletResponse response, String error) throws IOException {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("error", error);
+        response.setStatus(400);
+        sendJson(response, json.toString());
     }
 }

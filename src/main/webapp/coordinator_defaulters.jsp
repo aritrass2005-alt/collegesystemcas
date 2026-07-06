@@ -85,14 +85,27 @@
                                 <% if(startDate != null && !startDate.isEmpty()) { %> for the period <%= startDate %> to <%= endDate %><% } else { %> overall <% } %>.
                             </div>
                         </div>
-                        <div class="modal-footer border-0 bg-light">
-                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <div class="modal-footer border-0 bg-light flex-column align-items-stretch">
                             <form action="publishDefaulters" method="post" class="m-0">
                                 <input type="hidden" name="context" value="coordinator">
                                 <input type="hidden" name="threshold" value="<%= currentThreshold %>">
                                 <input type="hidden" name="startDate" value="<%= startDate %>">
                                 <input type="hidden" name="endDate" value="<%= endDate %>">
-                                <button type="submit" class="btn btn-warning fw-bold px-4">Publish & Notify</button>
+                                
+                                <div class="form-check form-switch mb-3 text-start px-5">
+                                    <input class="form-check-input" type="checkbox" name="notifyParents" id="notifyParentsCheck" value="true" checked>
+                                    <label class="form-check-label fw-bold text-dark small" for="notifyParentsCheck">
+                                        <i class="bi bi-shield-exclamation text-danger me-1"></i>Also notify parents via simulated Email &amp; SMS
+                                    </label>
+                                    <div class="form-text text-muted" style="font-size: 0.75rem;">
+                                        Sends an official low-attendance alert to parents with registered contact information.
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end gap-2 w-100 mt-2">
+                                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning fw-bold px-4">Publish &amp; Notify</button>
+                                </div>
                             </form>
                         </div>
                     </div>

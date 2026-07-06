@@ -148,37 +148,10 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            boolean updated = stmt.executeUpdate() > 0;
-            if (updated) markReviewDone(id);
-            return updated;
+            return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    private void markReviewDone(int attendanceId) {
-        String fetchSql = "SELECT student_id, subject_id, date_time FROM attendance WHERE id = ?";
-        String updateSql = "UPDATE attendance_review SET status = 'Done' WHERE student_id = ? AND DATE(review_date) = DATE(?) AND (subject_id = ? OR subject_id IS NULL OR subject_id = 0) AND status = 'Approved'";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement fetchStmt = conn.prepareStatement(fetchSql)) {
-            fetchStmt.setInt(1, attendanceId);
-            try (ResultSet rs = fetchStmt.executeQuery()) {
-                if (rs.next()) {
-                    int studentId = rs.getInt("student_id");
-                    int subjectId = rs.getInt("subject_id");
-                    java.sql.Timestamp dateTime = rs.getTimestamp("date_time");
-                    
-                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                        updateStmt.setInt(1, studentId);
-                        updateStmt.setTimestamp(2, dateTime);
-                        updateStmt.setInt(3, subjectId);
-                        updateStmt.executeUpdate();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -263,9 +236,7 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            boolean updated = stmt.executeUpdate() > 0;
-            if (updated) markReviewDone(id);
-            return updated;
+            return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -278,9 +249,7 @@ public class AttendanceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, id);
-            boolean updated = stmt.executeUpdate() > 0;
-            if (updated) markReviewDone(id);
-            return updated;
+            return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -288,7 +257,8 @@ public class AttendanceDAO {
     }
 
     public Attendance getAttendanceById(int id) {
-        String sql = "SELECT a.id, a.student_id, a.subject_id, a.status, a.date_time, a.is_locked, a.appeal_status, a.admin_edited, s.name as student_name, s.roll_no " +
+        String sql = "SELECT a.id, a.student_id, a.subject_id, a.status, a.date_time, a.is_locked, a.appeal_status, a.admin_edited, " +
+                     "a.student_appeal_status, a.student_appeal_reason, a.student_appeal_remarks, s.name as student_name, s.roll_no " +
                      "FROM attendance a " +
                      "JOIN student s ON a.student_id = s.id " +
                      "WHERE a.id = ?";
@@ -308,6 +278,9 @@ public class AttendanceDAO {
                     a.setAdminEdited(rs.getBoolean("admin_edited"));
                     a.setStudentName(rs.getString("student_name"));
                     a.setStudentRollNo(rs.getString("roll_no"));
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
                     return a;
                 }
             }
@@ -524,7 +497,7 @@ public class AttendanceDAO {
 
     public List<Attendance> getStudentAttendanceHistory(int studentId) {
         List<Attendance> list = new ArrayList<>();
-        String sql = "SELECT a.*, s.name as subject_name FROM attendance a " +
+        String sql = "SELECT a.*, s.name as subject_name, s.subject_code FROM attendance a " +
                      "JOIN subject s ON a.subject_id = s.id " +
                      "WHERE a.student_id = ? ORDER BY a.date_time DESC";
         try (Connection conn = DBConnection.getConnection();
@@ -537,9 +510,12 @@ public class AttendanceDAO {
                     a.setSubjectId(rs.getInt("subject_id"));
                     a.setStatus(rs.getString("status"));
                     a.setDateTime(rs.getTimestamp("date_time"));
-                    // Use a temporary field for subject name if Attendance doesn't have it, 
-                    // Wait, Attendance doesn't have subjectName, let's use getStudentName as a hack or just change the model.
-                    a.setStudentName(rs.getString("subject_name")); // Re-using this field for UI display purposes
+                    a.setSubjectName(rs.getString("subject_name"));
+                    a.setSubjectCode(rs.getString("subject_code"));
+                    a.setStudentName(rs.getString("subject_name")); // Maintain legacy hack support
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
                     list.add(a);
                 }
             }
@@ -608,20 +584,107 @@ public class AttendanceDAO {
         return 100.0; // Default if no classes
     }
 
-    public List<String> getAbsentDatesForStudent(int studentId) {
-        List<String> dates = new ArrayList<>();
-        String sql = "SELECT DISTINCT DATE(date_time) as absent_date FROM attendance WHERE student_id = ? AND status = 'Absent' ORDER BY absent_date DESC";
+    public boolean submitStudentAppeal(int attendanceId, String reason) {
+        String sql = "UPDATE attendance SET student_appeal_status = 'Pending', student_appeal_reason = ?, student_appeal_remarks = NULL WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, studentId);
+            stmt.setString(1, reason);
+            stmt.setInt(2, attendanceId);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean verifyStudentAppeal(int attendanceId, String status, String remarks) {
+        String sql = "UPDATE attendance SET student_appeal_status = ?, student_appeal_remarks = ? " +
+                     ("Approved".equalsIgnoreCase(status) ? ", status = 'Present' " : "") + 
+                     "WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setString(2, remarks);
+            stmt.setInt(3, attendanceId);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Attendance> getPendingStudentAppealsForTeacher(int teacherId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = "SELECT a.*, s.name as student_name, s.roll_no, sub.name as subject_name, sub.subject_code " +
+                     "FROM attendance a " +
+                     "JOIN student s ON a.student_id = s.id " +
+                     "JOIN subject sub ON a.subject_id = sub.id " +
+                     "WHERE sub.teacher_id = ? AND a.student_appeal_status = 'Pending' " +
+                     "ORDER BY a.date_time DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    dates.add(rs.getString("absent_date"));
+                    Attendance a = new Attendance();
+                    a.setId(rs.getInt("id"));
+                    a.setStudentId(rs.getInt("student_id"));
+                    a.setSubjectId(rs.getInt("subject_id"));
+                    a.setStatus(rs.getString("status"));
+                    a.setDateTime(rs.getTimestamp("date_time"));
+                    a.setLocked(rs.getBoolean("is_locked"));
+                    a.setStudentName(rs.getString("student_name"));
+                    a.setStudentRollNo(rs.getString("roll_no"));
+                    a.setSubjectName(rs.getString("subject_name"));
+                    a.setSubjectCode(rs.getString("subject_code"));
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
+                    list.add(a);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dates;
+        return list;
+    }
+
+    public List<Attendance> getStudentAppealHistoryForTeacher(int teacherId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = "SELECT a.*, s.name as student_name, s.roll_no, sub.name as subject_name, sub.subject_code " +
+                     "FROM attendance a " +
+                     "JOIN student s ON a.student_id = s.id " +
+                     "JOIN subject sub ON a.subject_id = sub.id " +
+                     "WHERE sub.teacher_id = ? AND a.student_appeal_status IN ('Approved', 'Rejected') " +
+                     "ORDER BY a.resolved_at DESC, a.date_time DESC"; // resolves resolvesresolve resolving Resolving resolved resolved_at Resolve resolves Resolved resolved
+        // Wait, resolved_at is not in the attendance table! Our migration added only:
+        // student_appeal_status, student_appeal_reason, student_appeal_remarks.
+        // Let's order by date_time DESC instead. Yes! That is extremely safe and doesn't require resolved_at.
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.replace("ORDER BY a.resolved_at DESC, a.date_time DESC", "ORDER BY a.date_time DESC"))) {
+            stmt.setInt(1, teacherId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Attendance a = new Attendance();
+                    a.setId(rs.getInt("id"));
+                    a.setStudentId(rs.getInt("student_id"));
+                    a.setSubjectId(rs.getInt("subject_id"));
+                    a.setStatus(rs.getString("status"));
+                    a.setDateTime(rs.getTimestamp("date_time"));
+                    a.setLocked(rs.getBoolean("is_locked"));
+                    a.setStudentName(rs.getString("student_name"));
+                    a.setStudentRollNo(rs.getString("roll_no"));
+                    a.setSubjectName(rs.getString("subject_name"));
+                    a.setSubjectCode(rs.getString("subject_code"));
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
+                    list.add(a);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

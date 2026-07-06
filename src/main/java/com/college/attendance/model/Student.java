@@ -14,6 +14,9 @@ public class Student {
     private boolean isBanned;
     private String dob;
     private String status;
+    private String parentName;
+    private String parentEmail;
+    private String parentPhone;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -54,4 +57,13 @@ public class Student {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getParentName() { return parentName; }
+    public void setParentName(String parentName) { this.parentName = parentName; }
+
+    public String getParentEmail() { return parentEmail; }
+    public void setParentEmail(String parentEmail) { this.parentEmail = parentEmail; }
+
+    public String getParentPhone() { return parentPhone; }
+    public void setParentPhone(String parentPhone) { this.parentPhone = parentPhone; }
 }

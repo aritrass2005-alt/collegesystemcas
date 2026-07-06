@@ -197,13 +197,6 @@
                                 </div>
                                 <i class="bi bi-chevron-right"></i>
                             </a>
-                            <a href="chat.jsp" class="btn text-start d-flex align-items-center justify-content-between p-3" style="background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;">
-                                <div>
-                                    <i class="bi bi-chat-dots fs-5 me-2"></i>
-                                    <span class="fw-bold">Department Chat</span>
-                                </div>
-                                <i class="bi bi-chevron-right"></i>
-                            </a>
                         </div>
                     </div>
                 </div>

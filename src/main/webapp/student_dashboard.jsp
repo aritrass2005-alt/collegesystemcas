@@ -204,6 +204,9 @@
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="pills-month-tab" data-bs-toggle="pill" data-bs-target="#pills-month" type="button" role="tab">Month-wise</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-absent-tab" data-bs-toggle="pill" data-bs-target="#pills-absent" type="button" role="tab">Absent Records & Appeals</button>
+                                </li>
                             </ul>
                         </div>
                         
@@ -279,57 +282,102 @@
                                     </table>
                                 </div>
                             </div>
+                            
+                            <!-- Absent Records & Appeals Tab -->
+                            <div class="tab-pane fade" id="pills-absent" role="tabpanel">
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                            <tr>
+                                                <th class="border-0 rounded-start">Subject</th>
+                                                <th class="border-0">Date & Time</th>
+                                                <th class="border-0">Appeal Status</th>
+                                                <th class="border-0">Remarks / Reason</th>
+                                                <th class="border-0 text-center rounded-end">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% 
+                                            boolean hasAbsences = false;
+                                            if (history != null) {
+                                                for (Attendance a : history) {
+                                                    if ("Absent".equals(a.getStatus())) {
+                                                        hasAbsences = true;
+                                                        String subCode = a.getSubjectCode() != null ? a.getSubjectCode() : "";
+                                                        String subName = a.getSubjectName() != null ? a.getSubjectName() : "Unknown Subject";
+                                                        String timeStr = timeOnly.format(a.getDateTime());
+                                                        String dateStr = sdf.format(a.getDateTime());
+                                                        String appealStatus = a.getStudentAppealStatus();
+                                                        String appealReason = a.getStudentAppealReason();
+                                                        String appealRemarks = a.getStudentAppealRemarks();
+                                            %>
+                                                <tr>
+                                                    <td class="fw-semibold"><%= subCode %> - <%= subName %></td>
+                                                    <td>
+                                                        <div class="fw-medium"><%= dateStr %></div>
+                                                        <small class="text-muted"><%= timeStr %></small>
+                                                    </td>
+                                                    <td>
+                                                        <% if (appealStatus == null) { %>
+                                                            <span class="badge bg-secondary rounded-pill px-3 py-2">Not Appealed</span>
+                                                        <% } else if ("Pending".equals(appealStatus)) { %>
+                                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                                        <% } else if ("Approved".equals(appealStatus)) { %>
+                                                            <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-check-circle-fill me-1"></i>Approved</span>
+                                                        <% } else if ("Rejected".equals(appealStatus)) { %>
+                                                            <span class="badge bg-danger rounded-pill px-3 py-2"><i class="bi bi-x-circle-fill me-1"></i>Rejected</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (appealStatus != null) { %>
+                                                            <div class="small text-dark"><strong>Reason:</strong> <%= appealReason %></div>
+                                                            <% if (appealRemarks != null && !appealRemarks.isEmpty()) { %>
+                                                                <div class="small text-muted mt-1 bg-light p-2 rounded" style="border-left: 3px solid var(--secondary);"><strong>Teacher:</strong> <%= appealRemarks %></div>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            <span class="text-muted small">No appeal filed yet.</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <% if (appealStatus == null) { %>
+                                                            <button class="btn btn-sm btn-primary-custom px-3 rounded-pill fw-bold" 
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#appealModal" 
+                                                                    data-attendance-id="<%= a.getId() %>" 
+                                                                    data-subject-info="<%= subCode %> - <%= subName %>" 
+                                                                    data-date-info="<%= dateStr %> <%= timeStr %>">
+                                                                <i class="bi bi-exclamation-circle me-1"></i> File Appeal
+                                                            </button>
+                                                        <% } else { %>
+                                                            <button class="btn btn-sm btn-outline-secondary px-3 rounded-pill" disabled>Filed</button>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% 
+                                                    }
+                                                }
+                                            }
+                                            if (!hasAbsences) {
+                                            %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted py-5">
+                                                        <i class="bi bi-emoji-smile fs-1 text-success d-block mb-3"></i>
+                                                        <h6 class="fw-bold">No Absent Records!</h6>
+                                                        <p class="mb-0 small">Keep up the flawless attendance!</p>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column -->
-                <div class="col-xl-4 d-flex flex-column gap-4">
-                    
-                    <!-- Today's Attendance -->
-                    <div class="glass-card p-4 animate-up delay-2">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold m-0"><i class="bi bi-calendar-day-fill text-primary me-2"></i> Today's Classes</h5>
-                            <span class="badge bg-light text-dark border"><%= sdf.format(new java.util.Date()) %></span>
-                        </div>
-                        <div class="list-group list-group-flush" style="max-height: 250px; overflow-y: auto;">
-                            <% 
-                            boolean hasToday = false;
-                            String todayDateStr = sdf.format(new java.util.Date());
-                            if (history != null) {
-                                for (Attendance a : history) {
-                                    if (sdf.format(a.getDateTime()).equals(todayDateStr)) {
-                                        hasToday = true;
-                                        String color = "danger";
-                                        String icon = "x-circle";
-                                        if ("Present".equals(a.getStatus())) { color = "success"; icon = "check-circle"; }
-                                        else if ("Leave".equals(a.getStatus())) { color = "secondary"; icon = "dash-circle"; }
-                            %>
-                                <div class="list-group-item px-0 py-2 border-bottom d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 fw-bold"><%= a.getStudentName() %></h6>
-                                        <small class="text-muted"><i class="bi bi-clock me-1"></i> <%= timeOnly.format(a.getDateTime()) %></small>
-                                    </div>
-                                    <span class="badge bg-<%= color %> bg-opacity-10 text-<%= color %> border border-<%= color %> border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.8rem;">
-                                        <i class="bi bi-<%= icon %> me-1"></i> <%= a.getStatus() %>
-                                    </span>
-                                </div>
-                            <% 
-                                    }
-                                }
-                            } 
-                            if (!hasToday) {
-                            %>
-                                <div class="text-center text-muted py-4">
-                                    <i class="bi bi-cup-hot fs-3 d-block mb-2 opacity-50"></i>
-                                    <small>No classes marked for today yet.</small>
-                                </div>
-                            <% } %>
-                        </div>
-                    </div>
-
-                    <!-- Section Defaulters -->
-                    <div class="glass-card p-4 animate-up delay-3">
+                <!-- Right Column: Section Defaulters -->
+                <div class="col-xl-4">
+                    <div class="glass-card p-4 h-100 animate-up delay-2">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="fw-bold m-0"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Section Defaulters</h5>
                         </div>
@@ -381,7 +429,7 @@
 </div>
 
 <!-- Calendar Modal -->
-<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true" data-bs-focus="false">
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content" style="border-radius: 24px; overflow: hidden; border: none;">
             <div class="modal-header p-4" style="background: linear-gradient(135deg, #1e1e2d 0%, #2d2d44 100%);">
@@ -413,51 +461,58 @@
     </div>
 </div>
 
-<!-- Calendar Event Details & Appeal Modal -->
-<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true" data-bs-focus="false" style="z-index: 1060;">
+<!-- Appeal Modal -->
+<div class="modal fade" id="appealModal" tabindex="-1" aria-labelledby="appealModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow-lg">
-            <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e3a5f, #0f2240);">
-                <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i> Attendance Details</h5>
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: var(--shadow-card);">
+            <div class="modal-header bg-primary text-white border-0 py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <h5 class="modal-title fw-bold" id="appealModalLabel"><i class="bi bi-exclamation-circle-fill me-2"></i> File Recheck Appeal</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="mb-3">
-                    <h6 class="text-muted mb-1">Subject</h6>
-                    <div id="appealSubjectName" class="fw-bold fs-5"></div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-6">
-                        <h6 class="text-muted mb-1">Date & Time</h6>
-                        <div id="appealDateDisplay" class="fw-medium"></div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="text-muted mb-1">Status</h6>
-                        <div id="appealStatus" class="fw-bold"></div>
-                    </div>
-                </div>
-                
-                <form id="calendarAppealForm" action="studentReviews" method="post">
-                    <input type="hidden" name="action" value="create">
-                    <input type="hidden" name="subjectId" id="appealSubjectId">
-                    <input type="hidden" name="reviewDate" id="appealReviewDate">
+            <form action="studentDashboard" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="action" value="submitAppeal">
+                    <input type="hidden" name="attendanceId" id="modalAttendanceId">
                     
-                    <div id="appealReasonGroup" style="display:none;">
-                        <hr>
-                        <h6 class="text-primary mb-2"><i class="bi bi-pencil-square me-1"></i> Appeal Absence</h6>
-                        <p class="small text-muted mb-2">You can request an attendance review if you believe this was marked incorrectly or if you have a valid reason.</p>
-                        <textarea name="reason" class="form-control mb-3" rows="3" placeholder="Provide your reason here..." required></textarea>
+                    <div class="mb-3 bg-light p-3 rounded shadow-sm" style="border-left: 4px solid var(--primary);">
+                        <div class="small text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">SUBJECT</div>
+                        <div class="fw-bold text-dark mb-3" id="modalSubjectInfo">CS201 - Data Structures</div>
+                        
+                        <div class="small text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">DATE & TIME</div>
+                        <div class="fw-bold text-dark" id="modalDateInfo">2026-05-31 10:30 AM</div>
                     </div>
                     
-                    <div class="d-flex justify-content-end gap-2 mt-2">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" id="appealSubmitBtn" class="btn btn-primary" style="display:none;">Submit Appeal</button>
+                    <div class="mb-3">
+                        <label for="appealReason" class="form-label fw-bold text-dark">Reason for Appeal</label>
+                        <textarea class="form-control bg-light" name="reason" id="appealReason" rows="4" required placeholder="Please explain why your attendance should be rechecked (e.g., I was in class, technical issue, etc.)..."></textarea>
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer border-0 p-3">
+                    <button type="button" class="btn btn-light px-4 rounded-pill fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold" style="background: linear-gradient(135deg, #1e3a5f, #0f2240); border: none;">Submit Appeal</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const appealModal = document.getElementById('appealModal');
+        if (appealModal) {
+            appealModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const attendanceId = button.getAttribute('data-attendance-id');
+                const subjectInfo = button.getAttribute('data-subject-info');
+                const dateInfo = button.getAttribute('data-date-info');
+                
+                appealModal.querySelector('#modalAttendanceId').value = attendanceId;
+                appealModal.querySelector('#modalSubjectInfo').textContent = subjectInfo;
+                appealModal.querySelector('#modalDateInfo').textContent = dateInfo;
+            });
+        }
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
@@ -482,10 +537,8 @@
             textColor: '#fff',
             extendedProps: {
                 subject: '<%= subjectName %>',
-                subjectId: '<%= a.getSubjectId() %>',
                 status: '<%= a.getStatus() %>',
-                time: '<%= timeStr %>',
-                dateOnly: '<%= sdf.format(a.getDateTime()) %>'
+                time: '<%= timeStr %>'
             }
         });
         <% } } %>
@@ -521,35 +574,8 @@
             },
             eventClick: function(info) {
                 var props = info.event.extendedProps;
-                var dateStr = info.event.start.toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                
-                document.getElementById('appealSubjectId').value = props.subjectId;
-                document.getElementById('appealReviewDate').value = props.dateOnly;
-                document.getElementById('appealSubjectName').textContent = props.subject;
-                document.getElementById('appealDateDisplay').textContent = dateStr + ' at ' + props.time;
-                
-                var statusEl = document.getElementById('appealStatus');
-                statusEl.textContent = props.status;
-                if (props.status === 'Present') statusEl.className = 'fw-bold text-success';
-                else if (props.status === 'Absent') statusEl.className = 'fw-bold text-danger';
-                else statusEl.className = 'fw-bold text-secondary';
-                
-                var appealBtn = document.getElementById('appealSubmitBtn');
-                var reasonGroup = document.getElementById('appealReasonGroup');
-                var reasonInput = document.querySelector('#appealReasonGroup textarea');
-                
-                if (props.status === 'Absent') {
-                    appealBtn.style.display = 'block';
-                    reasonGroup.style.display = 'block';
-                    if (reasonInput) reasonInput.setAttribute('required', 'required');
-                } else {
-                    appealBtn.style.display = 'none';
-                    reasonGroup.style.display = 'none';
-                    if (reasonInput) reasonInput.removeAttribute('required');
-                }
-                
-                var eventModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
-                eventModal.show();
+                var dateStr = info.event.start.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                alert(props.subject + '\n' + props.status + '\nTime: ' + props.time + '\nDate: ' + dateStr);
             }
         });
         window.calendar.render();

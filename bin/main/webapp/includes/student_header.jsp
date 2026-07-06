@@ -11,7 +11,7 @@
     int unreadNotifs = 0;
     if (currentStudent != null) {
         NotificationDAO nDao = new NotificationDAO();
-        unreadNotifs = nDao.getUnreadCount(currentStudent.getId(), "Student");
+        unreadNotifs = nDao.getUnreadCount(currentStudent.getId());
     }
 %>
 <header class="top-header">
@@ -38,7 +38,7 @@
         <!-- Profile -->
         <div style="position:relative;">
             <div class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">
-                <img src="<%= photoUrl %>" alt="Profile Photo" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= java.net.URLEncoder.encode(studentName, "UTF-8") %>&background=1e3a5f&color=fff&bold=true';">
+                <img src="<%= photoUrl %>" alt="Profile Photo">
                 <div class="d-none d-md-block">
                     <div class="profile-name"><%= studentName %></div>
                     <div class="profile-role">Student</div>

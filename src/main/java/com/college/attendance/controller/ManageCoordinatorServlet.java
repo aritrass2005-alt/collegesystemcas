@@ -7,12 +7,12 @@ import com.college.attendance.model.Teacher;
 import com.college.attendance.dao.ConfigDAO;
 import com.college.attendance.model.ConfigData;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import java.util.List;
@@ -53,9 +53,9 @@ public class ManageCoordinatorServlet extends HttpServlet {
         String action = request.getParameter("action");
         if ("assign".equals(action)) {
             int teacherId = Integer.parseInt(request.getParameter("teacher_id"));
-            String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
+            String department = request.getParameter("department");
             int year = Integer.parseInt(request.getParameter("year"));
-            String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
+            String section = request.getParameter("section");
             
             boolean success = coordinatorDAO.addCoordinatorRole(teacherId, department, year, section);
             if (success) {
@@ -74,9 +74,9 @@ public class ManageCoordinatorServlet extends HttpServlet {
         } else if ("update".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             int teacherId = Integer.parseInt(request.getParameter("teacher_id"));
-            String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
+            String department = request.getParameter("department");
             int year = Integer.parseInt(request.getParameter("year"));
-            String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
+            String section = request.getParameter("section");
             
             boolean success = coordinatorDAO.updateCoordinatorRole(id, teacherId, department, year, section);
             if (success) {

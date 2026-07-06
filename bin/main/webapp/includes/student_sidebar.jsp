@@ -45,13 +45,6 @@
                     <span>Class Routine</span>
                 </a>
             </li>
-            <li>
-                <a href="studentReviews"
-                   class="<%= activePage.contains("studentReviews") || activePage.contains("student_reviews") ? "active" : "" %>">
-                    <i class="bi bi-chat-left-text-fill"></i>
-                    <span>Review Requests</span>
-                </a>
-            </li>
         </ul>
     </div>
 

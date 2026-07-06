@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.college.attendance.model.Teacher" %>
+<%@ page import="com.college.attendance.dao.AttendanceDAO" %>
 <%
     String currentPath = request.getRequestURI();
     String activePage = currentPath.substring(currentPath.lastIndexOf("/") + 1);
@@ -44,6 +46,12 @@
                 </a>
             </li>
             <li>
+                <a href="parentAlertLogs" class="<%= activePage.contains("parentAlertLogs") || activePage.contains("parent_alert_logs.jsp") ? "active" : "" %>">
+                    <i class="bi bi-send-exclamation"></i>
+                    <span>Parent Alerts</span>
+                </a>
+            </li>
+            <li>
                 <a href="teacherStudentView" class="<%= activePage.contains("teacherStudentView") || activePage.contains("teacher_student_view.jsp") ? "active" : "" %>">
                     <i class="bi bi-mortarboard"></i>
                     <span>Student Directory</span>
@@ -55,23 +63,40 @@
                     <span>Attendance History</span>
                 </a>
             </li>
+            <% 
+                int pendingAppealsCount = 0;
+                Teacher sidebarTeacher = (Teacher) session.getAttribute("user");
+                if (sidebarTeacher != null) {
+                    AttendanceDAO sidebarAttendanceDAO = new AttendanceDAO();
+                    pendingAppealsCount = sidebarAttendanceDAO.getPendingStudentAppealsForTeacher(sidebarTeacher.getId()).size();
+                }
+            %>
+            <li>
+                <a href="teacherAppeals" class="<%= activePage.contains("teacherAppeals") || activePage.contains("teacher_appeals.jsp") ? "active" : "" %>" style="position: relative;">
+                    <i class="bi bi-shield-exclamation"></i>
+                    <span>Student Appeals</span>
+                    <% if (pendingAppealsCount > 0) { %>
+                        <span class="badge bg-danger rounded-pill position-absolute animate-pulse" style="top: 50%; right: 15px; transform: translateY(-50%); font-size: 0.7rem; padding: 3px 8px; font-weight: 700; box-shadow: 0 0 10px rgba(220,53,69,0.4);">
+                            <%= pendingAppealsCount %>
+                        </span>
+                    <% } %>
+                </a>
+            </li>
             <li>
                 <a href="teacherTimetable" class="<%= activePage.contains("teacherTimetable") || activePage.contains("teacher_timetable.jsp") ? "active" : "" %>">
                     <i class="bi bi-clock-history"></i>
                     <span>Class Routine</span>
                 </a>
             </li>
-            <li>
-                <a href="chat.jsp" class="<%= activePage.equals("chat.jsp") ? "active" : "" %>">
-                    <i class="bi bi-chat-dots"></i> <span>Department Chat</span>
-                </a>
-            </li>
-
         </ul>
     </div>
 
     <!-- Footer -->
     <div class="sidebar-footer">
+        <a href="chat" class="<%= activePage.contains("chat") || activePage.contains("staff_chat") ? "active" : "" %>" style="background: rgba(79,156,249,0.08); border-color: rgba(79,156,249,0.2);">
+            <i class="bi bi-chat-dots-fill" style="color: #4f9cf9;"></i>
+            <span>Staff Chat</span>
+        </a>
         <a href="logout" class="danger">
             <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>

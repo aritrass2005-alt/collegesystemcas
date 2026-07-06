@@ -16,11 +16,6 @@
     Date targetDate = (Date) request.getAttribute("targetDate");
     String dept = (String) request.getAttribute("department");
     SimpleDateFormat timeFmt = new SimpleDateFormat("hh:mm a");
-
-    String activeTab = request.getParameter("tab");
-    if (activeTab == null || activeTab.isEmpty()) {
-        activeTab = "records";
-    }
 %>
 <!DOCTYPE html>
 <html>
@@ -65,13 +60,13 @@
             <!-- Nav Tabs -->
             <ul class="nav nav-tabs mb-3" id="attendanceTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link <%= "records".equals(activeTab) ? "active fw-bold" : "fw-bold text-dark" %>" id="records-tab" data-bs-toggle="tab" data-bs-target="#records" type="button" role="tab">Attendance Records</button>
+                    <button class="nav-link active fw-bold" id="records-tab" data-bs-toggle="tab" data-bs-target="#records" type="button" role="tab">Attendance Records</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link <%= "absent".equals(activeTab) ? "active fw-bold text-danger" : "fw-bold text-danger" %>" id="absent-tab" data-bs-toggle="tab" data-bs-target="#absent" type="button" role="tab">Absent List</button>
+                    <button class="nav-link fw-bold text-danger" id="absent-tab" data-bs-toggle="tab" data-bs-target="#absent" type="button" role="tab">Absent List</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link <%= "pending".equals(activeTab) ? "active fw-bold text-warning" : "fw-bold text-warning" %>" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                    <button class="nav-link fw-bold text-warning" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
                         Pending Leaves
                         <% if (pendingLeaves != null && !pendingLeaves.isEmpty()) { %>
                             <span class="badge bg-warning text-dark ms-1"><%= pendingLeaves.size() %></span>
@@ -82,7 +77,7 @@
 
             <div class="tab-content" id="attendanceTabsContent">
                 <!-- Records Tab -->
-                <div class="tab-pane fade <%= "records".equals(activeTab) ? "show active" : "" %>" id="records" role="tabpanel">
+                <div class="tab-pane fade show active" id="records" role="tabpanel">
                     <div class="card custom-table p-3 border-0 shadow-sm">
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.9rem;">
@@ -190,7 +185,7 @@
                 </div>
 
                 <!-- Absent List Tab -->
-                <div class="tab-pane fade <%= "absent".equals(activeTab) ? "show active" : "" %>" id="absent" role="tabpanel">
+                <div class="tab-pane fade" id="absent" role="tabpanel">
                     <div class="card custom-table p-3 border-0 shadow-sm">
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.9rem;">
@@ -275,15 +270,7 @@
                 </div>
 
                 <!-- Pending Leaves Tab -->
-                <div class="tab-pane fade <%= "pending".equals(activeTab) ? "show active" : "" %>" id="pending" role="tabpanel">
-                    <% if (pendingLeaves != null && !pendingLeaves.isEmpty()) { %>
-                    <div class="d-flex justify-content-end mb-3">
-                        <form action="adminFacultyAttendance" method="post" onsubmit="return confirm('Are you sure you want to verify all pending leaves?');">
-                            <input type="hidden" name="action" value="verifyAll">
-                            <button type="submit" class="btn btn-success fw-bold"><i class="bi bi-check-all me-1"></i> Verify All Pending</button>
-                        </form>
-                    </div>
-                    <% } %>
+                <div class="tab-pane fade" id="pending" role="tabpanel">
                     <div class="card custom-table p-3 border-0 shadow-sm">
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.9rem;">
@@ -320,7 +307,6 @@
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <form action="adminFacultyAttendance" method="post">
-                                                                <input type="hidden" name="action" value="verify">
                                                                 <input type="hidden" name="id" value="<%= pl.getId() %>">
                                                                 <input type="hidden" name="currentDate" value="<%= targetDate %>">
                                                                 <input type="hidden" name="currentDept" value="<%= dept != null ? dept : "" %>">

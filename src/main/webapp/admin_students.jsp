@@ -230,7 +230,25 @@
                                 <input type="text" name="dob" id="studentDob" class="form-control" placeholder="e.g. 32012006">
                                 <div class="form-text">DOB will be used as the default password. Format should match what students will type.</div>
                             </div>
-                            <div class="col-12">
+                            
+                            <!-- Parent Details -->
+                            <div class="col-12 mt-3 mb-1">
+                                <h6 class="fw-bold border-bottom pb-2 text-primary" style="font-size: 0.9rem;"><i class="bi bi-people me-2"></i>Parent / Guardian Details</h6>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Parent Full Name</label>
+                                <input type="text" name="parent_name" id="studentParentName" class="form-control" placeholder="e.g. Robert Smith">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Parent Email Address</label>
+                                <input type="email" name="parent_email" id="studentParentEmail" class="form-control" placeholder="e.g. parent@email.com">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Parent Phone Number</label>
+                                <input type="text" name="parent_phone" id="studentParentPhone" class="form-control" placeholder="e.g. 9876543210">
+                            </div>
+
+                            <div class="col-12 mt-3">
                                 <label class="form-label small fw-bold">Address</label>
                                 <textarea name="address" id="studentAddress" class="form-control" rows="2"></textarea>
                             </div>
@@ -296,6 +314,9 @@
             document.getElementById('studentForm').reset();
             document.getElementById('dobField').style.display = 'block';
             document.getElementById('studentDob').required = true;
+            document.getElementById('studentParentName').value = '';
+            document.getElementById('studentParentEmail').value = '';
+            document.getElementById('studentParentPhone').value = '';
         }
 
         function editStudent(student) {
@@ -310,6 +331,10 @@
             document.getElementById('studentYear').value = student.year;
             document.getElementById('studentSec').value = student.section;
             document.getElementById('studentAddress').value = student.address || '';
+            
+            document.getElementById('studentParentName').value = student.parentName || '';
+            document.getElementById('studentParentEmail').value = student.parentEmail || '';
+            document.getElementById('studentParentPhone').value = student.parentPhone || '';
             
             document.getElementById('dobField').style.display = 'block';
             document.getElementById('studentDob').required = true;

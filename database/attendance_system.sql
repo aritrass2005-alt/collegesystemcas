@@ -44,12 +44,16 @@ CREATE TABLE IF NOT EXISTS student (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(20),
+    dob VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL, -- Auto-generated DOB format (hashed)
     address TEXT,
     department VARCHAR(100),
     year INT,
     section VARCHAR(10),
     status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    parent_name VARCHAR(100) DEFAULT NULL,
+    parent_email VARCHAR(100) DEFAULT NULL,
+    parent_phone VARCHAR(20) DEFAULT NULL,
     profile_photo VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -61,8 +65,11 @@ CREATE TABLE IF NOT EXISTS subject (
     name VARCHAR(100) NOT NULL,
     department VARCHAR(100),
     year INT,
-    teacher_id INT,
-    FOREIGN KEY (teacher_id) REFERENCES teacher(id) ON DELETE SET NULL
+    section VARCHAR(10) DEFAULT NULL,
+    teacher_id INT DEFAULT NULL,
+    alt_teacher_id INT DEFAULT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id) ON DELETE SET NULL,
+    FOREIGN KEY (alt_teacher_id) REFERENCES teacher(id) ON DELETE SET NULL
 );
 
 -- Attendance Table
@@ -73,6 +80,11 @@ CREATE TABLE IF NOT EXISTS attendance (
     status ENUM('Present', 'Absent', 'Leave') NOT NULL,
     date_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_locked BOOLEAN DEFAULT FALSE, -- Locked after submission
+    appeal_status VARCHAR(20) DEFAULT NULL, -- Teacher-to-Admin appeal status
+    admin_edited BOOLEAN DEFAULT FALSE,
+    student_appeal_status VARCHAR(20) DEFAULT NULL, -- Student-to-Teacher appeal status
+    student_appeal_reason TEXT DEFAULT NULL,
+    student_appeal_remarks TEXT DEFAULT NULL,
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE,
     UNIQUE KEY uc_student_subject_date (student_id, subject_id, (DATE(date_time)))
@@ -103,51 +115,46 @@ CREATE TABLE IF NOT EXISTS defaulter_list (
     FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE
 );
 
--- Chat System Tables
-CREATE TABLE IF NOT EXISTS chat_group (
+-- Parent Alert Log Table
+CREATE TABLE IF NOT EXISTS parent_alert_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    department VARCHAR(100) NOT NULL,
-    admin_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
+    student_id INT NOT NULL,
+    parent_name VARCHAR(100) NOT NULL,
+    parent_email VARCHAR(100),
+    parent_phone VARCHAR(20),
+    alert_type VARCHAR(10) NOT NULL, -- 'EMAIL', 'SMS', 'BOTH'
+    subject VARCHAR(255),
+    message TEXT NOT NULL,
+    status VARCHAR(15) DEFAULT 'SENT',
+    sender_name VARCHAR(100) NOT NULL,
+    sender_role VARCHAR(50) NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS chat_participant (
-    group_id INT NOT NULL,
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    user_id INT NOT NULL,
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (group_id, user_type, user_id),
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS user_public_keys (
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    user_id INT NOT NULL,
-    public_key TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_type, user_id)
-);
-
-CREATE TABLE IF NOT EXISTS chat_message (
+-- Notification Table
+CREATE TABLE IF NOT EXISTS notification (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    group_id INT NOT NULL,
-    sender_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    sender_id INT NOT NULL,
-    encrypted_content TEXT NOT NULL,
-    iv TEXT NOT NULL, -- Initialization vector for AES-GCM
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
+    sender_name VARCHAR(100) NOT NULL,
+    sender_role VARCHAR(50) NOT NULL,
+    receiver_id INT NOT NULL,
+    receiver_role VARCHAR(20) DEFAULT 'Student',
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    attachment_path VARCHAR(255),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS group_keys (
-    group_id INT NOT NULL,
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    user_id INT NOT NULL,
-    encrypted_symmetric_key TEXT NOT NULL,
-    PRIMARY KEY (group_id, user_type, user_id),
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
+-- System Settings Table (For maintenance mode and generic configs)
+CREATE TABLE IF NOT EXISTS system_settings (
+    setting_key VARCHAR(50) PRIMARY KEY,
+    setting_value VARCHAR(255) NOT NULL
 );
+
+INSERT INTO system_settings (setting_key, setting_value) 
+VALUES ('maintenance_mode', 'false') 
+ON DUPLICATE KEY UPDATE setting_key=setting_key;
 
 -- INSERT SAMPLE DATA --
 -- Super Admin (Password: admin123, hashed using BCrypt)
@@ -160,8 +167,8 @@ INSERT INTO teacher (name, email, phone, password, department, year, section, is
 VALUES ('John Doe', 'john.doe@college.edu', '1234567890', '$2a$12$dE7f5f.X8N2P8JvA9J.2Ue3O.7L7y.X8Y9L8V9W9V.X8Y9L8V9W9V', 'Computer Science', 2, 'A', TRUE);
 
 -- Sample Student (DOB: 15082002 -> Password: 15082002 hashed)
-INSERT INTO student (roll_no, name, email, phone, password, department, year, section)
-VALUES ('CS202001', 'Alice Smith', 'alice@student.edu', '0987654321', '$2a$12$z2P.X8N2P8JvA9J.2Ue3O.7L7y.X8Y9L8V9W9V.X8Y9L8V9W9V.X8Y', 'Computer Science', 2, 'A');
+INSERT INTO student (roll_no, name, email, phone, dob, password, department, year, section)
+VALUES ('CS202001', 'Alice Smith', 'alice@student.edu', '0987654321', '15082002', '$2a$12$zy8E96KGKfnrknXR/VU2UeP/VR24UixeaoAPAdDMMht.OIiEZs/5S', 'Computer Science', 2, 'A');
 
 -- Sample Subject
 INSERT INTO subject (subject_code, name, department, year, teacher_id)

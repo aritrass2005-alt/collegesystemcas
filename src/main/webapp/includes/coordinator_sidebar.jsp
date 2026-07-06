@@ -58,15 +58,14 @@
             </a>
         </div>
         <div class="sidebar-nav-item">
-            <a href="coordinatorAttendanceView" class="<%= activePage.contains("coordinatorAttendanceView") || activePage.contains("coordinator_attendance_view.jsp") ? "active" : "" %>">
-                <i class="bi bi-calendar-check-fill"></i>
-                <span>Attendance History</span>
+            <a href="parentAlertLogs" class="<%= activePage.contains("parentAlertLogs") || activePage.contains("parent_alert_logs.jsp") ? "active" : "" %>">
+                <i class="bi bi-send-exclamation-fill"></i> <span>Parent Alerts</span>
             </a>
         </div>
         <div class="sidebar-nav-item">
-            <a href="coordinatorReviews" class="<%= activePage.contains("coordinatorReviews") || activePage.contains("coordinator_reviews.jsp") ? "active" : "" %>">
-                <i class="bi bi-chat-left-text-fill"></i>
-                <span>Review Requests</span>
+            <a href="coordinatorAttendanceView" class="<%= activePage.contains("coordinatorAttendanceView") || activePage.contains("coordinator_attendance_view.jsp") ? "active" : "" %>">
+                <i class="bi bi-calendar-check-fill"></i>
+                <span>Attendance History</span>
             </a>
         </div>
         <div class="sidebar-nav-item">
@@ -82,6 +81,10 @@
         <a href="teacher_dashboard.jsp">
             <i class="bi bi-person-video3"></i>
             <span>Switch to Teacher View</span>
+        </a>
+        <a href="chat" class="<%= activePage.contains("chat") || activePage.contains("staff_chat") ? "active" : "" %>" style="background: rgba(79,156,249,0.08); border-color: rgba(79,156,249,0.2);">
+            <i class="bi bi-chat-dots-fill" style="color: #4f9cf9;"></i>
+            <span>Staff Chat</span>
         </a>
         <a href="logout" class="danger">
             <i class="bi bi-box-arrow-right"></i>

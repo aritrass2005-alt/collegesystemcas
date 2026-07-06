@@ -1,12 +1,14 @@
 package com.college.attendance.dao;
 
 import com.college.attendance.model.Teacher;
+import com.college.attendance.dao.ChatDAO;
 import com.college.attendance.util.DBConnection;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class TeacherDAO {
     public boolean addTeacher(Teacher teacher) {
         String sql = "INSERT INTO teacher (name, email, phone, password, department, is_approved) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
              
             stmt.setString(1, teacher.getName());
             stmt.setString(2, teacher.getEmail());
@@ -29,7 +31,28 @@ public class TeacherDAO {
             // Teachers added by admin are pre-approved
             stmt.setBoolean(6, true);
             
-            return stmt.executeUpdate() > 0;
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int teacherId = rs.getInt(1);
+                        teacher.setId(teacherId);
+                        
+                        ChatDAO chatDAO = new ChatDAO();
+                        List<String> depts = chatDAO.getAllottedDepartments(teacherId);
+                        for (String dept : depts) {
+                            int convId = chatDAO.getDepartmentConversationId(dept);
+                            if (convId > 0) {
+                                if (!chatDAO.isParticipant(convId, "Teacher", teacherId)) {
+                                    chatDAO.addParticipant(convId, "Teacher", teacherId);
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -137,12 +160,25 @@ public class TeacherDAO {
     }
 
     public boolean approveTeacher(int teacherId) {
-        String sql = "UPDATE teacher SET is_approved = ? WHERE id = ?";
+        String sql = "UPDATE teacher SET is_approved = TRUE WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, true);
-            stmt.setInt(2, teacherId);
-            return stmt.executeUpdate() > 0;
+            stmt.setInt(1, teacherId);
+            int affected = stmt.executeUpdate();
+            if (affected > 0) {
+                ChatDAO chatDAO = new ChatDAO();
+                List<String> depts = chatDAO.getAllottedDepartments(teacherId);
+                for (String dept : depts) {
+                    int convId = chatDAO.getDepartmentConversationId(dept);
+                    if (convId > 0) {
+                        if (!chatDAO.isParticipant(convId, "Teacher", teacherId)) {
+                            chatDAO.addParticipant(convId, "Teacher", teacherId);
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -176,37 +212,5 @@ public class TeacherDAO {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public List<Teacher> getTeachersForDepartmentChat(String dept) {
-        List<Teacher> teachers = new ArrayList<>();
-        String sql = "SELECT DISTINCT t.* FROM teacher t " +
-                     "LEFT JOIN subject s ON t.id = s.teacher_id " +
-                     "LEFT JOIN coordinator c ON t.id = c.teacher_id " +
-                     "WHERE t.department = ? OR s.department = ? OR c.department = ?";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, dept);
-            stmt.setString(2, dept);
-            stmt.setString(3, dept);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Teacher t = new Teacher();
-                    t.setId(rs.getInt("id"));
-                    t.setName(rs.getString("name"));
-                    t.setEmail(rs.getString("email"));
-                    t.setPhone(rs.getString("phone"));
-                    t.setDepartment(rs.getString("department"));
-                    t.setApproved(rs.getBoolean("is_approved"));
-                    t.setBanned(rs.getBoolean("is_banned"));
-                    teachers.add(t);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return teachers;
     }
 }

@@ -9,6 +9,9 @@
     List<ConfigData> departments = (List<ConfigData>) request.getAttribute("departments");
     List<ConfigData> sections = (List<ConfigData>) request.getAttribute("sections");
     List<ConfigData> years = (List<ConfigData>) request.getAttribute("years");
+    Boolean maintenanceMode = (Boolean) request.getAttribute("maintenanceMode");
+    if (maintenanceMode == null) maintenanceMode = false;
+    String role = (String) session.getAttribute("role");
 %>
 <!DOCTYPE html>
 <html>
@@ -25,6 +28,45 @@
 
         <div class="container-fluid p-0">
             <h3 class="fw-bold mb-4">Manage Configuration</h3>
+
+            <% if ("SuperAdmin".equals(role)) { %>
+            <!-- Maintenance Mode Card -->
+            <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #f8fafc; border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-danger bg-opacity-25 text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; font-size: 1.5rem; box-shadow: 0 0 15px rgba(220, 38, 38, 0.2);">
+                            <i class="bi bi-shield-slash"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 d-flex align-items-center gap-3">
+                                Global Maintenance Mode
+                                <% if (maintenanceMode) { %>
+                                    <span class="badge bg-danger text-white px-2.5 py-1 fs-6 fw-semibold rounded-pill animate-pulse">Active</span>
+                                <% } else { %>
+                                    <span class="badge bg-success text-white px-2.5 py-1 fs-6 fw-semibold rounded-pill">Inactive</span>
+                                <% } %>
+                            </h5>
+                            <p class="mb-0 text-secondary" style="font-size: 0.875rem; max-width: 600px;">
+                                When active, all Students, Teachers, and normal Admins will be blocked and redirected to the maintenance page. Super Admins bypass this block to manage the platform.
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <form action="manageConfig" method="post" id="maintenanceForm">
+                            <input type="hidden" name="action" value="toggleMaintenance">
+                            <input type="hidden" name="enable" value="<%= !maintenanceMode %>">
+                            <button type="submit" class="btn <%= maintenanceMode ? "btn-outline-success" : "btn-danger" %> px-4 py-2.5 fw-bold d-flex align-items-center gap-2" style="border-radius: 8px; transition: all 0.3s ease;">
+                                <% if (maintenanceMode) { %>
+                                    <i class="bi bi-play-fill"></i> Disable Maintenance Mode
+                                <% } else { %>
+                                    <i class="bi bi-pause-fill"></i> Enable Maintenance Mode
+                                <% } %>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% } %>
 
             <% if(request.getParameter("msg") != null) { %>
                 <div class="alert alert-success alert-dismissible fade show"><%= request.getParameter("msg") %>

@@ -9,7 +9,7 @@ import os
 import time
 
 BASE_URL = "http://localhost:8080/webapp"
-SCREENSHOT_DIR = r"c:\Users\91820\Desktop\collegeatt\cas\screenshots"
+SCREENSHOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "screenshots")
 
 # Credentials
 ADMIN_EMAIL = "super@college.edu"

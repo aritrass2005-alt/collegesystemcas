@@ -5,14 +5,14 @@ import com.college.attendance.model.LeaveApplication;
 import com.college.attendance.model.Student;
 import com.college.attendance.util.ValidationUtil;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -108,7 +108,7 @@ public class StudentLeaveServlet extends HttpServlet {
                 }
                 // Limit: 5 MB already enforced by @MultipartConfig maxFileSize
                 String fileName   = UUID.randomUUID().toString() + "_" + originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
-                String uploadPath = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "uploads" + File.separator + "leaves";
+                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "leaves";
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
                 filePart.write(uploadPath + File.separator + fileName);

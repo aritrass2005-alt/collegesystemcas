@@ -15,6 +15,11 @@ public class Attendance {
     private String studentRollNo;
     private String appealStatus;
     private boolean adminEdited;
+    
+    // Student recheck appeal fields
+    private String studentAppealStatus;
+    private String studentAppealReason;
+    private String studentAppealRemarks;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -46,6 +51,15 @@ public class Attendance {
 
     public boolean isAdminEdited() { return adminEdited; }
     public void setAdminEdited(boolean adminEdited) { this.adminEdited = adminEdited; }
+
+    public String getStudentAppealStatus() { return studentAppealStatus; }
+    public void setStudentAppealStatus(String studentAppealStatus) { this.studentAppealStatus = studentAppealStatus; }
+
+    public String getStudentAppealReason() { return studentAppealReason; }
+    public void setStudentAppealReason(String studentAppealReason) { this.studentAppealReason = studentAppealReason; }
+
+    public String getStudentAppealRemarks() { return studentAppealRemarks; }
+    public void setStudentAppealRemarks(String studentAppealRemarks) { this.studentAppealRemarks = studentAppealRemarks; }
 
     // Extra display fields for appeals view
     private String subjectName;

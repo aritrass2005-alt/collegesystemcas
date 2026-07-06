@@ -9,11 +9,11 @@ import com.college.attendance.model.Subject;
 import com.college.attendance.model.Teacher;
 import com.college.attendance.util.ValidationUtil;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,16 +150,6 @@ public class TakeAttendanceServlet extends HttpServlet {
 
         boolean success = attendanceDAO.submitAttendance(records);
         if (success) {
-            // Notify absent students
-            com.college.attendance.dao.NotificationDAO notifDAO = new com.college.attendance.dao.NotificationDAO();
-            String subjName = subject.getName();
-            String date = new java.sql.Date(System.currentTimeMillis()).toString();
-            for (Attendance a : records) {
-                if ("Absent".equalsIgnoreCase(a.getStatus())) {
-                    notifDAO.sendNotification(teacher.getName(), "Teacher", a.getStudentId(), "Student", "Absent for Class", "You were marked absent for " + subjName + " on " + date + ".", null);
-                }
-            }
-            
             response.sendRedirect("takeAttendance?subjectId=" + subjectId + "&msg=Attendance+submitted+for+" + records.size() + "+students");
         } else {
             response.sendRedirect("takeAttendance?subjectId=" + subjectId + "&error=Failed+to+submit+attendance");

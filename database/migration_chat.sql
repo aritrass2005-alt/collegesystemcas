@@ -1,47 +1,50 @@
+-- ============================================================
+-- Chat System Migration (Department Version)
+-- Run this against the college_attendance database
+-- ============================================================
+
 USE college_attendance;
 
--- Chat System Tables
-CREATE TABLE IF NOT EXISTS chat_group (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    department VARCHAR(100) NOT NULL,
-    admin_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
-);
+-- Drop old tables if they exist to apply new schema
+DROP TABLE IF EXISTS chat_messages;
+DROP TABLE IF EXISTS chat_participants;
+DROP TABLE IF EXISTS chat_conversations;
+DROP TABLE IF EXISTS chat_files;
 
-CREATE TABLE IF NOT EXISTS chat_participant (
-    group_id INT NOT NULL,
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
+-- Conversations (1-on-1, Custom Group, or Department Group)
+CREATE TABLE chat_conversations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) DEFAULT NULL,
+    type ENUM('DIRECT', 'GROUP', 'DEPARTMENT') DEFAULT 'GROUP',
+    department_name VARCHAR(100) DEFAULT NULL,
+    created_by_role VARCHAR(20) NOT NULL,
+    created_by_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Participants in each conversation
+CREATE TABLE chat_participants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT NOT NULL,
+    user_role VARCHAR(20) NOT NULL,
     user_id INT NOT NULL,
+    last_read_message_id BIGINT DEFAULT 0,
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (group_id, user_type, user_id),
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
-);
+    FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE,
+    UNIQUE KEY uc_conv_user (conversation_id, user_role, user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS user_public_keys (
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    user_id INT NOT NULL,
-    public_key TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_type, user_id)
-);
-
-CREATE TABLE IF NOT EXISTS chat_message (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    group_id INT NOT NULL,
-    sender_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
+-- Messages (stored encrypted)
+CREATE TABLE chat_messages (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT NOT NULL,
+    sender_role VARCHAR(20) NOT NULL,
     sender_id INT NOT NULL,
     encrypted_content TEXT NOT NULL,
-    iv TEXT NOT NULL, -- Initialization vector for AES-GCM
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS group_keys (
-    group_id INT NOT NULL,
-    user_type ENUM('Admin', 'Teacher', 'Coordinator') NOT NULL,
-    user_id INT NOT NULL,
-    encrypted_symmetric_key TEXT NOT NULL,
-    PRIMARY KEY (group_id, user_type, user_id),
-    FOREIGN KEY (group_id) REFERENCES chat_group(id) ON DELETE CASCADE
-);
+    message_type ENUM('TEXT', 'SYSTEM', 'FILE', 'PHOTO', 'AUDIO') DEFAULT 'TEXT',
+    file_url VARCHAR(255) DEFAULT NULL,
+    file_name VARCHAR(255) DEFAULT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE,
+    INDEX idx_conv_time (conversation_id, sent_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

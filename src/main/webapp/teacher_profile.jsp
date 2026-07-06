@@ -60,7 +60,7 @@
                 <div class="col-lg-4">
                     <div class="profile-hero text-center mb-4">
                         <div class="position-relative d-inline-block mb-3">
-                            <img id="previewPhoto" src="<%= photoUrl != null ? photoUrl : avatarUrl %>" alt="Profile" class="photo-ring" onerror="this.onerror=null; this.src='<%= avatarUrl %>';">
+                            <img id="previewPhoto" src="<%= photoUrl != null ? photoUrl : avatarUrl %>" alt="Profile" class="photo-ring">
                             <label for="photoInput" class="photo-edit-btn" title="Change photo">
                                 <i class="bi bi-camera-fill"></i>
                             </label>

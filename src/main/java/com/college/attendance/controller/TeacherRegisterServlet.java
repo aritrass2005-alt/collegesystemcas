@@ -3,11 +3,11 @@ package com.college.attendance.controller;
 import com.college.attendance.dao.TeacherDAO;
 import com.college.attendance.model.Teacher;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/registerTeacher")
@@ -22,7 +22,7 @@ public class TeacherRegisterServlet extends HttpServlet {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
-        String department = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
+        String department = request.getParameter("department");
         String password = request.getParameter("password");
         
         Teacher t = new Teacher();

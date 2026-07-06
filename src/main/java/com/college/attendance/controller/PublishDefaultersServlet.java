@@ -5,12 +5,12 @@ import com.college.attendance.dao.NotificationDAO;
 import com.college.attendance.model.DefaulterRecord;
 import com.college.attendance.model.Teacher;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,6 +18,7 @@ import java.util.List;
 public class PublishDefaultersServlet extends HttpServlet {
     private AttendanceDAO attendanceDAO = new AttendanceDAO();
     private NotificationDAO notificationDAO = new NotificationDAO();
+    private com.college.attendance.dao.StudentDAO studentDAO = new com.college.attendance.dao.StudentDAO();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -39,6 +40,7 @@ public class PublishDefaultersServlet extends HttpServlet {
         String endDate = request.getParameter("endDate");
 
         String context = request.getParameter("context"); // "teacher" or "coordinator"
+        boolean notifyParents = "true".equals(request.getParameter("notifyParents"));
         
         List<DefaulterRecord> defaulters;
         String senderRole = "Faculty";
@@ -51,6 +53,7 @@ public class PublishDefaultersServlet extends HttpServlet {
         }
 
         int successCount = 0;
+        int parentSuccessCount = 0;
         if (defaulters != null) {
             for (DefaulterRecord dr : defaulters) {
                 String title = "Attendance Alert: Defaulter List Published";
@@ -62,18 +65,38 @@ public class PublishDefaultersServlet extends HttpServlet {
                 }
                 message += " Please check your dashboard for full attendance details.";
 
-                if (notificationDAO.sendNotification(teacher.getName(), senderRole, dr.getStudentId(), "Student", title, message, null)) {
+                if (notificationDAO.sendNotification(teacher.getName(), senderRole, dr.getStudentId(), title, message, null)) {
                     successCount++;
+                }
+
+                if (notifyParents) {
+                    com.college.attendance.model.Student student = studentDAO.getStudentById(dr.getStudentId());
+                    if (student != null) {
+                        String datePeriod = (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) 
+                                            ? (startDate + " to " + endDate) 
+                                            : "overall";
+                        if (com.college.attendance.util.AlertService.sendParentAlert(student, dr.getPercentage(), threshold, datePeriod, teacher.getName(), senderRole)) {
+                            parentSuccessCount++;
+                        }
+                    }
                 }
             }
         }
 
-        String referer = request.getHeader("Referer");
-        if (referer != null) {
-            String separator = referer.contains("?") ? "&" : "?";
-            response.sendRedirect(referer + separator + "msg=Successfully+notified+" + successCount + "+defaulter+students.");
-        } else {
-            response.sendRedirect("teacher_dashboard.jsp");
+        String msg = "Successfully notified " + successCount + " defaulter students.";
+        if (notifyParents) {
+            msg += " Sent " + parentSuccessCount + " parent alerts.";
         }
+        String referer = request.getHeader("Referer");
+        if (referer == null || referer.isEmpty()) {
+            referer = "teacherDefaulterList";
+        }
+        String redirectUrl;
+        if (referer.contains("?")) {
+            redirectUrl = referer + "&msg=" + java.net.URLEncoder.encode(msg, "UTF-8");
+        } else {
+            redirectUrl = referer + "?msg=" + java.net.URLEncoder.encode(msg, "UTF-8");
+        }
+        response.sendRedirect(redirectUrl);
     }
 }

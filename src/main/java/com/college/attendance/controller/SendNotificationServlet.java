@@ -8,14 +8,14 @@ import com.college.attendance.model.Admin;
 import com.college.attendance.model.Student;
 import com.college.attendance.model.Teacher;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -77,7 +77,7 @@ public class SendNotificationServlet extends HttpServlet {
             Part filePart = request.getPart("attachment");
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName().replaceAll("[^a-zA-Z0-9.-]", "_");
-                String uploadPath = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "uploads" + File.separator + "notices";
+                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "notices";
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
                 filePart.write(uploadPath + File.separator + fileName);
@@ -88,14 +88,14 @@ public class SendNotificationServlet extends HttpServlet {
 
             if ("SPECIFIC".equals(targetType)) {
                 int studentId = Integer.parseInt(request.getParameter("studentId"));
-                if (notificationDAO.sendNotification(senderName, senderRole, studentId, "Student", title, message, attachmentPath)) {
+                if (notificationDAO.sendNotification(senderName, senderRole, studentId, title, message, attachmentPath)) {
                     successCount++;
                 }
             } else {
                 // Group notification
-                String dept = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
+                String dept = request.getParameter("department");
                 int year = Integer.parseInt(request.getParameter("year"));
-                String section = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("section"));
+                String section = request.getParameter("section");
                 if (section == null || section.isEmpty() || "All".equalsIgnoreCase(section)) {
                     section = null;
                 }
@@ -108,17 +108,39 @@ public class SendNotificationServlet extends HttpServlet {
                             continue; // Skip non-defaulters based on custom threshold
                         }
                     }
-                    if (notificationDAO.sendNotification(senderName, senderRole, s.getId(), "Student", title, message, attachmentPath)) {
+                    if (notificationDAO.sendNotification(senderName, senderRole, s.getId(), title, message, attachmentPath)) {
                         successCount++;
                     }
                 }
             }
 
-            response.sendRedirect(request.getHeader("Referer") + "?msg=Notification sent successfully to " + successCount + " students.");
+            String referer = request.getHeader("Referer");
+            if (referer == null || referer.isEmpty()) {
+                referer = "coordinator_notifications.jsp";
+            }
+            String redirectUrl;
+            String msg = "Notification sent successfully to " + successCount + " students.";
+            if (referer.contains("?")) {
+                redirectUrl = referer + "&msg=" + java.net.URLEncoder.encode(msg, "UTF-8");
+            } else {
+                redirectUrl = referer + "?msg=" + java.net.URLEncoder.encode(msg, "UTF-8");
+            }
+            response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getHeader("Referer") + "?error=Failed to send notifications.");
+            String referer = request.getHeader("Referer");
+            if (referer == null || referer.isEmpty()) {
+                referer = "coordinator_notifications.jsp";
+            }
+            String redirectUrl;
+            String errMsg = "Failed to send notifications.";
+            if (referer.contains("?")) {
+                redirectUrl = referer + "&error=" + java.net.URLEncoder.encode(errMsg, "UTF-8");
+            } else {
+                redirectUrl = referer + "?error=" + java.net.URLEncoder.encode(errMsg, "UTF-8");
+            }
+            response.sendRedirect(redirectUrl);
         }
     }
 }

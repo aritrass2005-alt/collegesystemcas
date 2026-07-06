@@ -13,7 +13,7 @@ import java.util.List;
 public class StudentDAO {
 
     public boolean addStudent(Student student, String dob, String address) {
-        String sql = "INSERT INTO student (roll_no, name, email, phone, dob, password, address, department, year, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO student (roll_no, name, email, phone, dob, password, address, department, year, section, parent_name, parent_email, parent_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -30,6 +30,9 @@ public class StudentDAO {
             stmt.setString(8, student.getDepartment());
             stmt.setInt(9, student.getYear());
             stmt.setString(10, student.getSection());
+            stmt.setString(11, student.getParentName());
+            stmt.setString(12, student.getParentEmail());
+            stmt.setString(13, student.getParentPhone());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -39,7 +42,7 @@ public class StudentDAO {
     }
 
     public boolean updateStudent(Student student, String address) {
-        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, dob=?, address=?, department=?, year=?, section=? WHERE id=?";
+        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, dob=?, address=?, department=?, year=?, section=?, parent_name=?, parent_email=?, parent_phone=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -52,7 +55,10 @@ public class StudentDAO {
             stmt.setString(7, student.getDepartment());
             stmt.setInt(8, student.getYear());
             stmt.setString(9, student.getSection());
-            stmt.setInt(10, student.getId());
+            stmt.setString(10, student.getParentName());
+            stmt.setString(11, student.getParentEmail());
+            stmt.setString(12, student.getParentPhone());
+            stmt.setInt(13, student.getId());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -194,6 +200,9 @@ public class StudentDAO {
                 s.setSection(rs.getString("section"));
                 try { s.setEmail(rs.getString("email")); } catch(Exception ex) {} // Safety
                 s.setBanned(rs.getBoolean("is_banned"));
+                s.setParentName(rs.getString("parent_name"));
+                s.setParentEmail(rs.getString("parent_email"));
+                s.setParentPhone(rs.getString("parent_phone"));
                 students.add(s);
             }
         } catch (Exception e) {
@@ -226,6 +235,9 @@ public class StudentDAO {
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
                     s.setSection(rs.getString("section"));
+                    s.setParentName(rs.getString("parent_name"));
+                    s.setParentEmail(rs.getString("parent_email"));
+                    s.setParentPhone(rs.getString("parent_phone"));
                     students.add(s);
                 }
             }
@@ -273,6 +285,9 @@ public class StudentDAO {
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
                     s.setSection(rs.getString("section"));
+                    s.setParentName(rs.getString("parent_name"));
+                    s.setParentEmail(rs.getString("parent_email"));
+                    s.setParentPhone(rs.getString("parent_phone"));
                     students.add(s);
                 }
             }
@@ -280,6 +295,37 @@ public class StudentDAO {
             e.printStackTrace();
         }
         return students;
+    }
+
+    public Student getStudentById(int id) {
+        String sql = "SELECT * FROM student WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Student s = new Student();
+                    s.setId(rs.getInt("id"));
+                    s.setRollNo(rs.getString("roll_no"));
+                    s.setName(rs.getString("name"));
+                    s.setEmail(rs.getString("email"));
+                    s.setPhone(rs.getString("phone"));
+                    s.setDob(rs.getString("dob"));
+                    s.setStatus(rs.getString("status"));
+                    s.setDepartment(rs.getString("department"));
+                    s.setYear(rs.getInt("year"));
+                    s.setSection(rs.getString("section"));
+                    s.setParentName(rs.getString("parent_name"));
+                    s.setParentEmail(rs.getString("parent_email"));
+                    s.setParentPhone(rs.getString("parent_phone"));
+                    s.setBanned(rs.getBoolean("is_banned"));
+                    return s;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

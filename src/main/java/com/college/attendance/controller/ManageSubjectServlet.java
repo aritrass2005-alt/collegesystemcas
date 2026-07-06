@@ -7,11 +7,11 @@ import com.college.attendance.model.Subject;
 import com.college.attendance.model.Teacher;
 import com.college.attendance.model.ConfigData;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -126,11 +126,11 @@ public class ManageSubjectServlet extends HttpServlet {
     // ── Helpers ────────────────────────────────────────────────────────────────
     private Subject buildSubjectFromRequest(HttpServletRequest req) {
         Subject s = new Subject();
-        s.setSubjectCode(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("subjectCode")));
-        s.setName(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("name")));
-        s.setDepartment(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("department")));
+        s.setSubjectCode(req.getParameter("subjectCode"));
+        s.setName(req.getParameter("name"));
+        s.setDepartment(req.getParameter("department"));
         try { s.setYear(Integer.parseInt(req.getParameter("year"))); } catch (Exception ignored) {}
-        s.setSection(com.college.attendance.util.ValidationUtil.cleanUpper(req.getParameter("section")));
+        s.setSection(req.getParameter("section"));
         try { s.setTeacherId(Integer.parseInt(req.getParameter("teacherId"))); } catch (Exception ignored) {}
         try { s.setAltTeacherId(Integer.parseInt(req.getParameter("altTeacherId"))); } catch (Exception ignored) {}
         return s;

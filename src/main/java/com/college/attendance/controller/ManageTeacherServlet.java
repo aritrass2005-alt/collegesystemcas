@@ -6,12 +6,12 @@ import com.college.attendance.dao.SubjectDAO;
 import com.college.attendance.model.Teacher;
 import com.college.attendance.util.ValidationUtil;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,11 +41,8 @@ public class ManageTeacherServlet extends HttpServlet {
                 response.sendRedirect("manageTeachers?error=Invalid+teacher+ID");
                 return;
             }
-            if (teacherDAO.approveTeacher(Integer.parseInt(idStr))) {
-                response.sendRedirect("manageTeachers?msg=Teacher+approved");
-            } else {
-                response.sendRedirect("manageTeachers?error=Failed+to+approve+teacher");
-            }
+            teacherDAO.approveTeacher(Integer.parseInt(idStr));
+            response.sendRedirect("manageTeachers?msg=Teacher+approved");
             return;
         } else if ("delete".equals(action)) {
             String idStr = ValidationUtil.clean(request.getParameter("id"));
@@ -61,9 +58,9 @@ public class ManageTeacherServlet extends HttpServlet {
             return;
         }
 
-        String dept    = ValidationUtil.cleanUpper(request.getParameter("department"));
+        String dept    = ValidationUtil.clean(request.getParameter("department"));
         String yearStr = ValidationUtil.clean(request.getParameter("year"));
-        String section = ValidationUtil.cleanUpper(request.getParameter("section"));
+        String section = ValidationUtil.clean(request.getParameter("section"));
         String subjectId = ValidationUtil.clean(request.getParameter("subject_id"));
 
         int year = 0;
@@ -72,12 +69,6 @@ public class ManageTeacherServlet extends HttpServlet {
         }
 
         List<Teacher> teachers = teacherDAO.getTeachersByFilter(dept, year, section, subjectId);
-        
-        String filter = ValidationUtil.clean(request.getParameter("filter"));
-        if ("pending".equals(filter)) {
-            teachers.removeIf(Teacher::isApproved);
-        }
-        
         request.setAttribute("teachers",    teachers);
         request.setAttribute("departments", configDAO.getAll("department"));
         request.setAttribute("years",       configDAO.getAll("academic_year"));
@@ -107,7 +98,7 @@ public class ManageTeacherServlet extends HttpServlet {
         String name  = ValidationUtil.clean(request.getParameter("name"));
         String email = ValidationUtil.clean(request.getParameter("email"));
         String phone = ValidationUtil.clean(request.getParameter("phone"));
-        String dept  = ValidationUtil.cleanUpper(request.getParameter("department"));
+        String dept  = ValidationUtil.clean(request.getParameter("department"));
 
         StringBuilder errors = new StringBuilder();
         if (!ValidationUtil.isValidName(name))   errors.append("Invalid name. ");

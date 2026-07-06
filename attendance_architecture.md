@@ -59,7 +59,7 @@ import java.sql.SQLException;
 public class DBConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/college_attendance";
     private static final String USER = "root";
-    private static final String PASSWORD = "123456"; // Requested Password
+    private static final String PASSWORD = "aritra04"; // Requested Password
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         // Load the MySQL Driver
@@ -234,7 +234,7 @@ public class AttendanceServlet extends HttpServlet {
 ## 4. Deployment Instructions (Apache Tomcat Community Server)
 
 ### Step 1: Database Setup
-1. Ensure MySQL is running on your machine with the password `123456`.
+1. Ensure MySQL is running on your machine with the password `aritra04`.
 2. Open MySQL Workbench or your terminal.
 3. Source the provided `database/attendance_system.sql` script to create the database, tables, and the default **Super Admin** account (`super@college.edu` / `admin123`).
 

@@ -4,12 +4,12 @@ import com.college.attendance.dao.FacultyAttendanceDAO;
 import com.college.attendance.model.FacultyAttendance;
 import com.college.attendance.model.Teacher;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
@@ -29,7 +29,7 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
         }
 
         String dateParam = request.getParameter("date");
-        String deptParam = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("department"));
+        String deptParam = request.getParameter("department");
 
         Date targetDate = null;
         if (dateParam != null && !dateParam.isEmpty()) {
@@ -70,39 +70,28 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
             
             com.college.attendance.model.Admin admin = (com.college.attendance.model.Admin) session.getAttribute("user");
             
-            String activeTab = "records";
             if ("add".equals(action)) {
                 int teacherId = Integer.parseInt(request.getParameter("teacherId"));
                 Date targetDate = Date.valueOf(request.getParameter("targetDate"));
                 dao.addAttendanceByAdmin(teacherId, targetDate, status, notes);
                 com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Added faculty attendance for Teacher ID " + teacherId + " on " + targetDate + " as " + status);
-                activeTab = "absent";
-            } else if ("verifyAll".equals(action)) {
-                dao.verifyAllPendingLeaves();
-                com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified all pending faculty leaves");
-                activeTab = "pending";
             } else {
                 int id = Integer.parseInt(request.getParameter("id"));
                 dao.updateAttendanceByAdmin(id, status, notes);
                 com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified/Updated faculty attendance ID " + id + " to " + status);
-                if ("verify".equals(action)) {
-                    activeTab = "pending";
-                } else {
-                    activeTab = "records";
-                }
             }
             
             String dateParam = request.getParameter("currentDate");
-            String deptParam = com.college.attendance.util.ValidationUtil.cleanUpper(request.getParameter("currentDept"));
+            String deptParam = request.getParameter("currentDept");
             
             String redirectUrl = "adminFacultyAttendance?";
             if (dateParam != null && !dateParam.isEmpty()) redirectUrl += "date=" + dateParam + "&";
-            if (deptParam != null && !deptParam.isEmpty()) redirectUrl += "department=" + deptParam + "&";
+            if (deptParam != null && !deptParam.isEmpty()) redirectUrl += "department=" + deptParam;
             
-            response.sendRedirect(redirectUrl + "tab=" + activeTab + "&msg=Updated Successfully");
+            response.sendRedirect(redirectUrl + "&msg=Updated Successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("adminFacultyAttendance?tab=records&error=Update Failed");
+            response.sendRedirect("adminFacultyAttendance?error=Update Failed");
         }
     }
 }

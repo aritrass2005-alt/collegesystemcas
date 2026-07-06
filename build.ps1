@@ -1,4 +1,4 @@
-$workspace = "c:\Users\91820\Desktop\collegeatt\cas"
+$workspace = $PSScriptRoot
 $srcDir = "$workspace\src\main\java"
 $webappDir = "$workspace\src\main\webapp"
 $libDir = "$webappDir\WEB-INF\lib"
@@ -13,33 +13,37 @@ if (-not (Test-Path -Path $buildLibDir)) {
     New-Item -ItemType Directory -Path $buildLibDir -Force | Out-Null
 }
 
-# Download Servlet API for compilation (Tomcat 9 uses Servlet 4.0)
-$servletApiJar = "$buildLibDir\javax.servlet-api-4.0.1.jar"
+# Download Servlet API for compilation (Tomcat 10 uses Servlet 5.0)
+$servletApiJar = "$buildLibDir\jakarta.servlet-api-5.0.0.jar"
 if (-not (Test-Path -Path $servletApiJar)) {
-    Write-Host "Downloading Servlet API for compilation..."
-    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar" -OutFile $servletApiJar
-}
-
-# Download WebSocket API
-$websocketApiJar = "$buildLibDir\javax.websocket-api-1.1.jar"
-if (-not (Test-Path -Path $websocketApiJar)) {
-    Write-Host "Downloading WebSocket API for compilation..."
-    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/javax/websocket/javax.websocket-api/1.1/javax.websocket-api-1.1.jar" -OutFile $websocketApiJar
+    Write-Host "Downloading Jakarta Servlet API for compilation..."
+    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/5.0.0/jakarta.servlet-api-5.0.0.jar" -OutFile $servletApiJar
 }
 
 # Build Classpath
 $jars = Get-ChildItem -Path $libDir -Filter *.jar | Select-Object -ExpandProperty FullName
 $jars += $servletApiJar
-$jars += $websocketApiJar
+
+# Add WebSocket API from Tomcat for compilation (needed for @ServerEndpoint)
+$tomcatLib = "C:\Program Files\Apache Software Foundation\Tomcat 10.0_Tomcat10.0\lib"
+$wsApiJar = "$tomcatLib\websocket-api.jar"
+if (Test-Path -Path $wsApiJar) {
+    $jars += $wsApiJar
+    Write-Host "Added WebSocket API from Tomcat."
+} else {
+    Write-Host "WARNING: websocket-api.jar not found in Tomcat lib. WebSocket endpoints may not compile."
+}
+
 $classpath = $jars -join ";"
 
 # Find all Java files
 $javaFiles = Get-ChildItem -Path $srcDir -Filter *.java -Recurse | Select-Object -ExpandProperty FullName
-$javaFilesList = $javaFiles -join " "
+$javaFilesList = $javaFiles | ForEach-Object { "`"$_`"" }
+$javaFilesList = $javaFilesList -join " "
 
 # Compile
-Write-Host "Compiling Java files for Java 11 compatibility..."
-$compileCmd = "javac --release 11 -cp `"$classpath`" -d `"$classesDir`" $javaFilesList"
+Write-Host "Compiling Java files for Java 8 compatibility..."
+$compileCmd = "javac --release 8 -cp `"$classpath`" -d `"$classesDir`" $javaFilesList"
 Invoke-Expression $compileCmd
 
 if ($LASTEXITCODE -eq 0) {

@@ -1,4 +1,4 @@
-$libDir = "c:\Users\91820\Desktop\collegeatt\cas\src\main\webapp\WEB-INF\lib"
+$libDir = "$PSScriptRoot\src\main\webapp\WEB-INF\lib"
 
 if (-not (Test-Path -Path $libDir)) {
     New-Item -ItemType Directory -Path $libDir -Force | Out-Null

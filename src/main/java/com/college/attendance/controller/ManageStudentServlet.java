@@ -6,12 +6,12 @@ import com.college.attendance.dao.SubjectDAO;
 import com.college.attendance.model.Student;
 import com.college.attendance.util.ValidationUtil;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,9 +50,9 @@ public class ManageStudentServlet extends HttpServlet {
             return;
         }
 
-        String dept      = ValidationUtil.cleanUpper(request.getParameter("department"));
+        String dept      = ValidationUtil.clean(request.getParameter("department"));
         String yearStr   = ValidationUtil.clean(request.getParameter("year"));
-        String section   = ValidationUtil.cleanUpper(request.getParameter("section"));
+        String section   = ValidationUtil.clean(request.getParameter("section"));
         String subjectId = ValidationUtil.clean(request.getParameter("subject_id"));
 
         int year = 0;
@@ -89,7 +89,7 @@ public class ManageStudentServlet extends HttpServlet {
         String action = ValidationUtil.clean(request.getParameter("action"));
         
         if ("promote".equals(action)) {
-            String pDept = ValidationUtil.cleanUpper(request.getParameter("promote_department"));
+            String pDept = ValidationUtil.clean(request.getParameter("promote_department"));
             String pYearStr = ValidationUtil.clean(request.getParameter("promote_year"));
             int pYear = ValidationUtil.parseIntSafe(pYearStr, 0);
             
@@ -108,14 +108,17 @@ public class ManageStudentServlet extends HttpServlet {
         }
 
         // ── Field extraction and validation ──────────────────────────────────
-        String rollNo  = ValidationUtil.clean(request.getParameter("roll_no"));
-        String name    = ValidationUtil.clean(request.getParameter("name"));
-        String email   = ValidationUtil.clean(request.getParameter("email"));
-        String phone   = ValidationUtil.clean(request.getParameter("phone"));
-        String dept    = ValidationUtil.cleanUpper(request.getParameter("department"));
-        String yearStr = ValidationUtil.clean(request.getParameter("year"));
-        String section = ValidationUtil.cleanUpper(request.getParameter("section"));
-        String address = ValidationUtil.sanitizeText(request.getParameter("address"));
+        String rollNo      = ValidationUtil.clean(request.getParameter("roll_no"));
+        String name        = ValidationUtil.clean(request.getParameter("name"));
+        String email       = ValidationUtil.clean(request.getParameter("email"));
+        String phone       = ValidationUtil.clean(request.getParameter("phone"));
+        String dept        = ValidationUtil.clean(request.getParameter("department"));
+        String yearStr     = ValidationUtil.clean(request.getParameter("year"));
+        String section     = ValidationUtil.clean(request.getParameter("section"));
+        String address     = ValidationUtil.sanitizeText(request.getParameter("address"));
+        String parentName  = ValidationUtil.clean(request.getParameter("parent_name"));
+        String parentEmail = ValidationUtil.clean(request.getParameter("parent_email"));
+        String parentPhone = ValidationUtil.clean(request.getParameter("parent_phone"));
 
         StringBuilder errors = new StringBuilder();
 
@@ -124,6 +127,17 @@ public class ManageStudentServlet extends HttpServlet {
         if (!ValidationUtil.isValidEmail(email))     errors.append("Invalid email. ");
         if (phone != null && !ValidationUtil.isValidPhone(phone)) errors.append("Invalid phone. ");
         if (dept == null || dept.isEmpty())          errors.append("Department required. ");
+        
+        // Optional parent details validations
+        if (parentName != null && !parentName.isEmpty() && !ValidationUtil.isValidName(parentName)) {
+            errors.append("Invalid Parent Name. ");
+        }
+        if (parentEmail != null && !parentEmail.isEmpty() && !ValidationUtil.isValidEmail(parentEmail)) {
+            errors.append("Invalid Parent Email. ");
+        }
+        if (parentPhone != null && !parentPhone.isEmpty() && !ValidationUtil.isValidPhone(parentPhone)) {
+            errors.append("Invalid Parent Phone. ");
+        }
 
         int year = ValidationUtil.parseIntSafe(yearStr, 0);
         if (!ValidationUtil.isValidAcademicYear(year)) errors.append("Invalid year (1-4). ");
@@ -141,6 +155,9 @@ public class ManageStudentServlet extends HttpServlet {
         s.setDepartment(dept);
         s.setYear(year);
         s.setSection(section);
+        s.setParentName(parentName);
+        s.setParentEmail(parentEmail);
+        s.setParentPhone(parentPhone);
 
         boolean success = false;
         

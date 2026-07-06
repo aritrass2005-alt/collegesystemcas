@@ -3,41 +3,44 @@ package com.college.attendance.model;
 import java.sql.Timestamp;
 
 public class ChatMessage {
-    private int id;
-    private int groupId;
-    private String senderType;
+    private long id;
+    private int conversationId;
+    private String senderRole;
     private int senderId;
-    private String encryptedContent;
-    private String iv;
-    private Timestamp timestamp;
-    private String messageType; // "text", "image", "file", "voice"
-    private String fileUrl;     // relative URL for non-text messages
-    private String fileName;    // original filename
-
-    // For UI display
     private String senderName;
-    private String senderDetails;
+    private String senderPhoto;
+    private String encryptedContent;
+    private String messageType; // TEXT, SYSTEM, FILE, PHOTO, AUDIO
+    private String fileUrl;
+    private String fileName;
+    private Timestamp sentAt;
+    
+    // Status tracking for frontend (not stored in DB per message, computed dynamically based on participants' lastReadMessageId)
+    private String status; // SENT, DELIVERED, READ
+    
+    private boolean isEdited;
+    private boolean isDeleted;
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
-    public int getGroupId() { return groupId; }
-    public void setGroupId(int groupId) { this.groupId = groupId; }
+    public int getConversationId() { return conversationId; }
+    public void setConversationId(int conversationId) { this.conversationId = conversationId; }
 
-    public String getSenderType() { return senderType; }
-    public void setSenderType(String senderType) { this.senderType = senderType; }
+    public String getSenderRole() { return senderRole; }
+    public void setSenderRole(String senderRole) { this.senderRole = senderRole; }
 
     public int getSenderId() { return senderId; }
     public void setSenderId(int senderId) { this.senderId = senderId; }
 
+    public String getSenderName() { return senderName; }
+    public void setSenderName(String senderName) { this.senderName = senderName; }
+
+    public String getSenderPhoto() { return senderPhoto; }
+    public void setSenderPhoto(String senderPhoto) { this.senderPhoto = senderPhoto; }
+
     public String getEncryptedContent() { return encryptedContent; }
     public void setEncryptedContent(String encryptedContent) { this.encryptedContent = encryptedContent; }
-
-    public String getIv() { return iv; }
-    public void setIv(String iv) { this.iv = iv; }
-
-    public Timestamp getTimestamp() { return timestamp; }
-    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
 
     public String getMessageType() { return messageType; }
     public void setMessageType(String messageType) { this.messageType = messageType; }
@@ -48,9 +51,15 @@ public class ChatMessage {
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
 
-    public String getSenderName() { return senderName; }
-    public void setSenderName(String senderName) { this.senderName = senderName; }
+    public Timestamp getSentAt() { return sentAt; }
+    public void setSentAt(Timestamp sentAt) { this.sentAt = sentAt; }
 
-    public String getSenderDetails() { return senderDetails; }
-    public void setSenderDetails(String senderDetails) { this.senderDetails = senderDetails; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public boolean isEdited() { return isEdited; }
+    public void setEdited(boolean isEdited) { this.isEdited = isEdited; }
+
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
 }

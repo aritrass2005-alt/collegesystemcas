@@ -3,10 +3,10 @@ package com.college.attendance.controller;
 import com.college.attendance.model.Student;
 import com.college.attendance.util.DBConnection;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.sql.*;
 
@@ -58,7 +58,7 @@ public class StudentProfileServlet extends HttpServlet {
         Part photoPart = request.getPart("profile_photo");
         if (photoPart != null && photoPart.getSize() > 0) {
             String fileName = "student_" + student.getId() + "_" + System.currentTimeMillis() + getExtension(photoPart.getSubmittedFileName());
-            String uploadDir = System.getProperty("user.home") + File.separator + "cas_uploads" + File.separator + "profiles";
+            String uploadDir = getServletContext().getRealPath("/") + "img" + File.separator + "profiles";
             new File(uploadDir).mkdirs();
             photoPart.write(uploadDir + File.separator + fileName);
             photoPath = "img/profiles/" + fileName;

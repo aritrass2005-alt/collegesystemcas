@@ -7,12 +7,12 @@ import com.college.attendance.model.Subject;
 import com.college.attendance.model.Timetable;
 import com.college.attendance.model.ConfigData;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
@@ -138,34 +138,6 @@ public class AdminTimetableServlet extends HttpServlet {
                 response.sendRedirect("manageTimetable?" + redirectBase + "&msg=Routine+cleared");
             } catch (Exception e) {
                 response.sendRedirect("manageTimetable?" + redirectBase + "&error=Failed+to+clear");
-            }
-
-        } else if ("edit_slot".equals(action)) {
-            try {
-                int    id         = Integer.parseInt(request.getParameter("id"));
-                int    subjectId  = Integer.parseInt(request.getParameter("subject_id"));
-                String dayOfWeek  = request.getParameter("day_of_week");
-                String startStr   = request.getParameter("start_time");
-                String endStr     = request.getParameter("end_time");
-                String roomNo     = request.getParameter("room_no");
-
-                if (startStr.length() == 5) startStr += ":00";
-                if (endStr.length()   == 5) endStr   += ":00";
-
-                Timetable t = new Timetable();
-                t.setId(id);
-                t.setSubjectId(subjectId);
-                t.setDayOfWeek(dayOfWeek);
-                t.setStartTime(Time.valueOf(startStr));
-                t.setEndTime(Time.valueOf(endStr));
-                t.setRoomNo(roomNo);
-
-                boolean success = timetableDAO.updateTimetable(t);
-                response.sendRedirect("manageTimetable?" + redirectBase +
-                        (success ? "&msg=Slot+updated+successfully" : "&error=Failed+to+update+slot"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("manageTimetable?" + redirectBase + "&error=Invalid+input");
             }
 
         } else {
