@@ -48,6 +48,10 @@ public class ChatServlet extends HttpServlet {
             handleGetMessages(request, response, session);
         } else if ("conversations".equals(action)) {
             handleGetConversations(request, response, session);
+        } else if ("getPoll".equals(action)) {
+            handleGetPoll(request, response, session);
+        } else if ("getPinnedMessages".equals(action)) {
+            handleGetPinnedMessages(request, response, session);
         } else {
             // Forward to chat page
             int userId = getUserId(session);
@@ -88,6 +92,16 @@ public class ChatServlet extends HttpServlet {
             handleAddMember(request, response, session);
         } else if ("deleteGroup".equals(action)) {
             handleDeleteGroup(request, response, session);
+        } else if ("createPoll".equals(action)) {
+            handleCreatePoll(request, response, session);
+        } else if ("votePoll".equals(action)) {
+            handleVotePoll(request, response, session);
+        } else if ("closePoll".equals(action)) {
+            handleClosePoll(request, response, session);
+        } else if ("pinMessage".equals(action)) {
+            handlePinMessage(request, response, session);
+        } else if ("unpinMessage".equals(action)) {
+            handleUnpinMessage(request, response, session);
         } else {
             sendJsonError(response, "Unknown action");
         }
@@ -217,5 +231,94 @@ public class ChatServlet extends HttpServlet {
         json.addProperty("error", error);
         response.setStatus(400);
         sendJson(response, json.toString());
+    }
+
+    // ---- POLL HANDLERS ----
+
+    private void handleGetPoll(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int pollId = Integer.parseInt(request.getParameter("pollId"));
+        com.college.attendance.model.ChatPoll poll = chatDAO.getPoll(pollId, role, userId);
+        if (poll == null) { sendJsonError(response, "Poll not found"); return; }
+        sendJson(response, gson.toJson(poll));
+    }
+
+    private void handleGetPinnedMessages(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        if (!chatDAO.isParticipant(convId, role, userId)) { sendJsonError(response, "Not authorized"); return; }
+        List<ChatMessage> pinned = chatDAO.getPinnedMessages(convId, role, userId);
+        sendJson(response, gson.toJson(pinned));
+    }
+
+    private void handleCreatePoll(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        if (!chatDAO.isParticipant(convId, role, userId)) { sendJsonError(response, "Not authorized"); return; }
+
+        String question = request.getParameter("question");
+        String[] opts = request.getParameterValues("options[]");
+        if (question == null || question.trim().isEmpty() || opts == null || opts.length < 2) {
+            sendJsonError(response, "Poll needs a question and at least 2 options"); return;
+        }
+        java.util.List<String> optList = java.util.Arrays.asList(opts);
+        int pollId = chatDAO.createPoll(convId, question.trim(), optList, role, userId);
+        JsonObject res = new JsonObject();
+        res.addProperty("success", pollId > 0);
+        res.addProperty("pollId", pollId);
+        sendJson(response, res.toString());
+    }
+
+    private void handleVotePoll(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int pollId = Integer.parseInt(request.getParameter("pollId"));
+        int optionId = Integer.parseInt(request.getParameter("optionId"));
+        boolean success = chatDAO.votePoll(pollId, optionId, role, userId);
+        // Return updated poll
+        com.college.attendance.model.ChatPoll poll = chatDAO.getPoll(pollId, role, userId);
+        JsonObject res = new JsonObject();
+        res.addProperty("success", success);
+        if (poll != null) res.add("poll", gson.toJsonTree(poll));
+        sendJson(response, res.toString());
+    }
+
+    private void handleClosePoll(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int pollId = Integer.parseInt(request.getParameter("pollId"));
+        boolean success = chatDAO.closePoll(pollId, role, userId);
+        JsonObject res = new JsonObject();
+        res.addProperty("success", success);
+        sendJson(response, res.toString());
+    }
+
+    // ---- PIN HANDLERS ----
+
+    private void handlePinMessage(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        long messageId = Long.parseLong(request.getParameter("messageId"));
+        if (!chatDAO.isParticipant(convId, role, userId)) { sendJsonError(response, "Not authorized"); return; }
+        boolean success = chatDAO.pinMessage(convId, messageId, role, userId);
+        JsonObject res = new JsonObject();
+        res.addProperty("success", success);
+        sendJson(response, res.toString());
+    }
+
+    private void handleUnpinMessage(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        long messageId = Long.parseLong(request.getParameter("messageId"));
+        if (!chatDAO.isParticipant(convId, role, userId)) { sendJsonError(response, "Not authorized"); return; }
+        boolean success = chatDAO.unpinMessage(convId, messageId);
+        JsonObject res = new JsonObject();
+        res.addProperty("success", success);
+        sendJson(response, res.toString());
     }
 }

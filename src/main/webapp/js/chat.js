@@ -135,10 +135,8 @@ async function handleWebSocketMessage(data) {
         case 'GROUP_CALL_JOIN':
             if (data.conversationId === currentConversationId) {
                 if (isVideoCall) {
-                    // We are already in the call, connect to the new peer
                     initiateMeshConnection(data.senderKey);
                 } else {
-                    // We are not in the call yet. Show a "Join Call" banner.
                     showJoinCallBanner(data.senderName, data.conversationId, data.callType || 'video');
                 }
             } else {
@@ -157,6 +155,17 @@ async function handleWebSocketMessage(data) {
             break;
         case 'GROUP_CALL_LEAVE':
             if (isVideoCall) removePeer(data.senderKey);
+            break;
+        case 'POLL_CREATED':
+        case 'POLL_UPDATED':
+            if (data.conversationId === currentConversationId && data.pollId) {
+                refreshPoll(data.pollId);
+            }
+            break;
+        case 'PIN_UPDATE':
+            if (data.conversationId === currentConversationId) {
+                loadPinnedMessages();
+            }
             break;
     }
 }
@@ -342,6 +351,11 @@ function appendMessage(msg) {
         deleteHtml = `<button class="icon-btn" style="font-size:0.8rem; padding:0; margin-left:10px; color: var(--text-muted);" onclick="showDeleteModal(${msg.messageId || msg.id}, ${canDeleteForEveryone})" title="Delete Message"><i class="bi bi-trash"></i></button>`;
     }
 
+    let pinHtml = '';
+    if (!deletedForEveryone) {
+        pinHtml = `<button class="icon-btn pin-action-btn" style="font-size:0.8rem; padding:0; margin-left:10px; color:#f59e0b;" onclick="pinMessage(${msg.messageId || msg.id})" title="Pin Message"><i class="bi bi-pin-angle"></i></button>`;
+    }
+
     // Store in map for forwarding, editing and deletions
     loadedMessages[msg.messageId || msg.id] = msg;
 
@@ -350,7 +364,7 @@ function appendMessage(msg) {
             <div class="message-bubble">
                 <span class="msg-sender">${msg.senderName}</span>
                 <div class="msg-content">${contentHtml}</div>
-                <span class="msg-time">${time} ${statusHtml} ${forwardHtml} ${editHtml} ${deleteHtml}</span>
+                <span class="msg-time">${time} ${statusHtml} ${forwardHtml} ${editHtml} ${deleteHtml} ${pinHtml}</span>
             </div>
         </div>
     `;
