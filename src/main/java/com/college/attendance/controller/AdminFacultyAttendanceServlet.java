@@ -75,6 +75,9 @@ public class AdminFacultyAttendanceServlet extends HttpServlet {
                 Date targetDate = Date.valueOf(request.getParameter("targetDate"));
                 dao.addAttendanceByAdmin(teacherId, targetDate, status, notes);
                 com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Added faculty attendance for Teacher ID " + teacherId + " on " + targetDate + " as " + status);
+            } else if ("verifyAllPending".equals(action)) {
+                dao.verifyAllPendingLeaves();
+                com.college.attendance.dao.ActivityLogDAO.log(admin.getRole(), admin.getName(), "Verified all pending faculty leaves.");
             } else {
                 int id = Integer.parseInt(request.getParameter("id"));
                 dao.updateAttendanceByAdmin(id, status, notes);

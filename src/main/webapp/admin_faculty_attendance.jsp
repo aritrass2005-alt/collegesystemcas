@@ -272,6 +272,18 @@
                 <!-- Pending Leaves Tab -->
                 <div class="tab-pane fade" id="pending" role="tabpanel">
                     <div class="card custom-table p-3 border-0 shadow-sm">
+                        <% if (pendingLeaves != null && !pendingLeaves.isEmpty()) { %>
+                        <div class="d-flex justify-content-end mb-3">
+                            <form action="adminFacultyAttendance" method="post" onsubmit="return confirm('Are you sure you want to verify and approve ALL pending leaves?');">
+                                <input type="hidden" name="action" value="verifyAllPending">
+                                <input type="hidden" name="currentDate" value="<%= targetDate %>">
+                                <input type="hidden" name="currentDept" value="<%= dept != null ? dept : "" %>">
+                                <button type="submit" class="btn btn-success shadow-sm" style="border-radius: var(--card-radius);">
+                                    <i class="bi bi-check-all me-1"></i> Verify All Pending Leaves
+                                </button>
+                            </form>
+                        </div>
+                        <% } %>
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.9rem;">
                                 <thead class="table-light">
