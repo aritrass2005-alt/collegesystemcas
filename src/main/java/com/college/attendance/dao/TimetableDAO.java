@@ -24,20 +24,21 @@ public class TimetableDAO {
         try { t.setYear(rs.getInt("year")); } catch (Exception ignored) {}
         try { t.setSection(rs.getString("section")); } catch (Exception ignored) {}
         try { t.setTeacherName(rs.getString("teacher_name")); } catch (Exception ignored) {}
+try { t.setTeacherId(rs.getInt("teacher_id_resolved")); } catch (Exception ignored) {}
         try { t.setTeacherId(rs.getInt("teacher_id")); } catch (Exception ignored) {}
         return t;
     }
 
     private static final String JOIN_SQL =
         "SELECT t.*, s.name as subject_name, s.subject_code, s.department, s.year, s.section, " +
-        "       s.teacher_id, tc.name as teacher_name " +
+        "       COALESCE(t.teacher_id, s.teacher_id) as teacher_id_resolved, tc.name as teacher_name " +
         "FROM timetable t " +
         "JOIN subject s ON t.subject_id = s.id " +
-        "LEFT JOIN teacher tc ON s.teacher_id = tc.id";
+        "LEFT JOIN teacher tc ON COALESCE(t.teacher_id, s.teacher_id) = tc.id";
 
     // ── Create ─────────────────────────────────────────────────────────────────
     public boolean addTimetable(Timetable timetable) {
-        String query = "INSERT INTO timetable (subject_id, day_of_week, start_time, end_time, room_no) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO timetable (subject_id, day_of_week, start_time, end_time, room_no, teacher_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, timetable.getSubjectId());
@@ -45,6 +46,11 @@ public class TimetableDAO {
             ps.setTime(3, timetable.getStartTime());
             ps.setTime(4, timetable.getEndTime());
             ps.setString(5, timetable.getRoomNo());
+            if (timetable.getTeacherId() > 0) {
+                ps.setInt(6, timetable.getTeacherId());
+            } else {
+                ps.setNull(6, java.sql.Types.INTEGER);
+            }
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

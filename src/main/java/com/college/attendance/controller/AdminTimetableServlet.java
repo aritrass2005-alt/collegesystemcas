@@ -3,6 +3,8 @@ package com.college.attendance.controller;
 import com.college.attendance.dao.SubjectDAO;
 import com.college.attendance.dao.TimetableDAO;
 import com.college.attendance.dao.ConfigDAO;
+import com.college.attendance.dao.TeacherDAO;
+import com.college.attendance.model.Teacher;
 import com.college.attendance.model.Subject;
 import com.college.attendance.model.Timetable;
 import com.college.attendance.model.ConfigData;
@@ -22,11 +24,13 @@ public class AdminTimetableServlet extends HttpServlet {
     private TimetableDAO timetableDAO;
     private SubjectDAO   subjectDAO;
     private ConfigDAO    configDAO;
+    private TeacherDAO   teacherDAO;
 
     public void init() {
         timetableDAO = new TimetableDAO();
         subjectDAO   = new SubjectDAO();
         configDAO    = new ConfigDAO();
+        teacherDAO   = new TeacherDAO();
     }
 
     // ── Guard ──────────────────────────────────────────────────────────────────
@@ -70,12 +74,14 @@ public class AdminTimetableServlet extends HttpServlet {
         List<ConfigData> departments = configDAO.getAll("department");
         List<ConfigData> sections    = configDAO.getAll("section");
         List<ConfigData> years       = configDAO.getAll("academic_year");
+        List<Teacher> allTeachers    = teacherDAO.getAllTeachers();
 
         request.setAttribute("timetables",   timetables);
         request.setAttribute("subjects",     subjects);
         request.setAttribute("departments",  departments);
         request.setAttribute("sections",     sections);
         request.setAttribute("years",        years);
+        request.setAttribute("teachers",     allTeachers);
         request.setAttribute("filterDept",    filterDept);
         request.setAttribute("filterYear",    filterYear);
         request.setAttribute("filterSection", filterSection);
@@ -101,6 +107,7 @@ public class AdminTimetableServlet extends HttpServlet {
                 String startStr    = request.getParameter("start_time");
                 String endStr      = request.getParameter("end_time");
                 String roomNo      = request.getParameter("room_no");
+                String teacherIdStr = request.getParameter("teacher_id");
 
                 if (startStr.length() == 5) startStr += ":00";
                 if (endStr.length()   == 5) endStr   += ":00";
@@ -111,6 +118,7 @@ public class AdminTimetableServlet extends HttpServlet {
                 t.setStartTime(Time.valueOf(startStr));
                 t.setEndTime(Time.valueOf(endStr));
                 t.setRoomNo(roomNo);
+                if (teacherIdStr != null && !teacherIdStr.isEmpty()) { t.setTeacherId(Integer.parseInt(teacherIdStr)); }
 
                 boolean success = timetableDAO.addTimetable(t);
                 response.sendRedirect("manageTimetable?" + redirectBase +
@@ -159,3 +167,4 @@ public class AdminTimetableServlet extends HttpServlet {
         return s;
     }
 }
+

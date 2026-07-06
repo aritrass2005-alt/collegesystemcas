@@ -9,6 +9,7 @@
     List<ConfigData> departments = (List<ConfigData>) request.getAttribute("departments");
     List<ConfigData> sections    = (List<ConfigData>) request.getAttribute("sections");
     List<ConfigData> years       = (List<ConfigData>) request.getAttribute("years");
+    List<Teacher> teachers       = (List<Teacher>) request.getAttribute("teachers");
     String fd = request.getAttribute("filterDept")    != null ? (String)request.getAttribute("filterDept")    : "";
     String fy = request.getAttribute("filterYear")    != null ? (String)request.getAttribute("filterYear")    : "";
     String fs = request.getAttribute("filterSection") != null ? (String)request.getAttribute("filterSection") : "";
@@ -42,7 +43,7 @@
 
 /* ── Day grid ── */
 .day-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
-.day-col{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-card);}
+.day-col{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;box-shadow:var(--shadow-card);}
 .day-col-header{padding:12px 16px;background:linear-gradient(135deg,#1e3a5f,#0f2240);display:flex;align-items:center;justify-content:space-between;}
 .day-col-header span{color:#fff;font-weight:700;font-size:.9rem;}
 .day-slots{padding:10px;}
@@ -263,9 +264,18 @@
                   </option>
                 <%}} %>
               </select>
+              <div class="col-12">
+              <label class="form-label small fw-semibold">Assigned Teacher (Optional)</label>
+              <select name="teacher_id" id="slotTeacher" class="form-select">
+                <option value="">� Use Default Teacher for Subject �</option>
+                <% if(teachers!=null){for(Teacher t:teachers){ %>
+                  <option value="<%=t.getId()%>"><%=t.getName()%> (<%=t.getDepartment()%>)</option>
+                <%}} %>
+              </select>
               <div class="teacher-autofill" id="teacherAutofill">
-                <i class="bi bi-person-badge-fill me-1"></i>Teacher: <strong id="teacherAutoName"></strong>
+                <i class="bi bi-info-circle-fill me-1"></i>Default: <strong id="teacherAutoName"></strong>
               </div>
+            </div>
             </div>
             <div class="col-6">
               <label class="form-label small fw-semibold">Start Time *</label>
@@ -335,4 +345,6 @@ setTimeout(function(){
 </script>
 </body>
 </html>
+
+
 
