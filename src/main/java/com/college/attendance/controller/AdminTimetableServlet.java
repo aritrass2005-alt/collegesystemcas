@@ -59,13 +59,8 @@ public class AdminTimetableServlet extends HttpServlet {
             timetables = timetableDAO.getAllTimetables();
         }
 
-        // Subjects filtered by current group for the add-slot dropdown
-        List<Subject> subjects;
-        if (filterDept != null && !filterDept.isEmpty()) {
-            subjects = subjectDAO.getSubjectsByFilter(filterDept, filterYear, filterSection);
-        } else {
-            subjects = subjectDAO.getAllSubjects();
-        }
+        // Always load all subjects for the dropdown so admins can schedule cross-department classes
+        List<Subject> subjects = subjectDAO.getAllSubjects();
 
         List<ConfigData> departments = configDAO.getAll("department");
         List<ConfigData> sections    = configDAO.getAll("section");
