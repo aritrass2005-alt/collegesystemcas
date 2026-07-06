@@ -283,7 +283,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
 <script src="js/encryption.js?v=4"></script>
-<script src="js/chat.js?v=5"></script>
+<script src="js/chat.js?v=6"></script>
 <script src="js/chat_poll_pin.js?v=1"></script>
 </body>
 </html>

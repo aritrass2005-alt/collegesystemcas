@@ -372,7 +372,7 @@ function appendMessage(msg) {
 
     let pinHtml = '';
     if (!deletedForEveryone) {
-        pinHtml = `<button class="icon-btn pin-action-btn" style="font-size:0.8rem; padding:0; margin-left:10px; color:#f59e0b;" onclick="pinMessage(${msg.messageId || msg.id})" title="Pin Message"><i class="bi bi-pin-angle"></i></button>`;
+        pinHtml = `<button class="icon-btn pin-action-btn" style="font-size:0.7rem; padding:0; margin-left:8px; color:#f59e0b;" onclick="pinMessage(${msg.messageId || msg.id})" title="Pin Message"><i class="bi bi-pin-angle"></i></button>`;
     }
 
     // Store in map for forwarding, editing and deletions
