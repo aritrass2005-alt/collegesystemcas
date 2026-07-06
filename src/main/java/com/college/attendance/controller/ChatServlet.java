@@ -183,11 +183,14 @@ public class ChatServlet extends HttpServlet {
 
         int convId = Integer.parseInt(request.getParameter("convId"));
         String memberRole = request.getParameter("memberRole");
-        int memberId = Integer.parseInt(request.getParameter("memberId"));
+        String memberEmail = request.getParameter("memberEmail");
 
-        boolean success = chatDAO.addParticipant(convId, memberRole, memberId);
+        boolean success = chatDAO.addParticipantByEmail(convId, memberRole, memberEmail);
         JsonObject result = new JsonObject();
         result.addProperty("success", success);
+        if (!success) {
+            result.addProperty("error", "Could not find user with that email and role, or they are already a member.");
+        }
         sendJson(response, result.toString());
     }
 

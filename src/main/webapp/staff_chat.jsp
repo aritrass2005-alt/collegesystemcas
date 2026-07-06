@@ -206,8 +206,8 @@
             </select>
         </div>
         <div class="form-group">
-            <label>User ID</label>
-            <input type="number" id="addMemberId" placeholder="Enter ID">
+            <label>Email ID</label>
+            <input type="email" id="addMemberEmail" placeholder="Enter Email Address">
         </div>
         <div class="modal-actions">
             <button class="btn-secondary" onclick="closeModal('addMemberModal')">Cancel</button>

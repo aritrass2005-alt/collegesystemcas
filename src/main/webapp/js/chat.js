@@ -434,16 +434,22 @@ async function createDepartmentGroup() {
 
 async function addMember() {
     const role = document.getElementById('addMemberRole').value;
-    const id = document.getElementById('addMemberId').value;
+    const email = document.getElementById('addMemberEmail').value;
+    if (!email) { alert("Please enter an email address"); return; }
+    
     const res = await fetch('chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: new URLSearchParams({action: 'addMember', convId: currentConversationId, memberRole: role, memberId: id})
+        body: new URLSearchParams({action: 'addMember', convId: currentConversationId, memberRole: role, memberEmail: email})
     });
     const json = await res.json();
     if (json.success) {
         alert("Member added!");
         closeModal('addMemberModal');
+        // Refresh the page or reload group info to show the new member
+        window.location.reload();
+    } else {
+        alert("Failed to add member: " + (json.error || "Unknown error"));
     }
 }
 

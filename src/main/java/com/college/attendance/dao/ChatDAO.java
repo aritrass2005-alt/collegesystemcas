@@ -242,11 +242,11 @@ public class ChatDAO {
         List<ChatParticipant> list = new ArrayList<>();
         String sql = "SELECT cp.*, " +
                      "COALESCE(" +
-                     "  (SELECT t.name FROM teacher t WHERE t.id = cp.user_id AND cp.user_role = 'Teacher'), " +
+                     "  (SELECT t.name FROM teacher t WHERE t.id = cp.user_id AND (cp.user_role = 'Teacher' OR cp.user_role = 'Coordinator')), " +
                      "  (SELECT a.name FROM admin a WHERE a.id = cp.user_id AND (cp.user_role = 'Admin' OR cp.user_role = 'SuperAdmin'))" +
                      ") AS user_name, " +
                      "COALESCE(" +
-                     "  (SELECT t.profile_photo FROM teacher t WHERE t.id = cp.user_id AND cp.user_role = 'Teacher'), " +
+                     "  (SELECT t.profile_photo FROM teacher t WHERE t.id = cp.user_id AND (cp.user_role = 'Teacher' OR cp.user_role = 'Coordinator')), " +
                      "  (SELECT a.profile_photo FROM admin a WHERE a.id = cp.user_id AND (cp.user_role = 'Admin' OR cp.user_role = 'SuperAdmin'))" +
                      ") AS profile_photo " +
                      "FROM chat_participants cp WHERE cp.conversation_id = ?";
@@ -285,6 +285,42 @@ public class ChatDAO {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Add a member to a conversation by Email
+     */
+    public boolean addParticipantByEmail(int conversationId, String role, String email) {
+        String query = "";
+        if ("Teacher".equals(role)) {
+            query = "SELECT id FROM teacher WHERE email = ?";
+        } else if ("Coordinator".equals(role)) {
+            query = "SELECT t.id FROM teacher t JOIN coordinator c ON t.id = c.teacher_id WHERE t.email = ?";
+        } else if ("Admin".equals(role) || "SuperAdmin".equals(role)) {
+            query = "SELECT id FROM admin WHERE email = ? AND role = ?";
+        } else {
+            return false;
+        }
+
+        int userId = -1;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, email);
+            if ("Admin".equals(role) || "SuperAdmin".equals(role)) {
+                ps.setString(2, role);
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (userId != -1) {
+            return addParticipant(conversationId, role, userId);
         }
         return false;
     }
