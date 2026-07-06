@@ -74,14 +74,14 @@ public class AdminTimetableServlet extends HttpServlet {
         List<ConfigData> departments = configDAO.getAll("department");
         List<ConfigData> sections    = configDAO.getAll("section");
         List<ConfigData> years       = configDAO.getAll("academic_year");
-        List<Teacher> allTeachers    = teacherDAO.getAllTeachers();
+        List<Teacher> teachers = teacherDAO.getTeachersByFilter(filterDept, 0, null, null);
 
         request.setAttribute("timetables",   timetables);
         request.setAttribute("subjects",     subjects);
         request.setAttribute("departments",  departments);
         request.setAttribute("sections",     sections);
         request.setAttribute("years",        years);
-        request.setAttribute("teachers",     allTeachers);
+        request.setAttribute("teachers", teachers);
         request.setAttribute("filterDept",    filterDept);
         request.setAttribute("filterYear",    filterYear);
         request.setAttribute("filterSection", filterSection);

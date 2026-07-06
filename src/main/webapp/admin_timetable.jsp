@@ -254,7 +254,7 @@
             </div>
             <div class="col-12">
               <label class="form-label small fw-semibold">Subject *</label>
-              <select name="subject_id" id="slotSubject" class="form-select" required onchange="autoFillTeacher(this)">
+              <select name="subject_id" id="slotSubject" class="form-select" required >
                 <option value="">â€” Select Subject â€”</option>
                 <% if(subjects!=null){for(Subject s:subjects){ %>
                   <option value="<%=s.getId()%>"
@@ -265,16 +265,14 @@
                 <%}} %>
               </select>
               <div class="col-12">
-              <label class="form-label small fw-semibold">Assigned Teacher (Optional)</label>
-              <select name="teacher_id" id="slotTeacher" class="form-select">
-                <option value="">— Use Default Teacher for Subject —</option>
+              <label class="form-label small fw-semibold">Assigned Teacher *</label>
+              <select name="teacher_id" id="slotTeacher" class="form-select" required>
+                <option value="">— Select Teacher —</option>
                 <% if(teachers!=null){for(Teacher t:teachers){ %>
                   <option value="<%=t.getId()%>"><%=t.getName()%> (<%=t.getDepartment()%>)</option>
                 <%}} %>
               </select>
-              <div class="teacher-autofill" id="teacherAutofill">
-                <i class="bi bi-info-circle-fill me-1"></i>Default: <strong id="teacherAutoName"></strong>
-              </div>
+
             </div>
             </div>
             <div class="col-6">
@@ -307,18 +305,11 @@ var slotModal = new bootstrap.Modal(document.getElementById('addSlotModal'));
 function openAddSlot(day) {
     document.getElementById('slotDay').value = day;
     document.getElementById('slotSubject').value = '';
-    document.getElementById('teacherAutofill').style.display = 'none';
+    
     slotModal.show();
 }
 
-function autoFillTeacher(sel) {
-    var opt = sel.options[sel.selectedIndex];
-    var teacher = opt ? opt.getAttribute('data-teacher') : '';
-    var div = document.getElementById('teacherAutofill');
-    if (teacher && teacher.length > 0) {
-        document.getElementById('teacherAutoName').textContent = teacher;
-        div.style.display = 'block';
-    } else {
+ else {
         div.style.display = 'none';
     }
 }
@@ -345,6 +336,8 @@ setTimeout(function(){
 </script>
 </body>
 </html>
+
+
 
 
 
