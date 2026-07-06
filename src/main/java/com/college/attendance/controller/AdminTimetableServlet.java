@@ -66,7 +66,8 @@ public class AdminTimetableServlet extends HttpServlet {
         // Subjects filtered by current group for the add-slot dropdown
         List<Subject> subjects;
         if (filterDept != null && !filterDept.isEmpty()) {
-            subjects = subjectDAO.getSubjectsByFilter(filterDept, null, null);
+            
+            subjects = subjectDAO.getSubjectsByFilter(filterDept, filterYear, filterSection);
         } else {
             subjects = subjectDAO.getAllSubjects();
         }
