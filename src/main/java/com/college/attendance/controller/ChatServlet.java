@@ -50,6 +50,8 @@ public class ChatServlet extends HttpServlet {
             handleGetConversations(request, response, session);
         } else if ("getPoll".equals(action)) {
             handleGetPoll(request, response, session);
+        } else if ("getPolls".equals(action)) {
+            handleGetPolls(request, response, session);
         } else if ("getPinnedMessages".equals(action)) {
             handleGetPinnedMessages(request, response, session);
         } else {
@@ -242,6 +244,15 @@ public class ChatServlet extends HttpServlet {
         com.college.attendance.model.ChatPoll poll = chatDAO.getPoll(pollId, role, userId);
         if (poll == null) { sendJsonError(response, "Poll not found"); return; }
         sendJson(response, gson.toJson(poll));
+    }
+
+    private void handleGetPolls(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        int userId = getUserId(session);
+        int convId = Integer.parseInt(request.getParameter("convId"));
+        if (!chatDAO.isParticipant(convId, role, userId)) { sendJsonError(response, "Not authorized"); return; }
+        List<com.college.attendance.model.ChatPoll> polls = chatDAO.getAllPolls(convId, role, userId);
+        sendJson(response, gson.toJson(polls));
     }
 
     private void handleGetPinnedMessages(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {

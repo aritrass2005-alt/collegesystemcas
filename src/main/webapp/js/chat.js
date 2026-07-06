@@ -204,18 +204,37 @@ function selectConversation(el) {
 }
 
 async function loadMessages() {
-    const res = await fetch(`chat?action=messages&convId=${currentConversationId}&limit=50&offset=0`);
-    const messages = await res.json();
+    const msgRes = await fetch(`chat?action=messages&convId=${currentConversationId}&limit=50&offset=0`);
+    const messages = await msgRes.json();
+
+    const pollRes = await fetch(`chat?action=getPolls&convId=${currentConversationId}`);
+    const polls = await pollRes.json();
     
     const container = document.getElementById('messagesContainer');
     container.innerHTML = '';
     
+    let allItems = [];
     for (let msg of messages) {
         msg.content = await decryptMessage(msg.encryptedContent, currentConversationId.toString());
         if (msg.fileUrl) {
             msg.fileUrl = await decryptMessage(msg.fileUrl, currentConversationId.toString());
         }
-        appendMessage(msg);
+        allItems.push({ type: 'msg', time: new Date(msg.sentAt).getTime(), data: msg });
+    }
+    for (let poll of polls) {
+        allItems.push({ type: 'poll', time: new Date(poll.createdAt).getTime(), data: poll });
+    }
+    
+    allItems.sort((a, b) => a.time - b.time);
+    
+    for (let item of allItems) {
+        if (item.type === 'msg') {
+            appendMessage(item.data);
+        } else if (item.type === 'poll') {
+            // Note: renderPollInChat needs to just append to the container chronologically
+            // appendPollMessage calls renderPollInChat, which we can just use directly since we already have the poll object
+            renderPollInChat(item.data);
+        }
     }
     scrollToBottom();
 }

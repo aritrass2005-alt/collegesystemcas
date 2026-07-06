@@ -579,6 +579,54 @@ public class ChatDAO {
         return null;
     }
 
+    /** Get all polls for a conversation. */
+    public List<ChatPoll> getAllPolls(int conversationId, String voterRole, int voterId) {
+        List<ChatPoll> polls = new ArrayList<>();
+        String sqlPolls = "SELECT p.*, " +
+            "(SELECT pv.option_id FROM chat_poll_votes pv WHERE pv.poll_id = p.id AND pv.voter_role = ? AND pv.voter_id = ?) AS my_vote " +
+            "FROM chat_polls p WHERE p.conversation_id = ? ORDER BY p.created_at ASC";
+            
+        String sqlOpts = "SELECT o.*, COUNT(pv.id) AS vote_count FROM chat_poll_options o " +
+            "LEFT JOIN chat_poll_votes pv ON pv.option_id = o.id WHERE o.poll_id = ? GROUP BY o.id ORDER BY o.id";
+            
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlPolls)) {
+            ps.setString(1, voterRole);
+            ps.setInt(2, voterId);
+            ps.setInt(3, conversationId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ChatPoll poll = new ChatPoll();
+                poll.setId(rs.getInt("id"));
+                poll.setConversationId(rs.getInt("conversation_id"));
+                poll.setQuestion(rs.getString("question"));
+                poll.setCreatedByRole(rs.getString("created_by_role"));
+                poll.setCreatedById(rs.getInt("created_by_id"));
+                poll.setCreatedAt(rs.getTimestamp("created_at"));
+                poll.setClosed(rs.getBoolean("is_closed"));
+                int myVote = rs.getInt("my_vote");
+                poll.setMyVotedOptionId(rs.wasNull() ? 0 : myVote);
+
+                List<ChatPollOption> opts = new ArrayList<>();
+                try (PreparedStatement psOpt = conn.prepareStatement(sqlOpts)) {
+                    psOpt.setInt(1, poll.getId());
+                    ResultSet rsOpt = psOpt.executeQuery();
+                    while (rsOpt.next()) {
+                        ChatPollOption opt = new ChatPollOption();
+                        opt.setId(rsOpt.getInt("id"));
+                        opt.setPollId(poll.getId());
+                        opt.setOptionText(rsOpt.getString("option_text"));
+                        opt.setVoteCount(rsOpt.getInt("vote_count"));
+                        opts.add(opt);
+                    }
+                }
+                poll.setOptions(opts);
+                polls.add(poll);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return polls;
+    }
+
     /** Cast or change a vote on a poll. Returns false if poll is closed. */
     public boolean votePoll(int pollId, int optionId, String voterRole, int voterId) {
         // Check poll is still open and option belongs to poll

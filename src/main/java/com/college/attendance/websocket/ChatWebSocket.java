@@ -81,6 +81,11 @@ public class ChatWebSocket {
                 case "GROUP_CALL_LEAVE":
                     handleMeshSignaling(json, session);
                     break;
+                case "POLL_CREATED":
+                case "POLL_UPDATED":
+                case "PIN_UPDATE":
+                    handleBroadcast(json, session);
+                    break;
                 default:
                     break;
             }
@@ -342,6 +347,13 @@ public class ChatWebSocket {
                 } catch (IOException e) {}
             }
         }
+    }
+
+    private void handleBroadcast(JsonObject json, Session session) {
+        int conversationId = json.has("conversationId") ? json.get("conversationId").getAsInt() : -1;
+        if (conversationId == -1) return;
+        String senderKey = (String) session.getUserProperties().get("userKey");
+        sendToConversationExcept(conversationId, json.toString(), senderKey);
     }
 
     private void broadcastOnlineStatus(String userKey, boolean online) {
