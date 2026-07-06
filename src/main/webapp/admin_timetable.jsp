@@ -309,10 +309,7 @@ function openAddSlot(day) {
     slotModal.show();
 }
 
- else {
-        div.style.display = 'none';
-    }
-}
+ 
 
 // Auto-dismiss alerts
 setTimeout(function(){
@@ -336,6 +333,7 @@ setTimeout(function(){
 </script>
 </body>
 </html>
+
 
 
 
