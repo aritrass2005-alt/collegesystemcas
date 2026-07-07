@@ -133,7 +133,12 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("role", "Student");
                 session.setMaxInactiveInterval(3600);
                 ActivityLogDAO.log("Student", student.getName(), "Logged into the system");
-                response.sendRedirect("studentDashboard");
+                
+                if (!student.isProfileCompleted() || !student.isParentVerified()) {
+                    response.sendRedirect("studentSetup");
+                } else {
+                    response.sendRedirect("studentDashboard");
+                }
                 return;
             }
         }

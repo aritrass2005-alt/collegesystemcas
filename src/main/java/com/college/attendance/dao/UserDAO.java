@@ -106,11 +106,19 @@ public class UserDAO {
                         student.setRollNo(rs.getString("roll_no"));
                         student.setName(rs.getString("name"));
                         student.setEmail(rs.getString("email"));
+                        student.setPhone(rs.getString("phone"));
+                        student.setAddress(rs.getString("address"));
+                        student.setDob(rs.getString("dob"));
                         student.setDepartment(rs.getString("department"));
                         student.setYear(rs.getInt("year"));
                         student.setSection(rs.getString("section"));
                         student.setProfilePhoto(rs.getString("profile_photo"));
                         student.setBanned(rs.getBoolean("is_banned"));
+                        student.setParentName(rs.getString("parent_name"));
+                        student.setParentEmail(rs.getString("parent_email"));
+                        student.setParentPhone(rs.getString("parent_phone"));
+                        student.setProfileCompleted(rs.getBoolean("is_profile_completed"));
+                        student.setParentVerified(rs.getBoolean("is_parent_verified"));
                         return student;
                     }
                 }

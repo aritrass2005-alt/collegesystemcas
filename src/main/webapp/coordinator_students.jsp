@@ -50,6 +50,7 @@
                                     <th>Department</th>
                                     <th>Year</th>
                                     <th>Section</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,11 +70,23 @@
                                         <td><%= s.getDepartment() %></td>
                                         <td><%= s.getYear() %></td>
                                         <td><span class="badge bg-light text-dark border"><%= s.getSection() != null && !s.getSection().isEmpty() ? s.getSection() : "All" %></span></td>
+                                        <td>
+                                            <% if (s.getParentPhone() != null && !s.getParentPhone().isEmpty()) { %>
+                                                <a href="tel:<%= s.getParentPhone() %>" class="btn btn-sm btn-outline-primary" title="Call Guardian">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                </a>
+                                                <a href="sms:<%= s.getParentPhone() %>" class="btn btn-sm btn-outline-success" title="Message Guardian">
+                                                    <i class="bi bi-chat-dots-fill"></i>
+                                                </a>
+                                            <% } else { %>
+                                                <span class="text-muted small">No contact info</span>
+                                            <% } %>
+                                        </td>
                                     </tr>
                                 <% }
                                 } else { %>
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">No students found in your assigned sections.</td>
+                                        <td colspan="7" class="text-center text-muted py-4">No students found in your assigned sections.</td>
                                     </tr>
                                 <% } %>
                             </tbody>

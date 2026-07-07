@@ -35,7 +35,13 @@ public class StudentLeaveServlet extends HttpServlet {
             response.sendRedirect("login.jsp?error=Unauthorized+Access");
             return;
         }
-        
+
+        // Enforce profile completion and parent verification
+        if (!student.isProfileCompleted() || !student.isParentVerified()) {
+            response.sendRedirect("studentSetup");
+            return;
+        }
+
         String action = request.getParameter("action");
         if ("cancel".equals(action)) {
             try {

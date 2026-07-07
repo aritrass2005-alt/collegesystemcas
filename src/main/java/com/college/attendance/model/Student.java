@@ -17,6 +17,8 @@ public class Student {
     private String parentName;
     private String parentEmail;
     private String parentPhone;
+    private boolean profileCompleted;
+    private boolean parentVerified;
 
     // Getters and Setters
     public int getId() { return id; }
@@ -66,4 +68,10 @@ public class Student {
 
     public String getParentPhone() { return parentPhone; }
     public void setParentPhone(String parentPhone) { this.parentPhone = parentPhone; }
+
+    public boolean isProfileCompleted() { return profileCompleted; }
+    public void setProfileCompleted(boolean profileCompleted) { this.profileCompleted = profileCompleted; }
+
+    public boolean isParentVerified() { return parentVerified; }
+    public void setParentVerified(boolean parentVerified) { this.parentVerified = parentVerified; }
 }

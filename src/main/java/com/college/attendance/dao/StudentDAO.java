@@ -13,7 +13,7 @@ import java.util.List;
 public class StudentDAO {
 
     public boolean addStudent(Student student, String dob, String address) {
-        String sql = "INSERT INTO student (roll_no, name, email, phone, dob, password, address, department, year, section, parent_name, parent_email, parent_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO student (roll_no, name, email, phone, dob, password, address, department, year, section, parent_name, parent_email, parent_phone, is_profile_completed, is_parent_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -33,6 +33,8 @@ public class StudentDAO {
             stmt.setString(11, student.getParentName());
             stmt.setString(12, student.getParentEmail());
             stmt.setString(13, student.getParentPhone());
+            stmt.setBoolean(14, student.isProfileCompleted());
+            stmt.setBoolean(15, student.isParentVerified());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -42,7 +44,7 @@ public class StudentDAO {
     }
 
     public boolean updateStudent(Student student, String address) {
-        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, dob=?, address=?, department=?, year=?, section=?, parent_name=?, parent_email=?, parent_phone=? WHERE id=?";
+        String sql = "UPDATE student SET roll_no=?, name=?, email=?, phone=?, dob=?, address=?, department=?, year=?, section=?, parent_name=?, parent_email=?, parent_phone=?, is_profile_completed=?, is_parent_verified=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
@@ -58,7 +60,9 @@ public class StudentDAO {
             stmt.setString(10, student.getParentName());
             stmt.setString(11, student.getParentEmail());
             stmt.setString(12, student.getParentPhone());
-            stmt.setInt(13, student.getId());
+            stmt.setBoolean(13, student.isProfileCompleted());
+            stmt.setBoolean(14, student.isParentVerified());
+            stmt.setInt(15, student.getId());
             
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -203,6 +207,8 @@ public class StudentDAO {
                 s.setParentName(rs.getString("parent_name"));
                 s.setParentEmail(rs.getString("parent_email"));
                 s.setParentPhone(rs.getString("parent_phone"));
+                s.setProfileCompleted(rs.getBoolean("is_profile_completed"));
+                s.setParentVerified(rs.getBoolean("is_parent_verified"));
                 students.add(s);
             }
         } catch (Exception e) {
@@ -238,6 +244,8 @@ public class StudentDAO {
                     s.setParentName(rs.getString("parent_name"));
                     s.setParentEmail(rs.getString("parent_email"));
                     s.setParentPhone(rs.getString("parent_phone"));
+                    s.setProfileCompleted(rs.getBoolean("is_profile_completed"));
+                    s.setParentVerified(rs.getBoolean("is_parent_verified"));
                     students.add(s);
                 }
             }
@@ -288,6 +296,8 @@ public class StudentDAO {
                     s.setParentName(rs.getString("parent_name"));
                     s.setParentEmail(rs.getString("parent_email"));
                     s.setParentPhone(rs.getString("parent_phone"));
+                    s.setProfileCompleted(rs.getBoolean("is_profile_completed"));
+                    s.setParentVerified(rs.getBoolean("is_parent_verified"));
                     students.add(s);
                 }
             }
@@ -311,6 +321,7 @@ public class StudentDAO {
                     s.setEmail(rs.getString("email"));
                     s.setPhone(rs.getString("phone"));
                     s.setDob(rs.getString("dob"));
+                    s.setAddress(rs.getString("address"));
                     s.setStatus(rs.getString("status"));
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
@@ -318,6 +329,8 @@ public class StudentDAO {
                     s.setParentName(rs.getString("parent_name"));
                     s.setParentEmail(rs.getString("parent_email"));
                     s.setParentPhone(rs.getString("parent_phone"));
+                    s.setProfileCompleted(rs.getBoolean("is_profile_completed"));
+                    s.setParentVerified(rs.getBoolean("is_parent_verified"));
                     s.setBanned(rs.getBoolean("is_banned"));
                     return s;
                 }

@@ -27,6 +27,12 @@ public class StudentAttendanceServlet extends HttpServlet {
             return;
         }
 
+        // Enforce profile completion and parent verification
+        if (!student.isProfileCompleted() || !student.isParentVerified()) {
+            response.sendRedirect("studentSetup");
+            return;
+        }
+
         List<AttendanceSummary> attendanceSummary = attendanceDAO.getStudentAttendanceSummary(student.getId());
         request.setAttribute("attendanceSummary", attendanceSummary);
 

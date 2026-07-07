@@ -22,6 +22,12 @@ public class StudentProfileServlet extends HttpServlet {
             return;
         }
 
+        // Enforce profile completion and parent verification
+        if (!student.isProfileCompleted() || !student.isParentVerified()) {
+            response.sendRedirect("studentSetup");
+            return;
+        }
+
         String action = request.getParameter("action");
         if ("remove_photo".equals(action)) {
             try (Connection conn = DBConnection.getConnection()) {
@@ -49,9 +55,17 @@ public class StudentProfileServlet extends HttpServlet {
         }
 
         String name    = request.getParameter("name");
-        String phone   = request.getParameter("phone");
-        String address = request.getParameter("address");
-        String newPass = request.getParameter("new_password");
+        String phone       = request.getParameter("phone");
+        String address     = request.getParameter("address");
+        String parentName  = request.getParameter("parent_name");
+        String parentPhone = request.getParameter("parent_phone");
+        String parentEmail = request.getParameter("parent_email");
+        String newPass     = request.getParameter("new_password");
+
+        if (phone != null && phone.equals(parentPhone)) {
+            response.sendRedirect("studentProfile?error=Student phone and guardian phone cannot be the same.");
+            return;
+        }
 
         // Handle photo upload
         String photoPath = null;
@@ -65,7 +79,7 @@ public class StudentProfileServlet extends HttpServlet {
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-            StringBuilder sql = new StringBuilder("UPDATE student SET name=?, phone=?, address=?");
+            StringBuilder sql = new StringBuilder("UPDATE student SET name=?, phone=?, address=?, parent_name=?, parent_phone=?, parent_email=?");
             if (photoPath != null) sql.append(", profile_photo=?");
             if (newPass != null && !newPass.trim().isEmpty()) sql.append(", password=?");
             sql.append(" WHERE id=?");
@@ -75,6 +89,9 @@ public class StudentProfileServlet extends HttpServlet {
             stmt.setString(idx++, name);
             stmt.setString(idx++, phone);
             stmt.setString(idx++, address);
+            stmt.setString(idx++, parentName);
+            stmt.setString(idx++, parentPhone);
+            stmt.setString(idx++, parentEmail);
             if (photoPath != null) stmt.setString(idx++, photoPath);
             if (newPass != null && !newPass.trim().isEmpty()) {
                 stmt.setString(idx++, org.mindrot.jbcrypt.BCrypt.hashpw(newPass, org.mindrot.jbcrypt.BCrypt.gensalt()));
@@ -85,6 +102,10 @@ public class StudentProfileServlet extends HttpServlet {
             // Refresh session object
             student.setName(name);
             student.setPhone(phone);
+            student.setAddress(address);
+            student.setParentName(parentName);
+            student.setParentPhone(parentPhone);
+            student.setParentEmail(parentEmail);
             if (photoPath != null) student.setProfilePhoto(photoPath);
             session.setAttribute("user", student);
 

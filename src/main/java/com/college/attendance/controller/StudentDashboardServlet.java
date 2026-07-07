@@ -29,6 +29,12 @@ public class StudentDashboardServlet extends HttpServlet {
             return;
         }
 
+        // Enforce profile completion and parent verification
+        if (!student.isProfileCompleted() || !student.isParentVerified()) {
+            response.sendRedirect("studentSetup");
+            return;
+        }
+
         // Fetch subject-wise attendance
         List<AttendanceSummary> subjectSummary = attendanceDAO.getStudentAttendanceSummary(student.getId());
         

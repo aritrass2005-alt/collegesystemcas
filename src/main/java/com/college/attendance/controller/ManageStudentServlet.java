@@ -158,6 +158,14 @@ public class ManageStudentServlet extends HttpServlet {
         s.setParentName(parentName);
         s.setParentEmail(parentEmail);
         s.setParentPhone(parentPhone);
+        
+        if (parentPhone != null && !parentPhone.trim().isEmpty() && parentName != null && !parentName.trim().isEmpty()) {
+            s.setProfileCompleted(true);
+            s.setParentVerified(true);
+        } else {
+            s.setProfileCompleted(false);
+            s.setParentVerified(false);
+        }
 
         boolean success = false;
         

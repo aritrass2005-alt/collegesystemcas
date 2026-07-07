@@ -144,6 +144,24 @@
                         </div>
 
                         <div class="form-section mb-4">
+                            <div class="section-label"><i class="bi bi-people me-2"></i>Guardian Details</div>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label small fw-bold text-muted">Guardian Name</label>
+                                    <input type="text" name="parent_name" class="form-control" value="<%= student.getParentName() != null ? student.getParentName() : "" %>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Guardian Phone</label>
+                                    <input type="text" name="parent_phone" class="form-control" value="<%= student.getParentPhone() != null ? student.getParentPhone() : "" %>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Guardian Email (Optional)</label>
+                                    <input type="email" name="parent_email" class="form-control" value="<%= student.getParentEmail() != null ? student.getParentEmail() : "" %>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section mb-4">
                             <div class="section-label"><i class="bi bi-lock me-2"></i>Change Password</div>
                             <div class="row g-3">
                                 <div class="col-md-6">

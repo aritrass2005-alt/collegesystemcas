@@ -24,6 +24,12 @@ public class StudentTimetableServlet extends HttpServlet {
             return;
         }
 
+        // Enforce profile completion and parent verification
+        if (!student.isProfileCompleted() || !student.isParentVerified()) {
+            response.sendRedirect("studentSetup");
+            return;
+        }
+
         TimetableDAO timetableDAO = new TimetableDAO();
         List<Timetable> studentTimetable = timetableDAO.getTimetableForStudent(student.getDepartment(), student.getYear(), student.getSection());
         request.setAttribute("studentTimetable", studentTimetable);
