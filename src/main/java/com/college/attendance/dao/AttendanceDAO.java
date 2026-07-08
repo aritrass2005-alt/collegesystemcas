@@ -687,4 +687,107 @@ public class AttendanceDAO {
         }
         return list;
     }
+
+    /**
+     * Get pending student appeals for students in the coordinator's assigned sections.
+     * Includes guardian contact details for the coordinator to call/message.
+     */
+    public List<Attendance> getPendingStudentAppealsForCoordinatorSection(int coordinatorTeacherId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = "SELECT a.*, s.name as student_name, s.roll_no, s.section as student_section, " +
+                     "s.department as student_dept, s.year as student_year, " +
+                     "s.parent_name, s.parent_phone, s.parent_email, " +
+                     "sub.name as subject_name, sub.subject_code " +
+                     "FROM attendance a " +
+                     "JOIN student s ON a.student_id = s.id " +
+                     "JOIN subject sub ON a.subject_id = sub.id " +
+                     "JOIN coordinator c ON s.department = c.department AND s.year = c.year " +
+                     "AND (c.section IS NULL OR c.section = '' OR s.section = c.section) " +
+                     "WHERE c.teacher_id = ? AND a.student_appeal_status = 'Pending' " +
+                     "ORDER BY a.date_time DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, coordinatorTeacherId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Attendance a = new Attendance();
+                    a.setId(rs.getInt("id"));
+                    a.setStudentId(rs.getInt("student_id"));
+                    a.setSubjectId(rs.getInt("subject_id"));
+                    a.setStatus(rs.getString("status"));
+                    a.setDateTime(rs.getTimestamp("date_time"));
+                    a.setLocked(rs.getBoolean("is_locked"));
+                    a.setStudentName(rs.getString("student_name"));
+                    a.setStudentRollNo(rs.getString("roll_no"));
+                    a.setStudentSection(rs.getString("student_section"));
+                    a.setStudentDepartment(rs.getString("student_dept"));
+                    a.setStudentYear(rs.getInt("student_year"));
+                    a.setParentName(rs.getString("parent_name"));
+                    a.setParentPhone(rs.getString("parent_phone"));
+                    a.setParentEmail(rs.getString("parent_email"));
+                    a.setSubjectName(rs.getString("subject_name"));
+                    a.setSubjectCode(rs.getString("subject_code"));
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
+                    list.add(a);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Get resolved student appeal history for students in the coordinator's assigned sections.
+     * Includes guardian contact details.
+     */
+    public List<Attendance> getStudentAppealHistoryForCoordinator(int coordinatorTeacherId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = "SELECT a.*, s.name as student_name, s.roll_no, s.section as student_section, " +
+                     "s.department as student_dept, s.year as student_year, " +
+                     "s.parent_name, s.parent_phone, s.parent_email, " +
+                     "sub.name as subject_name, sub.subject_code " +
+                     "FROM attendance a " +
+                     "JOIN student s ON a.student_id = s.id " +
+                     "JOIN subject sub ON a.subject_id = sub.id " +
+                     "JOIN coordinator c ON s.department = c.department AND s.year = c.year " +
+                     "AND (c.section IS NULL OR c.section = '' OR s.section = c.section) " +
+                     "WHERE c.teacher_id = ? AND a.student_appeal_status IN ('Approved', 'Rejected') " +
+                     "ORDER BY a.date_time DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, coordinatorTeacherId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Attendance a = new Attendance();
+                    a.setId(rs.getInt("id"));
+                    a.setStudentId(rs.getInt("student_id"));
+                    a.setSubjectId(rs.getInt("subject_id"));
+                    a.setStatus(rs.getString("status"));
+                    a.setDateTime(rs.getTimestamp("date_time"));
+                    a.setLocked(rs.getBoolean("is_locked"));
+                    a.setStudentName(rs.getString("student_name"));
+                    a.setStudentRollNo(rs.getString("roll_no"));
+                    a.setStudentSection(rs.getString("student_section"));
+                    a.setStudentDepartment(rs.getString("student_dept"));
+                    a.setStudentYear(rs.getInt("student_year"));
+                    a.setParentName(rs.getString("parent_name"));
+                    a.setParentPhone(rs.getString("parent_phone"));
+                    a.setParentEmail(rs.getString("parent_email"));
+                    a.setSubjectName(rs.getString("subject_name"));
+                    a.setSubjectCode(rs.getString("subject_code"));
+                    a.setStudentAppealStatus(rs.getString("student_appeal_status"));
+                    a.setStudentAppealReason(rs.getString("student_appeal_reason"));
+                    a.setStudentAppealRemarks(rs.getString("student_appeal_remarks"));
+                    list.add(a);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
+

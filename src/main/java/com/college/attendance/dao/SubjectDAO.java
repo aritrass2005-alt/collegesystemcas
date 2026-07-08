@@ -147,7 +147,7 @@ public class SubjectDAO {
         if (department != null && !department.isEmpty()) sql.append(" AND s.department = ?");
         if (year != null && !year.isEmpty()) sql.append(" AND s.year = ?");
         if (section != null && !section.isEmpty()) sql.append(" AND s.section = ?");
-        sql.append(" ORDER BY s.name");
+        sql.append(" ORDER BY s.department, s.year, s.section, s.name");
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int idx = 1;

@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS student (
 -- Subject Table
 CREATE TABLE IF NOT EXISTS subject (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    subject_code VARCHAR(50) NOT NULL UNIQUE,
+    subject_code VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
     department VARCHAR(100),
     year INT,

@@ -66,6 +66,14 @@ public class Attendance {
     private String subjectCode;
     private String teacherName;
 
+    // Guardian contact fields (used in coordinator appeals view)
+    private String parentName;
+    private String parentPhone;
+    private String parentEmail;
+    private String studentSection;
+    private String studentDepartment;
+    private int studentYear;
+
     public String getSubjectName() { return subjectName; }
     public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
 
@@ -74,4 +82,22 @@ public class Attendance {
 
     public String getTeacherName() { return teacherName; }
     public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
+
+    public String getParentName() { return parentName; }
+    public void setParentName(String parentName) { this.parentName = parentName; }
+
+    public String getParentPhone() { return parentPhone; }
+    public void setParentPhone(String parentPhone) { this.parentPhone = parentPhone; }
+
+    public String getParentEmail() { return parentEmail; }
+    public void setParentEmail(String parentEmail) { this.parentEmail = parentEmail; }
+
+    public String getStudentSection() { return studentSection; }
+    public void setStudentSection(String studentSection) { this.studentSection = studentSection; }
+
+    public String getStudentDepartment() { return studentDepartment; }
+    public void setStudentDepartment(String studentDepartment) { this.studentDepartment = studentDepartment; }
+
+    public int getStudentYear() { return studentYear; }
+    public void setStudentYear(int studentYear) { this.studentYear = studentYear; }
 }

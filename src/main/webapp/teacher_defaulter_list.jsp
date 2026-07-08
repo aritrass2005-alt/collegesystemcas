@@ -108,14 +108,8 @@
                                 <input type="hidden" name="startDate" value="<%= startDate %>">
                                 <input type="hidden" name="endDate" value="<%= endDate %>">
                                 
-                                <div class="form-check form-switch mb-3 text-start px-5">
-                                    <input class="form-check-input" type="checkbox" name="notifyParents" id="notifyParentsCheck" value="true" checked>
-                                    <label class="form-check-label fw-bold text-dark small" for="notifyParentsCheck">
-                                        <i class="bi bi-shield-exclamation text-danger me-1"></i>Also notify parents via simulated Email &amp; SMS
-                                    </label>
-                                    <div class="form-text text-muted" style="font-size: 0.75rem;">
-                                        Sends an official low-attendance alert to parents with registered contact information.
-                                    </div>
+                                <div class="alert alert-info small border-info mx-4 mt-3">
+                                    <i class="bi bi-info-circle-fill me-1"></i> <strong>Note:</strong> Only coordinators have the authority to send simulated Email &amp; SMS alerts to parents.
                                 </div>
                                 
                                 <div class="d-flex justify-content-end gap-2 w-100 mt-2">

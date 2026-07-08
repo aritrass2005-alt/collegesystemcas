@@ -42,6 +42,11 @@ public class PublishDefaultersServlet extends HttpServlet {
         String context = request.getParameter("context"); // "teacher" or "coordinator"
         boolean notifyParents = "true".equals(request.getParameter("notifyParents"));
         
+        // Security check: Only coordinators can send parent alerts
+        if (!("coordinator".equals(context) && Boolean.TRUE.equals(isCoordinator))) {
+            notifyParents = false;
+        }
+        
         List<DefaulterRecord> defaulters;
         String senderRole = "Faculty";
         

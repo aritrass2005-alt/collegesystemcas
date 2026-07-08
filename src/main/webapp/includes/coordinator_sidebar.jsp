@@ -63,6 +63,12 @@
             </a>
         </div>
         <div class="sidebar-nav-item">
+            <a href="coordinatorAppeals" class="<%= activePage.contains("coordinatorAppeals") || activePage.contains("coordinator_appeals.jsp") ? "active" : "" %>">
+                <i class="bi bi-shield-exclamation"></i>
+                <span>Section Appeals</span>
+            </a>
+        </div>
+        <div class="sidebar-nav-item">
             <a href="coordinatorAttendanceView" class="<%= activePage.contains("coordinatorAttendanceView") || activePage.contains("coordinator_attendance_view.jsp") ? "active" : "" %>">
                 <i class="bi bi-calendar-check-fill"></i>
                 <span>Attendance History</span>

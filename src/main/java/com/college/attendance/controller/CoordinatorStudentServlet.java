@@ -52,6 +52,9 @@ public class CoordinatorStudentServlet extends HttpServlet {
                     s.setDepartment(rs.getString("department"));
                     s.setYear(rs.getInt("year"));
                     s.setSection(rs.getString("section"));
+                    s.setParentName(rs.getString("parent_name"));
+                    s.setParentPhone(rs.getString("parent_phone"));
+                    s.setParentEmail(rs.getString("parent_email"));
                     students.add(s);
                 }
             }

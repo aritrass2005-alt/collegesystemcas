@@ -332,7 +332,7 @@
                                                         <% if (appealStatus != null) { %>
                                                             <div class="small text-dark"><strong>Reason:</strong> <%= appealReason %></div>
                                                             <% if (appealRemarks != null && !appealRemarks.isEmpty()) { %>
-                                                                <div class="small text-muted mt-1 bg-light p-2 rounded" style="border-left: 3px solid var(--secondary);"><strong>Teacher:</strong> <%= appealRemarks %></div>
+                                                                <div class="small text-muted mt-1 bg-light p-2 rounded" style="border-left: 3px solid var(--secondary);"><strong>Reviewer:</strong> <%= appealRemarks %></div>
                                                             <% } %>
                                                         <% } else { %>
                                                             <span class="text-muted small">No appeal filed yet.</span>

@@ -138,12 +138,12 @@ public class ManageSubjectServlet extends HttpServlet {
 
     private String buildFilterParams(HttpServletRequest req) {
         StringBuilder sb = new StringBuilder();
-        if (req.getParameter("dept") != null && !req.getParameter("dept").isEmpty())
-            sb.append("&dept=").append(req.getParameter("dept"));
-        if (req.getParameter("year") != null && !req.getParameter("year").isEmpty())
-            sb.append("&year=").append(req.getParameter("year"));
-        if (req.getParameter("section") != null && !req.getParameter("section").isEmpty())
-            sb.append("&section=").append(req.getParameter("section"));
+        if (req.getParameter("filterDept") != null && !req.getParameter("filterDept").isEmpty())
+            sb.append("&dept=").append(req.getParameter("filterDept"));
+        if (req.getParameter("filterYear") != null && !req.getParameter("filterYear").isEmpty())
+            sb.append("&year=").append(req.getParameter("filterYear"));
+        if (req.getParameter("filterSection") != null && !req.getParameter("filterSection").isEmpty())
+            sb.append("&section=").append(req.getParameter("filterSection"));
         return sb.toString();
     }
 }

@@ -96,13 +96,32 @@ public class StudentDashboardServlet extends HttpServlet {
                         if (attendanceDAO.submitStudentAppeal(attendanceId, reason)) {
                             com.college.attendance.dao.SubjectDAO subjectDAO = new com.college.attendance.dao.SubjectDAO();
                             com.college.attendance.model.Subject sub = subjectDAO.getSubjectById(a.getSubjectId());
-                            if (sub != null && sub.getTeacherId() > 0) {
-                                com.college.attendance.dao.NotificationDAO notificationDAO = new com.college.attendance.dao.NotificationDAO();
-                                String notifTitle = "New Student Recheck Appeal";
-                                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
-                                String formattedDate = sdf.format(a.getDateTime());
-                                String notifMessage = "Student " + student.getName() + " (" + student.getRollNo() + ") has submitted a recheck appeal for " + sub.getSubjectCode() + " on " + formattedDate + ".\nReason: " + reason;
-                                
+                            com.college.attendance.dao.NotificationDAO notificationDAO = new com.college.attendance.dao.NotificationDAO();
+                            com.college.attendance.dao.CoordinatorDAO coordinatorDAO = new com.college.attendance.dao.CoordinatorDAO();
+                            
+                            String notifTitle = "New Student Recheck Appeal";
+                            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
+                            String formattedDate = sdf.format(a.getDateTime());
+                            String subjectInfo = sub != null ? sub.getSubjectCode() : "Unknown Subject";
+                            String notifMessage = "Student " + student.getName() + " (" + student.getRollNo() + ") has submitted a recheck appeal for " + subjectInfo + " on " + formattedDate + ".\nReason: " + reason;
+                            
+                            // Send notification to coordinator of student's section (instead of teacher)
+                            int coordinatorTeacherId = coordinatorDAO.getCoordinatorTeacherIdForSection(
+                                student.getDepartment(), student.getYear(), student.getSection());
+                            
+                            if (coordinatorTeacherId > 0) {
+                                // Coordinator exists for this section - notify them
+                                notificationDAO.sendNotificationToRole(
+                                    student.getName(), 
+                                    "Student", 
+                                    coordinatorTeacherId, 
+                                    "Teacher", 
+                                    notifTitle, 
+                                    notifMessage, 
+                                    null
+                                );
+                            } else if (sub != null && sub.getTeacherId() > 0) {
+                                // No coordinator assigned - fall back to subject teacher
                                 notificationDAO.sendNotificationToRole(
                                     student.getName(), 
                                     "Student", 

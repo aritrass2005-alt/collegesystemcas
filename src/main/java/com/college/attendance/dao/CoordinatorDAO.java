@@ -120,4 +120,28 @@ public class CoordinatorDAO {
         }
         return false;
     }
+
+    /**
+     * Get the coordinator's teacher_id for a specific section (department, year, section).
+     * Returns -1 if no coordinator is assigned to the section.
+     */
+    public int getCoordinatorTeacherIdForSection(String department, int year, String section) {
+        String sql = "SELECT teacher_id FROM coordinator WHERE department = ? AND year = ? " +
+                     "AND (section = ? OR section IS NULL OR section = '') LIMIT 1";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, department);
+            stmt.setInt(2, year);
+            stmt.setString(3, section);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("teacher_id");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }
+

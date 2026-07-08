@@ -283,9 +283,9 @@
         <input type="hidden" name="action" id="modalAction" value="add_subject">
         <input type="hidden" name="id" id="modalId" value="">
         <!-- preserve current filters -->
-        <input type="hidden" name="dept"    value="<%= filterDept %>">
-        <input type="hidden" name="year"    value="<%= filterYear %>">
-        <input type="hidden" name="section" value="<%= filterSection %>">
+        <input type="hidden" name="filterDept"    value="<%= filterDept %>">
+        <input type="hidden" name="filterYear"    value="<%= filterYear %>">
+        <input type="hidden" name="filterSection" value="<%= filterSection %>">
 
         <div class="modal-header">
             <h5 class="modal-title" id="modalTitle"><i class="bi bi-journal-plus me-2"></i>Add New Subject</h5>
@@ -385,9 +385,9 @@
             <form action="manageSubjects" method="post">
                 <input type="hidden" name="action" value="delete_subject">
                 <input type="hidden" name="id" id="deleteSubjectId">
-                <input type="hidden" name="dept"    value="<%= filterDept %>">
-                <input type="hidden" name="year"    value="<%= filterYear %>">
-                <input type="hidden" name="section" value="<%= filterSection %>">
+                <input type="hidden" name="filterDept"    value="<%= filterDept %>">
+                <input type="hidden" name="filterYear"    value="<%= filterYear %>">
+                <input type="hidden" name="filterSection" value="<%= filterSection %>">
                 <button type="button" class="btn btn-secondary btn-sm me-2" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash3-fill"></i> Delete</button>
             </form>
