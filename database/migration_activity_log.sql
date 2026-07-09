@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS activity_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_type VARCHAR(50) NOT NULL,
+    user_name VARCHAR(100) NOT NULL,
+    action TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -6,12 +6,35 @@ import com.college.attendance.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityLogDAO {
     
+    private static boolean tableChecked = false;
+
+    private static void ensureTableExists() {
+        if (tableChecked) return;
+        String sql = "CREATE TABLE IF NOT EXISTS activity_log (" +
+                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "user_type VARCHAR(50) NOT NULL, " +
+                     "user_name VARCHAR(100) NOT NULL, " +
+                     "action TEXT NOT NULL, " +
+                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                     ")";
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            tableChecked = true;
+        } catch (Exception e) {
+            System.err.println("[ActivityLogDAO] Failed to create activity_log table: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static void log(String userType, String userName, String action) {
+        ensureTableExists();
         String sql = "INSERT INTO activity_log (user_type, user_name, action) VALUES (?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -25,6 +48,7 @@ public class ActivityLogDAO {
     }
 
     public List<ActivityLog> getRecentLogs(int limit) {
+        ensureTableExists();
         List<ActivityLog> logs = new ArrayList<>();
         String sql = "SELECT * FROM activity_log ORDER BY created_at DESC LIMIT ?";
         try (Connection conn = DBConnection.getConnection();
