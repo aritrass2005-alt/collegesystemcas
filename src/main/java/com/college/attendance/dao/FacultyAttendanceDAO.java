@@ -189,6 +189,18 @@ public class FacultyAttendanceDAO {
         return false;
     }
 
+    public boolean verifyAllAttendance(Date targetDate) {
+        String sql = "UPDATE faculty_attendance SET verified_by_admin = 1 WHERE date = ? AND verified_by_admin = 0 AND status != 'Pending'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, targetDate);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean addAttendanceByAdmin(int teacherId, Date date, String status, String notes) {
         String sql = "INSERT INTO faculty_attendance (teacher_id, date, status, admin_notes, verified_by_admin) VALUES (?, ?, ?, ?, 1)";
         try (Connection conn = DBConnection.getConnection();

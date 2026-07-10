@@ -3,10 +3,10 @@ package com.college.attendance.websocket;
 import com.college.attendance.model.Admin;
 import com.college.attendance.model.Teacher;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.HandshakeResponse;
-import jakarta.websocket.server.HandshakeRequest;
-import jakarta.websocket.server.ServerEndpointConfig;
+import javax.servlet.http.HttpSession;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * Configurator that copies HTTP session attributes into the WebSocket session

@@ -405,6 +405,7 @@ function sendReadReceipt(messageId) {
 }
 
 function escapeHtml(text) {
+    if (!text) return "";
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -927,5 +928,87 @@ function executeDeleteForEveryone() {
     
     closeModal('deleteMessageModal');
     messageToDeleteId = null;
+}
+
+// Discover Groups Logic
+let discoverableGroups = [];
+
+function showDiscoverGroupsModal() {
+    document.getElementById('discoverGroupsModal').style.display = 'flex';
+    fetchDiscoverableGroups();
+}
+
+async function fetchDiscoverableGroups() {
+    const listDiv = document.getElementById('discoverGroupsList');
+    listDiv.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Loading groups...</div>';
+    
+    try {
+        const res = await fetch('chat?action=discoverGroups');
+        const json = await res.json();
+        
+        if (json.status === 'success') {
+            discoverableGroups = json.groups;
+            renderDiscoverableGroups(discoverableGroups);
+        } else {
+            listDiv.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 20px;">${escapeHtml(json.error || 'Failed to load groups')}</div>`;
+        }
+    } catch (e) {
+        listDiv.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 20px;">Error loading groups</div>`;
+    }
+}
+
+function renderDiscoverableGroups(groups) {
+    const listDiv = document.getElementById('discoverGroupsList');
+    listDiv.innerHTML = '';
+    
+    if (groups.length === 0) {
+        listDiv.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">No new groups found to join.</div>';
+        return;
+    }
+    
+    groups.forEach(g => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-hover); border-radius: 8px; margin-bottom: 5px;';
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.style.cssText = 'font-weight: 600; color: var(--text-main);';
+        nameDiv.innerHTML = `<i class="bi bi-building" style="margin-right: 8px; color: var(--primary);"></i> ${escapeHtml(g.displayName)}`;
+        
+        const joinBtn = document.createElement('button');
+        joinBtn.className = 'btn-primary';
+        joinBtn.style.padding = '6px 12px';
+        joinBtn.style.fontSize = '0.85rem';
+        joinBtn.textContent = 'Join';
+        joinBtn.onclick = () => joinDiscoverableGroup(g.id);
+        
+        item.appendChild(nameDiv);
+        item.appendChild(joinBtn);
+        listDiv.appendChild(item);
+    });
+}
+
+function filterDiscoverGroups() {
+    const term = document.getElementById('discoverSearch').value.toLowerCase();
+    const filtered = discoverableGroups.filter(g => g.displayName && g.displayName.toLowerCase().includes(term));
+    renderDiscoverableGroups(filtered);
+}
+
+async function joinDiscoverableGroup(convId) {
+    try {
+        const res = await fetch('chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({action: 'joinGroup', convId: convId})
+        });
+        const json = await res.json();
+        if (json.success) {
+            alert('Joined group successfully!');
+            location.reload();
+        } else {
+            alert('Failed to join group: ' + (json.error || 'Unknown error'));
+        }
+    } catch(e) {
+        alert('Error joining group');
+    }
 }
 

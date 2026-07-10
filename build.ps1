@@ -13,11 +13,11 @@ if (-not (Test-Path -Path $buildLibDir)) {
     New-Item -ItemType Directory -Path $buildLibDir -Force | Out-Null
 }
 
-# Download Servlet API for compilation (Tomcat 10 uses Servlet 5.0)
-$servletApiJar = "$buildLibDir\jakarta.servlet-api-5.0.0.jar"
+# Download Servlet API for compilation (Tomcat 9 uses Servlet 4.0)
+$servletApiJar = "$buildLibDir\javax.servlet-api-4.0.1.jar"
 if (-not (Test-Path -Path $servletApiJar)) {
-    Write-Host "Downloading Jakarta Servlet API for compilation..."
-    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/5.0.0/jakarta.servlet-api-5.0.0.jar" -OutFile $servletApiJar
+    Write-Host "Downloading Java Servlet API for compilation..."
+    Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar" -OutFile $servletApiJar
 }
 
 # Build Classpath
@@ -25,7 +25,7 @@ $jars = Get-ChildItem -Path $libDir -Filter *.jar | Select-Object -ExpandPropert
 $jars += $servletApiJar
 
 # Add WebSocket API from Tomcat for compilation (needed for @ServerEndpoint)
-$tomcatLib = "C:\Program Files\Apache Software Foundation\Tomcat 10.0_Tomcat10.0\lib"
+$tomcatLib = "C:\Program Files\Apache Software Foundation\Tomcat 9.0\lib"
 $wsApiJar = "$tomcatLib\websocket-api.jar"
 if (Test-Path -Path $wsApiJar) {
     $jars += $wsApiJar

@@ -14,12 +14,8 @@ $jars = @(
         Name = "jbcrypt-0.4.jar"
     },
     @{
-        Url = "https://repo1.maven.org/maven2/jakarta/servlet/jsp/jstl/jakarta.servlet.jsp.jstl-api/2.0.0/jakarta.servlet.jsp.jstl-api-2.0.0.jar"
-        Name = "jakarta.servlet.jsp.jstl-api-2.0.0.jar"
-    },
-    @{
-        Url = "https://repo1.maven.org/maven2/org/glassfish/web/jakarta.servlet.jsp.jstl/2.0.0/jakarta.servlet.jsp.jstl-2.0.0.jar"
-        Name = "jakarta.servlet.jsp.jstl-impl-2.0.0.jar"
+        Url = "https://repo1.maven.org/maven2/javax/servlet/jstl/1.2/jstl-1.2.jar"
+        Name = "jstl-1.2.jar"
     },
     @{
         Url = "https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar"

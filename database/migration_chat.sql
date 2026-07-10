@@ -44,7 +44,20 @@ CREATE TABLE chat_messages (
     message_type ENUM('TEXT', 'SYSTEM', 'FILE', 'PHOTO', 'AUDIO') DEFAULT 'TEXT',
     file_url VARCHAR(255) DEFAULT NULL,
     file_name VARCHAR(255) DEFAULT NULL,
+    is_edited TINYINT(1) DEFAULT 0,
+    is_deleted TINYINT(1) DEFAULT 0,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE,
     INDEX idx_conv_time (conversation_id, sent_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Message deletions per user
+CREATE TABLE chat_message_deletions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    message_id BIGINT NOT NULL,
+    user_role VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_msg_del (message_id, user_role, user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

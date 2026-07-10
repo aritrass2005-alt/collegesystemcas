@@ -137,7 +137,6 @@
             line-height: 1.8;
         }
 
-        /* ── Right Panel ── */
         .right-panel {
             flex: 1;
             display: flex;
@@ -145,6 +144,29 @@
             justify-content: center;
             padding: 48px 40px;
             background: #fff;
+            position: relative;
+        }
+
+        .btn-home {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-home:hover {
+            background: #e5e7eb;
+            color: #1f2937;
         }
 
         .login-box {
@@ -393,6 +415,7 @@
 
     <!-- RIGHT PANEL -->
     <div class="right-panel">
+        <a href="index.jsp" class="btn-home"><i class="bi bi-arrow-left"></i> Back to Home</a>
         <div class="login-box">
 
             <h1 class="login-heading">Welcome back</h1>

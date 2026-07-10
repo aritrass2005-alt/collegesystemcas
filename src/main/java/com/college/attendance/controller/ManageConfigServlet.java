@@ -3,12 +3,12 @@ package com.college.attendance.controller;
 import com.college.attendance.dao.ConfigDAO;
 import com.college.attendance.dao.SystemSettingsDAO;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/manageConfig")
@@ -35,7 +35,6 @@ public class ManageConfigServlet extends HttpServlet {
         request.setAttribute("departments", configDAO.getAll("department"));
         request.setAttribute("sections", configDAO.getAll("section"));
         request.setAttribute("years", configDAO.getAll("academic_year"));
-        request.setAttribute("maintenanceMode", systemSettingsDAO.isMaintenanceMode());
         
         request.getRequestDispatcher("admin_config.jsp").forward(request, response);
     }
@@ -48,16 +47,6 @@ public class ManageConfigServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        if ("toggleMaintenance".equals(action)) {
-            if (!"SuperAdmin".equals(session.getAttribute("role"))) {
-                response.sendRedirect("manageConfig?error=Access+denied.+Super+Admin+only.");
-                return;
-            }
-            boolean enable = Boolean.parseBoolean(request.getParameter("enable"));
-            systemSettingsDAO.setMaintenanceMode(enable);
-            response.sendRedirect("manageConfig?msg=Maintenance+mode+" + (enable ? "enabled" : "disabled") + "+successfully.");
-            return;
-        }
 
         String type = request.getParameter("type");
         String value = request.getParameter("value");

@@ -12,7 +12,7 @@ public class ValidationUtil {
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_PATTERN =
-            Pattern.compile("^[6-9]\\d{9}$");                      // Indian mobile
+            Pattern.compile("^\\+?[0-9\\-\\s]{10,15}$");                      // More lenient phone validation
     private static final Pattern ROLL_NO_PATTERN =
             Pattern.compile("^[A-Za-z0-9_-]{3,20}$");
     private static final Pattern NAME_PATTERN =

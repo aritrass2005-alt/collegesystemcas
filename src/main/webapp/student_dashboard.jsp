@@ -108,13 +108,147 @@
             z-index: 2;
         }
         
-        .fc-theme-standard td, .fc-theme-standard th { border-radius: 8px; }
-        .fc-event {
-            border-radius: 6px;
-            border: none;
-            padding: 2px 4px;
+        /* ── FullCalendar Themed Overrides ──────────────────────────── */
+        #attendanceCalendar {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+
+        /* Toolbar */
+        .fc .fc-toolbar {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2240 100%);
+            border-radius: 14px 14px 0 0;
+            margin-bottom: 0 !important;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .fc .fc-toolbar-title {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        /* Toolbar buttons */
+        .fc .fc-button {
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            border-radius: 8px !important;
+            color: #fff !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            padding: 5px 14px !important;
+            transition: all 0.2s ease !important;
+            box-shadow: none !important;
+            text-transform: capitalize;
+        }
+        .fc .fc-button:hover {
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(255,255,255,0.4) !important;
+        }
+        .fc .fc-button-primary:not(:disabled).fc-button-active,
+        .fc .fc-button-primary:not(:disabled):active {
+            background: #4f9cf9 !important;
+            border-color: #4f9cf9 !important;
+        }
+
+        /* Grid */
+        .fc .fc-scrollgrid {
+            border: none !important;
+            border-radius: 0 0 14px 14px;
+            overflow: hidden;
+        }
+        .fc .fc-scrollgrid-section-header th {
+            background: #f0f4fb;
+            border: none !important;
+            padding: 10px 0 !important;
+        }
+        .fc .fc-col-header-cell-cushion {
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #1e3a5f;
+            text-decoration: none;
+        }
+
+        /* Day cells */
+        .fc .fc-daygrid-day {
+            background: #fff;
+            border-color: #e8edf5 !important;
+            transition: background 0.18s ease;
+        }
+        .fc .fc-daygrid-day:hover {
+            background: #f5f8ff;
+        }
+        .fc .fc-day-today {
+            background: linear-gradient(135deg, #eef4ff 0%, #deeaff 100%) !important;
+        }
+        .fc .fc-daygrid-day-number {
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.85rem;
+            color: #374151;
+            text-decoration: none;
+            padding: 6px 10px !important;
+        }
+        .fc .fc-day-today .fc-daygrid-day-number {
+            background: #1e3a5f;
+            color: #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px;
+            padding: 0 !important;
+        }
+        /* Other-month days */
+        .fc .fc-day-other .fc-daygrid-day-number { color: #aab4c8; }
+        .fc .fc-day-other { background: #fafbfd; }
+
+        /* Events */
+        .fc-event {
+            border-radius: 4px !important;
+            border: none !important;
+            padding: 1px 2px !important;
+            margin: 1px 3px !important;
+            cursor: pointer;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .fc-event:hover {
+            opacity: 0.85 !important;
+        }
+        .fc-event .fc-event-title { font-weight: 700; }
+
+        /* "more" link */
+        .fc .fc-daygrid-more-link {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #1e3a5f;
+            background: #deeaff;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin: 1px 4px;
+        }
+
+        /* Week / Day grid time labels */
+        .fc .fc-timegrid-slot-label-cushion {
+            font-size: 0.72rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        .fc .fc-timegrid-now-indicator-line {
+            border-color: #ef4444;
+        }
+        .fc .fc-timegrid-now-indicator-arrow {
+            border-color: #ef4444;
+        }
+
+        /* Modal body background */
+        #calendarModal .modal-body {
+            background: #f4f7fd;
+            padding: 20px 24px 24px !important;
         }
 
         @keyframes fadeInDown {
@@ -189,6 +323,20 @@
                     <span class="mt-3 fw-semibold text-uppercase letter-spacing-1 small">Overall Attendance</span>
                 </div>
             </div>
+
+
+            <% if(request.getParameter("msg") != null) { %>
+                <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= request.getParameter("msg") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+            <% if(request.getParameter("error") != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><%= request.getParameter("error") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
 
             <div class="row g-4">
                 <!-- Left Column: Attendance Stats -->
@@ -454,8 +602,20 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-body p-4">
-                <div id="attendanceCalendar"></div>
+            <div class="modal-body" style="padding:0 !important; background:#f4f7fd;">
+                <!-- Event detail toast -->
+                <div id="calEventToast" style="display:none;position:absolute;top:80px;right:24px;z-index:1100;min-width:240px;max-width:320px;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(30,58,95,0.18);padding:18px 20px;border-top:4px solid #1e3a5f;animation:fadeInDown 0.25s ease;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span id="calToastStatus" class="badge fs-6 px-3 py-2 rounded-pill"></span>
+                        <button onclick="document.getElementById('calEventToast').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#6b7280;line-height:1;">&times;</button>
+                    </div>
+                    <div class="fw-bold text-dark mb-1" id="calToastSubject" style="font-size:0.95rem;"></div>
+                    <div class="small text-muted" id="calToastDate"></div>
+                    <div class="small text-muted" id="calToastTime"></div>
+                </div>
+                <div style="border-radius:0 0 24px 24px;overflow:hidden;">
+                    <div id="attendanceCalendar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -525,64 +685,121 @@
                 String color = "#dc3545";
                 if ("Present".equals(a.getStatus())) color = "#198754";
                 else if ("Leave".equals(a.getStatus())) color = "#6c757d";
-                String subjectName = a.getStudentName(); // stored in studentName field
+                String subCode = a.getSubjectCode() != null ? a.getSubjectCode() : "";
+                String subName = a.getSubjectName() != null ? a.getSubjectName() : "Unknown";
+                String calTitle = subCode.isEmpty() ? subName : (subCode + " - " + subName);
+                // Escape single quotes to avoid JS syntax errors
+                calTitle = calTitle.replace("'", "\\'");
+                subName = subName.replace("'", "\\'");
                 String isoDateTime = sdtf.format(a.getDateTime());
                 String timeStr = timeOnly.format(a.getDateTime());
+                String dateOnly = sdf.format(a.getDateTime()); // yyyy-MM-dd in server timezone
         %>
         events.push({
-            title: '<%= subjectName %>: <%= a.getStatus() %>',
+            title: '<%= calTitle %>: <%= a.getStatus() %>',
             start: '<%= isoDateTime %>',
+            dateOnly: '<%= dateOnly %>',
             backgroundColor: '<%= color %>',
             borderColor: 'transparent',
             textColor: '#fff',
             extendedProps: {
-                subject: '<%= subjectName %>',
+                subject: '<%= subName %>',
                 status: '<%= a.getStatus() %>',
                 time: '<%= timeStr %>'
             }
         });
         <% } } %>
 
+        // Build a map: 'YYYY-MM-DD' -> [ {color, subject, status, time, code} ]
+        var dateEventsMap = {};
+        events.forEach(function(ev) {
+            var dateKey = ev.dateOnly; // Server-formatted date avoids JS timezone parsing
+            if (!dateEventsMap[dateKey]) dateEventsMap[dateKey] = [];
+            // Extract just the subject code (part before " - ")
+            var parts = ev.title.split(':')[0].split(' - ');
+            var code = parts[0].trim();
+            dateEventsMap[dateKey].push({
+                color:   ev.backgroundColor,
+                subject: ev.extendedProps.subject,
+                status:  ev.extendedProps.status,
+                time:    ev.extendedProps.time,
+                code:    code,
+                dateStr: ev.start
+            });
+        });
+
+        function showCalToast(ev, dateStr) {
+            var toast    = document.getElementById('calEventToast');
+            var statusEl = document.getElementById('calToastStatus');
+            statusEl.textContent = ev.status;
+            statusEl.className   = 'badge px-3 py-2 rounded-pill';
+            if (ev.status === 'Present')      { statusEl.style.background='#198754'; statusEl.style.color='#fff'; }
+            else if (ev.status === 'Absent')  { statusEl.style.background='#dc3545'; statusEl.style.color='#fff'; }
+            else                              { statusEl.style.background='#6c757d'; statusEl.style.color='#fff'; }
+            document.getElementById('calToastSubject').textContent = ev.subject;
+            document.getElementById('calToastDate').textContent    = '\uD83D\uDCC5 ' + dateStr;
+            document.getElementById('calToastTime').textContent    = '\uD83D\uDD50 ' + ev.time;
+            toast.style.display = 'block';
+            clearTimeout(window._calToastTimer);
+            window._calToastTimer = setTimeout(function() { toast.style.display='none'; }, 4000);
+        }
+
         window.calendar = new FullCalendar.Calendar(document.getElementById('attendanceCalendar'), {
             initialView: 'dayGridMonth',
             headerToolbar: {
-                left: 'prev,next today',
+                left:   'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                right:  'dayGridMonth,timeGridWeek,timeGridDay'
             },
             buttonText: { today: 'Today', month: 'Month', week: 'Week', day: 'Day' },
-            events: events,
-            eventDisplay: 'block',
-            eventBorderRadius: '6px',
-            height: 600,
-            dayMaxEvents: 3,
-            eventTimeFormat: {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            },
-            eventDidMount: function(info) {
-                info.el.style.fontWeight = '600';
-                info.el.style.fontSize = '0.8em';
-                info.el.style.padding = '2px 6px';
+            events: [],           // No FullCalendar-managed events — we render dots ourselves
+            height: 430,
+            dayCellDidMount: function(info) {
+                // Use toISOString() — matches FullCalendar's internal UTC date representation
+                var key = info.date.toISOString().substring(0, 10);
+                var dayEvs = dateEventsMap[key];
+                if (!dayEvs || dayEvs.length === 0) return;
 
-                // Bootstrap tooltip with time info
-                var props = info.event.extendedProps;
-                info.el.setAttribute('title', props.subject + ' • ' + props.status + ' at ' + props.time);
-                info.el.setAttribute('data-bs-toggle', 'tooltip');
-                info.el.setAttribute('data-bs-placement', 'top');
-            },
-            eventClick: function(info) {
-                var props = info.event.extendedProps;
-                var dateStr = info.event.start.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                alert(props.subject + '\n' + props.status + '\nTime: ' + props.time + '\nDate: ' + dateStr);
+                // Create a dots row under the date number
+                var container = document.createElement('div');
+                container.style.cssText = 'display:flex;flex-direction:column;gap:2px;padding:2px 4px 3px;';
+
+                dayEvs.forEach(function(ev) {
+                    var row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:4px;cursor:pointer;padding:1px 2px;border-radius:4px;transition:background 0.15s;';
+                    row.onmouseover = function() { row.style.background='rgba(0,0,0,0.06)'; };
+                    row.onmouseout  = function() { row.style.background='transparent'; };
+
+                    var dot = document.createElement('span');
+                    dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:' + ev.color
+                        + ';display:inline-block;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,0.2);';
+
+                    var label = document.createElement('span');
+                    label.textContent  = ev.code;
+                    label.style.cssText = 'font-size:0.68rem;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;';
+
+                    row.appendChild(dot);
+                    row.appendChild(label);
+
+                    // Click → show toast
+                    (function(evData) {
+                        row.onclick = function() {
+                            var dateLabel = info.date.toLocaleDateString('en-IN', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                            });
+                            showCalToast(evData, dateLabel);
+                        };
+                    })(ev);
+
+                    container.appendChild(row);
+                });
+
+                // Append below the date number inside the cell frame
+                var frame = info.el.querySelector('.fc-daygrid-day-frame');
+                if (frame) frame.appendChild(container);
             }
         });
         window.calendar.render();
-
-        // Init Bootstrap tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
     });
 </script>
 

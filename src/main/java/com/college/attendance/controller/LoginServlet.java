@@ -8,12 +8,12 @@ import com.college.attendance.dao.CoordinatorDAO;
 import com.college.attendance.util.ValidationUtil;
 
 import com.college.attendance.dao.ActivityLogDAO;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -60,6 +60,17 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("error", "Invalid credentials.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
+        }
+        
+        // Enforce Server Load Limit
+        if (!"Admin".equals(role)) {
+            int currentActive = com.college.attendance.listener.ActiveSessionListener.getActiveSessions();
+            int maxLimit = new com.college.attendance.dao.SystemSettingsDAO().getMaxTrafficLimit();
+            if (currentActive >= maxLimit) {
+                request.setAttribute("error", "Server is at maximum capacity. Please try again later.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
         }
 
         HttpSession session = request.getSession();

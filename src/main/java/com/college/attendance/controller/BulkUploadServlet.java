@@ -6,14 +6,14 @@ import com.college.attendance.model.Student;
 import com.college.attendance.model.Teacher;
 import com.college.attendance.util.ValidationUtil;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,6 +112,22 @@ public class BulkUploadServlet extends HttpServlet {
                     String sect   = data[6].trim();
                     String dob    = data[7].trim();
 
+                    // Fix phone scientific notation from Excel (e.g., 9.18E+09)
+                    if (phone.toUpperCase().contains("E")) {
+                        try {
+                            phone = new java.math.BigDecimal(phone).toPlainString();
+                            if (phone.contains(".")) phone = phone.substring(0, phone.indexOf("."));
+                        } catch (Exception e) {}
+                    }
+
+                    // Fix year format e.g. "3rd Year" -> "3"
+                    yearS = yearS.replaceAll("\\D+", "");
+
+                    // Fix DOB dropped leading zero from Excel e.g. "1012005" -> "01012005"
+                    if (dob.length() == 7) {
+                        dob = "0" + dob;
+                    }
+
                     // Row-level validation
                     if (!ValidationUtil.isValidRollNo(rollNo)
                             || !ValidationUtil.isValidName(name)
@@ -153,6 +169,14 @@ public class BulkUploadServlet extends HttpServlet {
                     String email = data[1].trim();
                     String phone = data[2].trim();
                     String dept  = data[3].trim();
+
+                    // Fix phone scientific notation from Excel (e.g., 9.18E+09)
+                    if (phone.toUpperCase().contains("E")) {
+                        try {
+                            phone = new java.math.BigDecimal(phone).toPlainString();
+                            if (phone.contains(".")) phone = phone.substring(0, phone.indexOf("."));
+                        } catch (Exception e) {}
+                    }
 
                     if (!ValidationUtil.isValidName(name)
                             || !ValidationUtil.isValidEmail(email)

@@ -2,14 +2,14 @@ package com.college.attendance.controller;
 
 import com.college.attendance.util.ValidationUtil;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.*;
 import java.nio.file.Files;
 
@@ -40,7 +40,7 @@ public class DatabaseToolServlet extends HttpServlet {
                 ProcessBuilder pb = new ProcessBuilder(
                     "mysqldump",
                     "-u", "root",
-                    "-paritra04",
+                    "-p123456",
                     "--result-file=" + backupPath,
                     "college_attendance"
                 );
@@ -108,7 +108,7 @@ public class DatabaseToolServlet extends HttpServlet {
             ProcessBuilder pb = new ProcessBuilder(
                 "mysql",
                 "-u", "root",
-                "-paritra04",
+                "-p123456",
                 "college_attendance"
             );
             pb.redirectInput(tempFile);

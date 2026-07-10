@@ -8,9 +8,9 @@ import com.college.attendance.model.LeaveApplication;
 import com.college.attendance.model.DefaulterRecord;
 import com.college.attendance.model.Teacher;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 

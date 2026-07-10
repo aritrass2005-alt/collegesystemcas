@@ -79,6 +79,19 @@
                 <!-- Records Tab -->
                 <div class="tab-pane fade show active" id="records" role="tabpanel">
                     <div class="card custom-table p-3 border-0 shadow-sm">
+                        <% if (records != null && !records.isEmpty()) { %>
+                        <div class="d-flex justify-content-end mb-3">
+                            <form action="adminFacultyAttendance" method="post" onsubmit="return confirm('Are you sure you want to verify ALL unverified attendance records for this date?');">
+                                <input type="hidden" name="action" value="verifyAllRecords">
+                                <input type="hidden" name="targetDate" value="<%= targetDate %>">
+                                <input type="hidden" name="currentDate" value="<%= targetDate %>">
+                                <input type="hidden" name="currentDept" value="<%= dept != null ? dept : "" %>">
+                                <button type="submit" class="btn btn-success shadow-sm" style="border-radius: var(--card-radius);">
+                                    <i class="bi bi-check-all me-1"></i> Verify All Records
+                                </button>
+                            </form>
+                        </div>
+                        <% } %>
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.9rem;">
                         <thead class="table-light">

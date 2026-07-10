@@ -147,11 +147,13 @@
     <jsp:include page="includes/coordinator_sidebar.jsp" />
 
     <!-- Main Content -->
-    <div id="main-content" style="margin-left:260px; min-height:100vh; background:#f0f2f8;">
+    <div id="content-wrapper">
+
         <!-- Header Include -->
         <jsp:include page="includes/coordinator_header.jsp" />
 
-        <div class="container-fluid p-0">
+        <div class="container-fluid px-4 py-4">
+
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 class="fw-bold mb-1"><i class="bi bi-shield-exclamation text-primary me-2"></i> Section Student Appeals</h3>
@@ -255,90 +257,89 @@
                             <p class="text-muted mb-0">No students in your section have pending attendance recheck appeals.</p>
                         </div>
                     <% } else { %>
-                        <div class="row g-4">
+                    <div class="d-flex flex-column gap-3">
                             <% for (Attendance a : pendingAppeals) { %>
-                                <div class="col-lg-6">
-                                    <div class="card border-0 shadow-sm p-4 appeal-card">
-                                        <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-3">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <img src="https://ui-avatars.com/api/?name=<%= java.net.URLEncoder.encode(a.getStudentName(), "UTF-8") %>&background=e2e8f0&color=475569&bold=true" class="rounded-circle" width="45" height="45">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold text-dark"><%= a.getStudentName() %></h6>
-                                                    <small class="text-muted"><%= a.getStudentRollNo() %></small>
-                                                    <% if (a.getStudentSection() != null) { %>
-                                                        <span class="badge bg-light text-dark border ms-1" style="font-size: 0.65rem;">Sec <%= a.getStudentSection() %></span>
+                                <div class="card border-0 shadow-sm appeal-card">
+                                    <div class="card-body p-0">
+                                        <div class="row g-0">
+                                            <%-- LEFT: Student info + subject + reason + guardian --%>
+                                            <div class="col-lg-7 p-4 border-end">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <img src="https://ui-avatars.com/api/?name=<%= java.net.URLEncoder.encode(a.getStudentName(), "UTF-8") %>&background=dbeafe&color=1d4ed8&bold=true" class="rounded-circle" width="48" height="48">
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold text-dark"><%= a.getStudentName() %></h6>
+                                                            <small class="text-muted"><%= a.getStudentRollNo() %></small>
+                                                            <% if (a.getStudentSection() != null) { %>
+                                                                <span class="badge bg-light text-dark border ms-1" style="font-size: 0.65rem;">Sec <%= a.getStudentSection() %></span>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill small fw-bold">Pending Review</span>
+                                                </div>
+
+                                                <div class="p-3 rounded-3 mb-3" style="background:#f1f5fb; border-left: 4px solid #1e3a5f; font-size: 0.88rem;">
+                                                    <div class="row g-2">
+                                                        <div class="col-6">
+                                                            <div class="text-muted small fw-bold mb-1">SUBJECT</div>
+                                                            <div class="fw-bold text-dark"><%= a.getSubjectCode() %> – <%= a.getSubjectName() %></div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="text-muted small fw-bold mb-1">ABSENT DATE</div>
+                                                            <div class="fw-bold text-dark"><%= sdtf.format(a.getDateTime()) %></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-chat-quote-fill me-1 text-primary"></i>Student's Explanation</div>
+                                                    <p class="mb-0 p-3 rounded-3 small border" style="background:#fafbff; white-space:pre-line; line-height:1.6; font-style:italic; color:#374151;">"<%= a.getStudentAppealReason() %>"</p>
+                                                </div>
+
+                                                <div class="guardian-contact-card">
+                                                    <div class="contact-label mb-2"><i class="bi bi-person-lines-fill me-1"></i>Guardian / Parent Contact</div>
+                                                    <% if (a.getParentName() != null && !a.getParentName().isEmpty()) { %>
+                                                        <div class="fw-semibold text-dark mb-2" style="font-size: 0.88rem;"><i class="bi bi-person-fill text-success me-1"></i><%= a.getParentName() %></div>
                                                     <% } %>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <% if (a.getParentPhone() != null && !a.getParentPhone().isEmpty()) { %>
+                                                            <a href="tel:<%= a.getParentPhone() %>" class="btn btn-sm btn-call px-3"><i class="bi bi-telephone-fill me-1"></i>Call</a>
+                                                            <a href="sms:<%= a.getParentPhone() %>" class="btn btn-sm btn-message px-3"><i class="bi bi-chat-dots-fill me-1"></i>SMS</a>
+                                                        <% } %>
+                                                        <% if (a.getParentEmail() != null && !a.getParentEmail().isEmpty()) { %>
+                                                            <a href="mailto:<%= a.getParentEmail() %>" class="btn btn-sm btn-email-guardian px-3"><i class="bi bi-envelope-fill me-1"></i>Email</a>
+                                                        <% } %>
+                                                        <% if ((a.getParentPhone() == null || a.getParentPhone().isEmpty()) && (a.getParentEmail() == null || a.getParentEmail().isEmpty())) { %>
+                                                            <span class="text-muted small"><i class="bi bi-exclamation-circle me-1"></i>No guardian contact info available</span>
+                                                        <% } %>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill small fw-bold">Pending Review</span>
-                                        </div>
-                                        
-                                        <div class="mb-3 bg-light p-3 rounded" style="font-size: 0.9rem; border-left: 4px solid var(--primary);">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted fw-bold">Subject:</span>
-                                                <span class="fw-bold text-dark"><%= a.getSubjectCode() %> - <%= a.getSubjectName() %></span>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span class="text-muted fw-bold">Absent Date:</span>
-                                                <span class="fw-bold text-dark"><%= sdtf.format(a.getDateTime()) %></span>
-                                            </div>
-                                        </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label text-muted fw-bold small"><i class="bi bi-chat-quote-fill me-1"></i> Student's Explanation</label>
-                                            <p class="mb-0 text-dark bg-light p-3 rounded small border border-light-subtle" style="white-space: pre-line; line-height: 1.5; font-style: italic;">"<%= a.getStudentAppealReason() %>"</p>
-                                        </div>
-
-                                        <!-- Guardian Contact Section (Coordinator Only) -->
-                                        <div class="guardian-contact-card mb-3">
-                                            <div class="contact-label mb-2"><i class="bi bi-person-lines-fill me-1"></i> Guardian / Parent Contact</div>
-                                            <% if (a.getParentName() != null && !a.getParentName().isEmpty()) { %>
-                                                <div class="fw-semibold text-dark mb-2" style="font-size: 0.9rem;">
-                                                    <i class="bi bi-person-fill text-success me-1"></i> <%= a.getParentName() %>
-                                                </div>
-                                            <% } %>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <% if (a.getParentPhone() != null && !a.getParentPhone().isEmpty()) { %>
-                                                    <a href="tel:<%= a.getParentPhone() %>" class="btn btn-sm btn-call px-3">
-                                                        <i class="bi bi-telephone-fill me-1"></i> Call (<%= a.getParentPhone() %>)
-                                                    </a>
-                                                    <a href="sms:<%= a.getParentPhone() %>" class="btn btn-sm btn-message px-3">
-                                                        <i class="bi bi-chat-dots-fill me-1"></i> Message
-                                                    </a>
-                                                <% } %>
-                                                <% if (a.getParentEmail() != null && !a.getParentEmail().isEmpty()) { %>
-                                                    <a href="mailto:<%= a.getParentEmail() %>" class="btn btn-sm btn-email-guardian px-3">
-                                                        <i class="bi bi-envelope-fill me-1"></i> Email
-                                                    </a>
-                                                <% } %>
-                                                <% if ((a.getParentPhone() == null || a.getParentPhone().isEmpty()) && (a.getParentEmail() == null || a.getParentEmail().isEmpty())) { %>
-                                                    <span class="text-muted small"><i class="bi bi-exclamation-circle me-1"></i> No guardian contact info available</span>
-                                                <% } %>
+                                            <%-- RIGHT: Action panel --%>
+                                            <div class="col-lg-5 p-4 d-flex flex-column" style="background:#f8faff;">
+                                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pencil-square me-2 text-primary"></i>Coordinator Decision</h6>
+                                                <form action="coordinatorAppeals" method="post" class="d-flex flex-column flex-grow-1">
+                                                    <input type="hidden" name="attendanceId" value="<%= a.getId() %>">
+                                                    <div class="mb-3 flex-grow-1">
+                                                        <label class="form-label text-muted fw-bold small">Remarks / Feedback</label>
+                                                        <textarea class="form-control textarea-custom" name="remarks" rows="5" placeholder="Explain your decision after contacting the guardian (e.g., Guardian confirmed student was ill)..."></textarea>
+                                                    </div>
+                                                    <div class="d-flex gap-2 mt-auto">
+                                                        <button type="submit" name="action" value="reject" class="btn btn-outline-danger flex-fill rounded-pill fw-bold" onclick="return confirm('Reject this appeal?')">
+                                                            <i class="bi bi-x-circle me-1"></i>Reject
+                                                        </button>
+                                                        <button type="submit" name="action" value="approve" class="btn btn-success flex-fill rounded-pill fw-bold text-white" style="background:#16a34a;border-color:#16a34a;" onclick="return confirm('Approve? Student will be marked PRESENT.')">
+                                                            <i class="bi bi-check-circle me-1"></i>Approve
+                                                        </button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
-
-                                        <!-- Coordinator Actions Form -->
-                                        <form action="coordinatorAppeals" method="post" class="mt-auto">
-                                            <input type="hidden" name="attendanceId" value="<%= a.getId() %>">
-                                            
-                                            <div class="mb-3">
-                                                <label for="remarks-<%= a.getId() %>" class="form-label text-muted fw-bold small">Coordinator's Remarks / Feedback</label>
-                                                <textarea class="form-control textarea-custom p-3 small" id="remarks-<%= a.getId() %>" name="remarks" rows="2" placeholder="Explain your decision after contacting the guardian (e.g., Guardian confirmed student was ill, verified via call)..."></textarea>
-                                            </div>
-                                            
-                                            <div class="d-flex gap-2 justify-content-end">
-                                                <button type="submit" name="action" value="reject" class="btn btn-outline-danger px-4 rounded-pill fw-bold" onclick="return confirm('Are you sure you want to reject this appeal?');">
-                                                    <i class="bi bi-x-circle me-1"></i> Reject
-                                                </button>
-                                                <button type="submit" name="action" value="approve" class="btn btn-success px-4 rounded-pill fw-bold text-white" style="background-color: #16a34a; border-color: #16a34a;" onclick="return confirm('Approve this appeal? The student will be marked PRESENT.');">
-                                                    <i class="bi bi-check-circle me-1"></i> Verify & Approve
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                             <% } %>
-                        </div>
+                    </div>
                     <% } %>
                 </div>
 

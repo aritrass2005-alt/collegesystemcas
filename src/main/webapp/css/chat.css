@@ -1,12 +1,12 @@
 :root {
-    --primary: #4f9cf9;
-    --primary-dark: #3a7bd5;
-    --bg-dark: #0f172a;
-    --bg-panel: #1e293b;
-    --bg-hover: #334155;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: #334155;
+    --primary: #8b5cf6;
+    --primary-dark: #7c3aed;
+    --bg-dark: #f8fafc;
+    --bg-panel: #ffffff;
+    --bg-hover: #f1f5f9;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
     --success: #10b981;
     --danger: #ef4444;
 }
@@ -140,13 +140,20 @@ body {
 .msg-time { font-size: 0.75rem; opacity: 0.7; text-align: right; margin-top: 5px; display: block; }
 .msg-status { margin-left: 5px; }
 
+.message-row.sent .message-bubble .icon-btn {
+    color: rgba(255, 255, 255, 0.7);
+}
+.message-row.sent .message-bubble .icon-btn:hover {
+    color: white;
+}
+
 /* Files / Attachments */
 .msg-attachment {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px;
-    background: rgba(0,0,0,0.2);
+    background: var(--bg-hover);
     border-radius: 8px;
     margin-bottom: 5px;
     cursor: pointer;
@@ -184,7 +191,7 @@ body {
     flex: 1;
     background: transparent;
     border: none;
-    color: white;
+    color: var(--text-main);
     padding: 10px;
     outline: none;
     font-size: 1rem;
@@ -278,7 +285,7 @@ body {
     width: 400px;
     max-width: 90%;
 }
-.modal h3 { margin-top: 0; color: white; }
+.modal h3 { margin-top: 0; color: var(--text-main); }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); }
 .form-group select, .form-group input {
@@ -286,7 +293,7 @@ body {
     padding: 10px;
     background: var(--bg-dark);
     border: 1px solid var(--border);
-    color: white;
+    color: var(--text-main);
     border-radius: 6px;
     box-sizing: border-box;
 }

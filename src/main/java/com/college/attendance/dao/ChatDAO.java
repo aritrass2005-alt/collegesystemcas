@@ -236,6 +236,35 @@ public class ChatDAO {
     }
 
     /**
+     * Get all conversations the user is NOT a part of.
+     */
+    public List<ChatConversation> getDiscoverableGroups(String role, int userId) {
+        List<ChatConversation> list = new ArrayList<>();
+        String sql = "SELECT * FROM chat_conversations WHERE id NOT IN (SELECT conversation_id FROM chat_participants WHERE user_role = ? AND user_id = ?) ORDER BY created_at DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             ps.setString(1, role);
+             ps.setInt(2, userId);
+             ResultSet rs = ps.executeQuery();
+             while (rs.next()) {
+                 ChatConversation c = new ChatConversation();
+                 c.setId(rs.getInt("id"));
+                 c.setName(rs.getString("name"));
+                 c.setType(rs.getString("type"));
+                 c.setDepartmentName(rs.getString("department_name"));
+                 c.setCreatedByRole(rs.getString("created_by_role"));
+                 c.setCreatedById(rs.getInt("created_by_id"));
+                 c.setCreatedAt(rs.getTimestamp("created_at"));
+                 c.setDisplayName(c.getName() != null ? c.getName() : "Group Chat");
+                 list.add(c);
+             }
+        } catch (Exception e) {
+             e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
      * Get participants of a conversation.
      */
     public List<ChatParticipant> getParticipants(int conversationId) {

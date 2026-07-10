@@ -6,8 +6,8 @@ import com.college.attendance.model.ChatParticipant;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import jakarta.websocket.*;
-import jakarta.websocket.server.ServerEndpoint;
+import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

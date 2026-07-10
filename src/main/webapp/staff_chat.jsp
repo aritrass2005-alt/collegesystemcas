@@ -8,6 +8,7 @@
     List<ChatConversation> conversations = (List<ChatConversation>) request.getAttribute("conversations");
     
     boolean isAdmin = "Admin".equals(currentRole) || "SuperAdmin".equals(currentRole);
+    String dashboardUrl = isAdmin ? "admin_dashboard.jsp" : "teacher_dashboard.jsp";
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +18,7 @@
     <title>Staff Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/chat.css?v=5">
+    <link rel="stylesheet" href="css/chat.css?v=7">
 </head>
 <body>
 
@@ -25,9 +26,17 @@
     <!-- Sidebar -->
     <div class="chat-sidebar">
         <div class="sidebar-header">
-            <h2>Chats</h2>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="<%= dashboardUrl %>" class="icon-btn" style="text-decoration: none; color: var(--text-main); font-size: 1.2rem; display: flex; align-items: center;" title="Back to Dashboard">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 style="margin: 0;">Chats</h2>
+            </div>
             <div class="sidebar-actions">
                 <% if(isAdmin) { %>
+                <button class="icon-btn primary-action" onclick="showDiscoverGroupsModal()" title="Discover & Join Groups">
+                    <i class="bi bi-search"></i>
+                </button>
                 <button class="icon-btn primary-action" onclick="showNewDeptGroupModal()" title="New Department Group">
                     <i class="bi bi-buildings"></i>
                 </button>
@@ -169,6 +178,24 @@
 <!-- ===== MODALS ===== -->
 
 <% if(isAdmin) { %>
+<!-- Discover Groups Modal -->
+<div class="modal-overlay" id="discoverGroupsModal">
+    <div class="modal" style="width: 500px; max-width: 95vw;">
+        <h3>Discover Groups</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">Find and join any unjoined group chat.</p>
+        <div class="form-group" style="margin-bottom: 15px;">
+            <input type="text" id="discoverSearch" placeholder="Search groups..." onkeyup="filterDiscoverGroups()">
+        </div>
+        <div id="discoverGroupsList" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Populated via JS -->
+            <div style="text-align: center; color: var(--text-muted); padding: 20px;">Loading groups...</div>
+        </div>
+        <div class="modal-actions" style="margin-top: 15px;">
+            <button class="btn-secondary" onclick="closeModal('discoverGroupsModal')">Close</button>
+        </div>
+    </div>
+</div>
+
 <!-- New Dept Group Modal -->
 <div class="modal-overlay" id="newDeptGroupModal">
     <div class="modal">
@@ -283,7 +310,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
 <script src="js/encryption.js?v=4"></script>
-<script src="js/chat.js?v=6"></script>
-<script src="js/chat_poll_pin.js?v=1"></script>
+<script src="js/chat.js?v=7"></script>
+<script src="js/chat_poll_pin.js?v=2"></script>
 </body>
 </html>

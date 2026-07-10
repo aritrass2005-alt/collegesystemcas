@@ -61,5 +61,55 @@ public class SystemSettingsDAO {
      */
     public static void invalidateCache() {
         maintenanceModeCache = null;
+        maxTrafficCache = null;
+    }
+
+    private static volatile Integer maxTrafficCache = null;
+
+    public int getMaxTrafficLimit() {
+        if (maxTrafficCache != null) {
+            return maxTrafficCache;
+        }
+
+        String sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'max_traffic_limit'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                int limit = Integer.parseInt(rs.getString("setting_value"));
+                maxTrafficCache = limit;
+                return limit;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Fallback default
+        return 1000;
+    }
+
+    public boolean setMaxTrafficLimit(int limit) {
+        String checkSql = "SELECT 1 FROM system_settings WHERE setting_key = 'max_traffic_limit'";
+        String insertSql = "INSERT INTO system_settings (setting_key, setting_value) VALUES ('max_traffic_limit', ?)";
+        String updateSql = "UPDATE system_settings SET setting_value = ? WHERE setting_key = 'max_traffic_limit'";
+        
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean exists = false;
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+                 ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) exists = true;
+            }
+            
+            String sql = exists ? updateSql : insertSql;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, String.valueOf(limit));
+                boolean success = stmt.executeUpdate() > 0;
+                if (success) maxTrafficCache = limit;
+                return success;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

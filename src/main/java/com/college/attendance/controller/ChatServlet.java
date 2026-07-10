@@ -5,12 +5,12 @@ import com.college.attendance.model.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -54,6 +54,8 @@ public class ChatServlet extends HttpServlet {
             handleGetPolls(request, response, session);
         } else if ("getPinnedMessages".equals(action)) {
             handleGetPinnedMessages(request, response, session);
+        } else if ("discoverGroups".equals(action)) {
+            handleDiscoverGroups(request, response, session);
         } else {
             // Forward to chat page
             int userId = getUserId(session);
@@ -104,6 +106,8 @@ public class ChatServlet extends HttpServlet {
             handlePinMessage(request, response, session);
         } else if ("unpinMessage".equals(action)) {
             handleUnpinMessage(request, response, session);
+        } else if ("joinGroup".equals(action)) {
+            handleJoinGroup(request, response, session);
         } else {
             sendJsonError(response, "Unknown action");
         }
@@ -334,5 +338,38 @@ public class ChatServlet extends HttpServlet {
         JsonObject res = new JsonObject();
         res.addProperty("success", success);
         sendJson(response, res.toString());
+    }
+
+    private void handleDiscoverGroups(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        if (!"Admin".equals(role) && !"SuperAdmin".equals(role)) {
+            sendJsonError(response, "Only admins can discover groups");
+            return;
+        }
+        int userId = getUserId(session);
+        List<ChatConversation> groups = chatDAO.getDiscoverableGroups(role, userId);
+        
+        JsonObject res = new JsonObject();
+        res.addProperty("status", "success");
+        res.add("groups", gson.toJsonTree(groups));
+        sendJson(response, res.toString());
+    }
+
+    private void handleJoinGroup(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        String role = (String) session.getAttribute("role");
+        if (!"Admin".equals(role) && !"SuperAdmin".equals(role)) {
+            sendJsonError(response, "Only admins can join uninvited groups");
+            return;
+        }
+        int userId = getUserId(session);
+        try {
+            int convId = Integer.parseInt(request.getParameter("convId"));
+            boolean success = chatDAO.addParticipant(convId, role, userId);
+            JsonObject res = new JsonObject();
+            res.addProperty("success", success);
+            sendJson(response, res.toString());
+        } catch (Exception e) {
+            sendJsonError(response, "Invalid parameters");
+        }
     }
 }

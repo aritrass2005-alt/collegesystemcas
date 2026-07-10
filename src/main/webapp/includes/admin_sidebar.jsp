@@ -103,6 +103,11 @@
             </li>
             <% if ("SuperAdmin".equals(roleName)) { %>
             <li>
+                <a href="serverManagement" class="<%= activePage.contains("serverManagement") || activePage.contains("admin_server_management") ? "active" : "" %>">
+                    <i class="bi bi-server"></i> <span>Server Management</span>
+                </a>
+            </li>
+            <li>
                 <a href="dbTools" class="<%= activePage.contains("db_tools") ? "active" : "" %>">
                     <i class="bi bi-database"></i> <span>Backup &amp; Restore</span>
                 </a>
